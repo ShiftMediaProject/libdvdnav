@@ -645,6 +645,18 @@ uint32_t dvdnav_describe_title_chapters(dvdnav_t *this, int32_t title, uint64_t 
       printerr("PGC start out of bounds");
       continue;
     }
+    if (0 == ifo->vts_pgcit->pgci_srp[ptt[i].pgcn-1].pgc_start_byte) {
+      printerr("PGC start zero.");
+      continue;
+    }
+    if (0 != (ifo->vts_pgcit->pgci_srp[ptt[i].pgcn-1].pgc_start_byte & 1)) {
+      printerr("PGC start unaligned.");
+      continue;
+    }
+    if (0 != ((int)(ifo->vts_pgcit->pgci_srp[ptt[i].pgcn-1].pgc) & 1)) {
+      printerr("PGC pointer unaligned.");
+      continue;
+    }
     pgc = ifo->vts_pgcit->pgci_srp[ptt[i].pgcn-1].pgc;
     if (pgc == NULL) {
       printerr("PGC missing.");
