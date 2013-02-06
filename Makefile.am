@@ -38,7 +38,7 @@ libdvdnav_la_SOURCES = \
 
 libdvdnav_la_LDFLAGS = \
 	-version-info $(DVDNAV_LT_CURRENT):$(DVDNAV_LT_REVISION):$(DVDNAV_LT_AGE) \
-	-export-symbols-regex "(^dvdnav.*|^nav.*|^ifo.*|^DVD.*)"
+	-export-symbols-regex "^dvdnav"
 libdvdnav_la_LIBADD = $(THREAD_LIBS) $(DVDREAD_LIBS)
 
 pkgincludedir = $(includedir)/dvdnav
