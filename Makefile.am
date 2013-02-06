@@ -8,11 +8,11 @@ EXTRA_DIST = AUTHORS \
 	     msvc/ \
 	     src/README.MAP \
 	     src/FELLOWSHIP.map \
-	     docs/doxy.conf \
-	     docs/mainpage.cpp \
-	     docs/tutorial.cpp \
-	     docs/dvd_structures \
-	     docs/library_layout
+	     doc/doxy.conf \
+	     doc/mainpage.cpp \
+	     doc/tutorial.cpp \
+	     doc/dvd_structures \
+	     doc/library_layout
 
 lib_LTLIBRARIES = libdvdnav.la
 
