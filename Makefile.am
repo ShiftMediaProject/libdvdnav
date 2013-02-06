@@ -54,7 +54,6 @@ pkgconfig_DATA = misc/dvdnav.pc misc/dvdnavmini.pc
 EXTRA_PROGRAMS = menus
 
 menus_SOURCES = examples/menus.c
-menus_CPPFLAGS = $(AM_CPPFLAGS) -DDVDNAV_COMPILE
 menus_LDADD = libdvdnav.la
 
 docs: misc/doxy.conf
