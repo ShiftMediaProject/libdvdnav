@@ -1,10 +1,3 @@
-dnl --------------------------------------------------------------
-dnl Configure.ac for libdvdnav
-dnl --------------------------------------------------------------
-
-dnl --------------------------------------------------------------
-dnl Require autoconf version 2.53
-dnl --------------------------------------------------------------
 AC_PREREQ([2.53])
 
 dnl --------------------------------------------------------------
@@ -21,7 +14,6 @@ AC_INIT([libdvdnav], [dvdnav_major.dvdnav_minor.dvdnav_sub[]dvdnav_pre])
 AC_CONFIG_SRCDIR([src/dvdnav.c])
 AM_INIT_AUTOMAKE([1.6 foreign])
 
-dnl create a config.h file (Automake will add -DHAVE_CONFIG_H)
 AC_CONFIG_HEADERS([config.h])
 AC_CANONICAL_HOST
 
@@ -67,47 +59,13 @@ AC_SUBST(DVDNAV_LT_CURRENT)
 AC_SUBST(DVDNAV_LT_AGE)
 AC_SUBST(DVDNAV_LT_REVISION)
 
-dnl --------------------------------------------------------------
-dnl Checks for programs.
-dnl --------------------------------------------------------------
-dnl Save CFLAGS, AC_ISC_POSIX set some unwanted default CFLAGS
-saved_CFLAGS="$CFLAGS"
-AC_ISC_POSIX
-CFLAGS="$saved_CFLAGS"
 AC_PROG_CC
-AC_PROG_MAKE_SET
-AC_PROG_INSTALL
-AC_PROG_LN_S
-
 LT_INIT
 
-dnl --------------------------------------------------------------
-dnl Checks for header files.
-dnl --------------------------------------------------------------
-AC_HEADER_STDC
-AC_CHECK_HEADER(unistd.h)
-AC_CHECK_HEADER(string.h)
+AC_SYS_LARGEFILE
 
-dnl --------------------------------------------------------------
-dnl Checks for typedefs, structures, and compiler characteristics.
-dnl --------------------------------------------------------------
-AC_C_CONST
-AC_C_INLINE
-AC_TYPE_OFF_T
-AC_TYPE_SIZE_T
-dnl AC_CHECK_TYPES([ptrdiff_t])
-AC_C_BIGENDIAN
-
-dnl -------------------------------------------------------------
-dnl Check for basic *nix fonction that we may emulate on windows.
-dnl -------------------------------------------------------------
-case $host in
-  *mingw32* | *cygwin*)
-    AC_CHECK_FUNCS(gettimeofday)
-    ;;
-  *)
-    ;;
-esac
+AS_CASE([$host],
+  [*mingw32* | *cygwin*], [AC_CHECK_FUNCS(gettimeofday)])
 
 dnl ---------------------------------------------
 dnl threads
@@ -154,15 +112,6 @@ case $host in
 esac
 
 PKG_CHECK_MODULES([DVDREAD], [dvdread])
-
-dnl ---------------------------------------------
-dnl cflags
-dnl ---------------------------------------------
-dnl Common cflags for all platforms
-CFLAGS="-O3 -Wall -D_FILE_OFFSET_BITS=64 -D_LARGEFILE64_SOURCE $CFLAGS"
-DEBUG_CFLAGS="-g -DDEBUG $CFLAGS"
-
-AC_SUBST(DEBUG_CFLAGS)
 
 dnl ---------------------------------------------
 dnl Check for doxygen (dynamic documentation generator)
