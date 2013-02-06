@@ -1,10 +1,8 @@
 AM_CPPFLAGS = $(THREAD_CFLAGS) $(DVDREAD_CFLAGS) -I$(top_srcdir)/src
 
-EXTRA_DIST = autogen.sh \
-	     AUTHORS \
+EXTRA_DIST = AUTHORS \
 	     ChangeLog \
 	     COPYING \
-	     INSTALL \
 	     README \
 	     TODO \
 	     msvc/ \
