@@ -63,6 +63,7 @@ AC_PROG_CC
 LT_INIT
 
 AC_SYS_LARGEFILE
+AC_C_BIGENDIAN
 
 AS_CASE([$host],
   [*mingw32* | *cygwin*], [AC_CHECK_FUNCS(gettimeofday)])
