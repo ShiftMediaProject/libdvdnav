@@ -79,21 +79,7 @@ AC_PROG_MAKE_SET
 AC_PROG_INSTALL
 AC_PROG_LN_S
 
-dnl --------------------------------------------------------------
-dnl Libtool
-dnl --------------------------------------------------------------
-dnl LT_PREREQ only available in libtool-2.2+
-dnl LT_PREREQ([1.4.0])
-AC_LIBTOOL_DLOPEN
-AC_DISABLE_STATIC
-AC_PROG_LIBTOOL
-AC_SUBST(LIBTOOL_DEPS)
-if ${CONFIG_SHELL} ./libtool --features | grep "enable static" >/dev/null; then
-  STATIC="-static"
-else
-  STATIC=
-fi
-AC_SUBST(STATIC)
+LT_INIT
 
 dnl --------------------------------------------------------------
 dnl Checks for header files.
