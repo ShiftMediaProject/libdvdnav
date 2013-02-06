@@ -217,7 +217,6 @@ dnl Output configuration files
 dnl ---------------------------------------------
 AC_OUTPUT([
 Makefile
-misc/dvdnav-config
 misc/dvdnav.pc
 misc/dvdnavmini.pc
 misc/libdvdnav.spec

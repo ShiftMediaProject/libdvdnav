@@ -48,13 +48,8 @@ pkginclude_HEADERS = \
 	src/dvdnav/dvdnav_events.h \
 	src/dvdnav/dvd_types.h
 
-bin_SCRIPTS = misc/dvdnav-config
-
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = misc/dvdnav.pc misc/dvdnavmini.pc
-
-m4datadir = $(datadir)/aclocal
-m4data_DATA = m4/dvdnav.m4
 
 EXTRA_PROGRAMS = menus
 
