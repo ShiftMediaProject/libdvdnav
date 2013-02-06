@@ -87,30 +87,6 @@ esac
 AC_SUBST(THREAD_LIBS)
 AC_SUBST(THREAD_CFLAGS)
 
-dnl ---------------------------------------------
-dnl dynamic linker
-dnl ---------------------------------------------
-case $host in
-  *mingw32*)
-    CFLAGS="-idirafter \$(top_srcdir)/msvc/include $CFLAGS"
-    LDFLAGS="-no-undefined $LDFLAGS"
-    ;;
-  *cygwin*)
-    LDFLAGS="-no-undefined $LDFLAGS"
-    ;;
-  *os2*)
-    LDFLAGS="-no-undefined -Zbin-files $LDFLAGS"
-    ;;
-  *)
-    AC_CHECK_LIB(c, dlopen,
-	         DYNAMIC_LD_LIBS="",
-	         AC_CHECK_LIB(dl, dlopen,
-             	              DYNAMIC_LD_LIBS="-ldl",
-	                      AC_MSG_ERROR(dynamic linker needed)))
-    AC_SUBST(DYNAMIC_LD_LIBS)
-    ;;
-esac
-
 PKG_CHECK_MODULES([DVDREAD], [dvdread])
 
 dnl ---------------------------------------------
