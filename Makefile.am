@@ -1,11 +1,8 @@
 AM_CPPFLAGS = $(THREAD_CFLAGS) $(DVDREAD_CFLAGS) -I$(top_srcdir)/src
 
-EXTRA_DIST = AUTHORS \
-	     ChangeLog \
-	     COPYING \
-	     README \
-	     TODO \
-	     msvc/ \
+dist_doc_DATA = AUTHORS ChangeLog COPYING README TODO
+
+EXTRA_DIST = msvc/ \
 	     src/README.MAP \
 	     src/FELLOWSHIP.map \
 	     doc/doxy.conf \
