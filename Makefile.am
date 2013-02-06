@@ -1,48 +1,68 @@
-include $(top_srcdir)/misc/Makefile.common
-
-
-if DVDNAV_ENABLE_EXAMPLES
-EXAMPLES_DIR = examples
-else
-EXAMPLES_DIR =
-endif
-
-SUBDIRS = src $(EXAMPLES_DIR) doc misc m4
+AM_CPPFLAGS = $(THREAD_CFLAGS) $(DVDREAD_CFLAGS) -I$(top_srcdir)/src
 
 EXTRA_DIST = autogen.sh \
 	     AUTHORS \
 	     ChangeLog \
-	     configure \
-	     config.guess \
-	     config.sub \
 	     COPYING \
 	     INSTALL \
-	     install-sh \
-	     libtool \
-	     ltmain.sh \
-	     missing \
-	     mkinstalldirs \
 	     README \
-	     TODO
+	     TODO \
+	     msvc/ \
+	     src/README.MAP \
+	     src/FELLOWSHIP.map \
+	     docs/doxy.conf \
+	     docs/mainpage.cpp \
+	     docs/tutorial.cpp \
+	     docs/dvd_structures \
+	     docs/library_layout
 
-MOSTLYCLEANFILES += $(PACKAGE)_$(VERSION).tar.gz \
-	$(distdir).tar.gz $(PACKAGE).tgz package_descriptions
+lib_LTLIBRARIES = libdvdnav.la
 
-MAINTAINERCLEANFILES += configure $(ACLOCAL_M4) config.h.in \
-	ltmain.sh config.guess config.sub install-sh missing \
-	mkinstalldirs
+libdvdnav_la_SOURCES = \
+	src/dvdnav.c \
+	src/read_cache.c \
+	src/navigation.c \
+	src/highlight.c \
+	src/searching.c \
+	src/settings.c \
+	src/remap.c \
+	src/dvdnav_internal.h \
+	src/read_cache.h \
+	src/remap.h \
+	src/vm/decoder.c \
+	src/vm/decoder.h \
+	src/vm/vm.c \
+	src/vm/vm.h \
+	src/vm/vmcmd.c \
+	src/vm/vmcmd.h
 
-world:
-	@$(MAKE) clean all install 2> warnings.log
-	test -s warnings.log || rm warnings.log
+libdvdnav_la_LDFLAGS = \
+	-version-info $(DVDNAV_LT_CURRENT):$(DVDNAV_LT_REVISION):$(DVDNAV_LT_AGE) \
+	-export-symbols-regex "(^dvdnav.*|^nav.*|^ifo.*|^DVD.*)"
+libdvdnav_la_LIBADD = $(THREAD_LIBS) $(DVDREAD_LIBS)
 
-prune-cache:
-	-rm -f config.cache
+pkgincludedir = $(includedir)/dvdnav
 
-release-check:
-	@./config.status misc/relchk.sh
-	@./autogen.sh noconfig && $(SHELL) misc/relchk.sh
+pkginclude_HEADERS = \
+	src/dvdnav/dvdnav.h \
+	src/dvdnav/dvdnav_events.h \
+	src/dvdnav/dvd_types.h
 
-dist-hook:
-	cp -r $(srcdir)/msvc $(distdir)/msvc
-	rm -rf `find $(distdir)/msvc -name CVS`
+bin_SCRIPTS = misc/dvdnav-config
+
+pkgconfigdir = $(libdir)/pkgconfig
+pkgconfig_DATA = misc/dvdnav.pc misc/dvdnavmini.pc
+
+m4datadir = $(datadir)/aclocal
+m4data_DATA = m4/dvdnav.m4
+
+EXTRA_PROGRAMS = menus
+
+menus_SOURCES = examples/menus.c
+menus_CPPFLAGS = $(AM_CPPFLAGS) -DDVDNAV_COMPILE
+menus_LDADD = libdvdnav.la
+
+docs: misc/doxy.conf
+	@if test x"$(DOXYGEN)" != "xno"; then \
+	  cd misc && $(DOXYGEN) doxy.conf > /dev/null 2> /dev/null; \
+	fi

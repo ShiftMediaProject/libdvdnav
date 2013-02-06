@@ -1,0 +1,10 @@
+prefix=/usr/local
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib
+includedir=${prefix}/include
+
+Name: libdvdnavmini
+Description: DVD Navigation mini library
+Version: 4.2.0
+
+Requires: dvdnav
