@@ -12,6 +12,7 @@ m4_define([dvdnav_pre],   [])
 
 AC_INIT([libdvdnav], [dvdnav_major.dvdnav_minor.dvdnav_sub[]dvdnav_pre])
 AC_CONFIG_SRCDIR([src/dvdnav.c])
+m4_include([m4/ax_check_compile_flag.m4])
 AM_INIT_AUTOMAKE([1.6 foreign])
 
 AC_CONFIG_HEADERS([config.h])
@@ -89,6 +90,11 @@ AC_SUBST(THREAD_LIBS)
 AC_SUBST(THREAD_CFLAGS)
 
 PKG_CHECK_MODULES([DVDREAD], [dvdread])
+
+dnl ---------------------------------------------
+dnl Check for bitfield compiler flag
+dnl ---------------------------------------------
+AX_CHECK_COMPILE_FLAG([-mno-ms-bitfields], [CFLAGS="-mno-ms-bitfields $CFLAGS"])
 
 dnl ---------------------------------------------
 dnl Check for doxygen (dynamic documentation generator)
