@@ -500,7 +500,7 @@ void vm_position_get(vm_t *vm, vm_position_t *position) {
        (vm->state).pgc->cell_playback[(vm->state).cellN - 1].first_sector < 1024)) {
     int time;
     int size = (vm->state).pgc->cell_playback[(vm->state).cellN - 1].last_sector -
-	       (vm->state).pgc->cell_playback[(vm->state).cellN - 1].first_sector;
+               (vm->state).pgc->cell_playback[(vm->state).cellN - 1].first_sector;
     time  = ((vm->state).pgc->cell_playback[(vm->state).cellN - 1].playback_time.hour   >> 4  ) * 36000;
     time += ((vm->state).pgc->cell_playback[(vm->state).cellN - 1].playback_time.hour   & 0x0f) * 3600;
     time += ((vm->state).pgc->cell_playback[(vm->state).cellN - 1].playback_time.minute >> 4  ) * 600;
@@ -684,38 +684,41 @@ static int process_command(vm_t *vm, link_t link_values) {
     fprintf(MSG_OUT, "libdvdnav: Before printout starts:\n");
     vm_print_link(link_values);
     fprintf(MSG_OUT, "libdvdnav: Link values %i %i %i %i\n", link_values.command,
-	    link_values.data1, link_values.data2, link_values.data3);
+            link_values.data1, link_values.data2, link_values.data3);
     vm_print_current_domain_state(vm);
     fprintf(MSG_OUT, "libdvdnav: Before printout ends.\n");
 #endif
 
     switch(link_values.command) {
+
     case LinkNoLink:
       /* BUTTON number:data1 */
       if(link_values.data1 != 0)
-	(vm->state).HL_BTNN_REG = link_values.data1 << 10;
+        (vm->state).HL_BTNN_REG = link_values.data1 << 10;
       return 0;  /* no actual jump */
 
     case LinkTopC:
       /* Restart playing from the beginning of the current Cell. */
       /* BUTTON number:data1 */
       if(link_values.data1 != 0)
-	(vm->state).HL_BTNN_REG = link_values.data1 << 10;
+        (vm->state).HL_BTNN_REG = link_values.data1 << 10;
       link_values = play_Cell(vm);
       break;
+
     case LinkNextC:
       /* Link to Next Cell */
       /* BUTTON number:data1 */
       if(link_values.data1 != 0)
-	(vm->state).HL_BTNN_REG = link_values.data1 << 10;
+        (vm->state).HL_BTNN_REG = link_values.data1 << 10;
       (vm->state).cellN += 1;
       link_values = play_Cell(vm);
       break;
+
     case LinkPrevC:
       /* Link to Previous Cell */
       /* BUTTON number:data1 */
       if(link_values.data1 != 0)
-	(vm->state).HL_BTNN_REG = link_values.data1 << 10;
+        (vm->state).HL_BTNN_REG = link_values.data1 << 10;
       assert((vm->state).cellN > 1);
       (vm->state).cellN -= 1;
       link_values = play_Cell(vm);
@@ -725,22 +728,24 @@ static int process_command(vm_t *vm, link_t link_values) {
       /* Link to Top of current Program */
       /* BUTTON number:data1 */
       if(link_values.data1 != 0)
-	(vm->state).HL_BTNN_REG = link_values.data1 << 10;
+        (vm->state).HL_BTNN_REG = link_values.data1 << 10;
       link_values = play_PG(vm);
       break;
+
     case LinkNextPG:
       /* Link to Next Program */
       /* BUTTON number:data1 */
       if(link_values.data1 != 0)
-	(vm->state).HL_BTNN_REG = link_values.data1 << 10;
+        (vm->state).HL_BTNN_REG = link_values.data1 << 10;
       (vm->state).pgN += 1;
       link_values = play_PG(vm);
       break;
+
     case LinkPrevPG:
       /* Link to Previous Program */
       /* BUTTON number:data1 */
       if(link_values.data1 != 0)
-	(vm->state).HL_BTNN_REG = link_values.data1 << 10;
+        (vm->state).HL_BTNN_REG = link_values.data1 << 10;
       assert((vm->state).pgN > 1);
       (vm->state).pgN -= 1;
       link_values = play_PG(vm);
@@ -750,124 +755,132 @@ static int process_command(vm_t *vm, link_t link_values) {
       /* Restart playing from beginning of current Program Chain */
       /* BUTTON number:data1 */
       if(link_values.data1 != 0)
-	(vm->state).HL_BTNN_REG = link_values.data1 << 10;
+        (vm->state).HL_BTNN_REG = link_values.data1 << 10;
       link_values = play_PGC(vm);
       break;
+
     case LinkNextPGC:
       /* Link to Next Program Chain */
       /* BUTTON number:data1 */
       if(link_values.data1 != 0)
-	(vm->state).HL_BTNN_REG = link_values.data1 << 10;
+        (vm->state).HL_BTNN_REG = link_values.data1 << 10;
       assert((vm->state).pgc->next_pgc_nr != 0);
       if(set_PGCN(vm, (vm->state).pgc->next_pgc_nr))
-	link_values = play_PGC(vm);
+        link_values = play_PGC(vm);
       else
-	link_values.command = Exit;
+        link_values.command = Exit;
       break;
+
     case LinkPrevPGC:
       /* Link to Previous Program Chain */
       /* BUTTON number:data1 */
       if(link_values.data1 != 0)
-	(vm->state).HL_BTNN_REG = link_values.data1 << 10;
+        (vm->state).HL_BTNN_REG = link_values.data1 << 10;
       assert((vm->state).pgc->prev_pgc_nr != 0);
       if(set_PGCN(vm, (vm->state).pgc->prev_pgc_nr))
-	link_values = play_PGC(vm);
+        link_values = play_PGC(vm);
       else
-	link_values.command = Exit;
+        link_values.command = Exit;
       break;
+
     case LinkGoUpPGC:
       /* Link to GoUp Program Chain */
       /* BUTTON number:data1 */
       if(link_values.data1 != 0)
-	(vm->state).HL_BTNN_REG = link_values.data1 << 10;
+        (vm->state).HL_BTNN_REG = link_values.data1 << 10;
       assert((vm->state).pgc->goup_pgc_nr != 0);
       if(set_PGCN(vm, (vm->state).pgc->goup_pgc_nr))
-	link_values = play_PGC(vm);
+        link_values = play_PGC(vm);
       else
-	link_values.command = Exit;
+        link_values.command = Exit;
       break;
+
     case LinkTailPGC:
       /* Link to Tail of Program Chain */
       /* BUTTON number:data1 */
       if(link_values.data1 != 0)
-	(vm->state).HL_BTNN_REG = link_values.data1 << 10;
+        (vm->state).HL_BTNN_REG = link_values.data1 << 10;
       link_values = play_PGC_post(vm);
     break;
 
     case LinkRSM:
-	/* Check and see if there is any rsm info!! */
-	if (!(vm->state).rsm_vtsN) {
-	  fprintf(MSG_OUT, "libdvdnav: trying to resume without any resume info set\n");
-	  link_values.command = Exit;
-	  break;
-	}
+        /* Check and see if there is any rsm info!! */
+        if (!(vm->state).rsm_vtsN) {
+          fprintf(MSG_OUT, "libdvdnav: trying to resume without any resume info set\n");
+          link_values.command = Exit;
+          break;
+        }
 
-	(vm->state).domain = VTS_DOMAIN;
-	if (!ifoOpenNewVTSI(vm, vm->dvd, (vm->state).rsm_vtsN))
-	  assert(0);
-	set_PGCN(vm, (vm->state).rsm_pgcN);
+        (vm->state).domain = VTS_DOMAIN;
+        if (!ifoOpenNewVTSI(vm, vm->dvd, (vm->state).rsm_vtsN))
+          assert(0);
+        set_PGCN(vm, (vm->state).rsm_pgcN);
 
-	/* These should never be set in SystemSpace and/or MenuSpace */
-	/* (vm->state).TTN_REG = rsm_tt; ?? */
-	/* (vm->state).TT_PGCN_REG = (vm->state).rsm_pgcN; ?? */
-    int i;
-	for(i = 0; i < 5; i++) {
-	  (vm->state).registers.SPRM[4 + i] = (vm->state).rsm_regs[i];
-	}
+        /* These should never be set in SystemSpace and/or MenuSpace */
+        /* (vm->state).TTN_REG = rsm_tt; ?? */
+        /* (vm->state).TT_PGCN_REG = (vm->state).rsm_pgcN; ?? */
+        int i;
+        for(i = 0; i < 5; i++) {
+          (vm->state).registers.SPRM[4 + i] = (vm->state).rsm_regs[i];
+        }
 
-	if(link_values.data1 != 0)
-	  (vm->state).HL_BTNN_REG = link_values.data1 << 10;
+        if(link_values.data1 != 0)
+          (vm->state).HL_BTNN_REG = link_values.data1 << 10;
 
-	if((vm->state).rsm_cellN == 0) {
-	  assert((vm->state).cellN); /*  Checking if this ever happens */
-	  (vm->state).pgN = 1;
-	  link_values = play_PG(vm);
-	} else {
-	  /* (vm->state).pgN = ?? this gets the right value in set_PGN() below */
-	  (vm->state).cellN = (vm->state).rsm_cellN;
-	  link_values.command = PlayThis;
-	  link_values.data1 = (vm->state).rsm_blockN & 0xffff;
-	  link_values.data2 = (vm->state).rsm_blockN >> 16;
-	  if(!set_PGN(vm)) {
-	    /* Were at the end of the PGC, should not happen for a RSM */
-	    assert(0);
-	    link_values.command = LinkTailPGC;
-	    link_values.data1 = 0;  /* No button */
-	  }
-	}
+        if((vm->state).rsm_cellN == 0) {
+          assert((vm->state).cellN); /*  Checking if this ever happens */
+          (vm->state).pgN = 1;
+          link_values = play_PG(vm);
+        } else {
+          /* (vm->state).pgN = ?? this gets the right value in set_PGN() below */
+          (vm->state).cellN = (vm->state).rsm_cellN;
+          link_values.command = PlayThis;
+          link_values.data1 = (vm->state).rsm_blockN & 0xffff;
+          link_values.data2 = (vm->state).rsm_blockN >> 16;
+          if(!set_PGN(vm)) {
+            /* Were at the end of the PGC, should not happen for a RSM */
+            assert(0);
+            link_values.command = LinkTailPGC;
+            link_values.data1 = 0;  /* No button */
+          }
+        }
       break;
+
     case LinkPGCN:
       /* Link to Program Chain Number:data1 */
       if(!set_PGCN(vm, link_values.data1))
-	assert(0);
+        assert(0);
       link_values = play_PGC(vm);
       break;
+
     case LinkPTTN:
       /* Link to Part of current Title Number:data1 */
       /* BUTTON number:data2 */
       /* PGC Pre-Commands are not executed */
       assert((vm->state).domain == VTS_DOMAIN);
       if(link_values.data2 != 0)
-	(vm->state).HL_BTNN_REG = link_values.data2 << 10;
+        (vm->state).HL_BTNN_REG = link_values.data2 << 10;
       if(!set_VTS_PTT(vm, (vm->state).vtsN, (vm->state).VTS_TTN_REG, link_values.data1))
         link_values.command = Exit;
       else
         link_values = play_PG(vm);
       break;
+
     case LinkPGN:
       /* Link to Program Number:data1 */
       /* BUTTON number:data2 */
       if(link_values.data2 != 0)
-	(vm->state).HL_BTNN_REG = link_values.data2 << 10;
+        (vm->state).HL_BTNN_REG = link_values.data2 << 10;
       /* Update any other state, PTTN perhaps? */
       (vm->state).pgN = link_values.data1;
       link_values = play_PG(vm);
       break;
+
     case LinkCN:
       /* Link to Cell Number:data1 */
       /* BUTTON number:data2 */
       if(link_values.data2 != 0)
-	(vm->state).HL_BTNN_REG = link_values.data2 << 10;
+        (vm->state).HL_BTNN_REG = link_values.data2 << 10;
       /* Update any other state, pgN, PTTN perhaps? */
       (vm->state).cellN = link_values.data1;
       link_values = play_Cell(vm);
@@ -887,8 +900,9 @@ static int process_command(vm_t *vm, link_t link_values) {
       if(set_TT(vm, link_values.data1))
         link_values = play_PGC(vm);
       else
-	link_values.command = Exit;
+        link_values.command = Exit;
       break;
+
     case JumpVTS_TT:
       /* Jump to Title:data1 in same VTS Title Domain */
       /* Only allowed from the VTS Menu Domain(VTSM) */
@@ -901,6 +915,7 @@ static int process_command(vm_t *vm, link_t link_values) {
       else
         link_values = play_PGC(vm);
       break;
+
     case JumpVTS_PTT:
       /* Jump to Part:data2 of Title:data1 in same VTS Title Domain */
       /* Only allowed from the VTS Menu Domain(VTSM) */
@@ -921,9 +936,10 @@ static int process_command(vm_t *vm, link_t link_values) {
       /* Stop SPRM9 Timer and any GPRM counters */
       assert((vm->state).domain == VMGM_DOMAIN || (vm->state).domain == VTSM_DOMAIN); /* ?? */
       if (!set_FP_PGC(vm))
-	assert(0);
+        assert(0);
       link_values = play_PGC(vm);
       break;
+
     case JumpSS_VMGM_MENU:
       /* Jump to Video Manager domain - Title Menu:data1 or any PGC in VMG */
       /* Allowed from anywhere except the VTS Title domain */
@@ -935,9 +951,10 @@ static int process_command(vm_t *vm, link_t link_values) {
       }
       (vm->state).domain = VMGM_DOMAIN;
       if(!set_MENU(vm, link_values.data1))
-	assert(0);
+        assert(0);
       link_values = play_PGC(vm);
       break;
+
     case JumpSS_VTSM:
       /* Jump to a menu in Video Title domain, */
       /* or to a Menu is the current VTS */
@@ -946,30 +963,30 @@ static int process_command(vm_t *vm, link_t link_values) {
       /* VTS_TTN_REG:data2 */
       /* get_MENU:data3 */
       if(link_values.data1 != 0) {
-	if (link_values.data1 != (vm->state).vtsN) {
-	  /* the normal case */
-	  assert((vm->state).domain == VMGM_DOMAIN || (vm->state).domain == FP_DOMAIN); /* ?? */
-	  if (!ifoOpenNewVTSI(vm, vm->dvd, link_values.data1))  /* Also sets (vm->state).vtsN */
-	    assert(0);
+        if (link_values.data1 != (vm->state).vtsN) {
+          /* the normal case */
+          assert((vm->state).domain == VMGM_DOMAIN || (vm->state).domain == FP_DOMAIN); /* ?? */
+          if (!ifoOpenNewVTSI(vm, vm->dvd, link_values.data1))  /* Also sets (vm->state).vtsN */
+            assert(0);
           if(vm->vtsi == NULL || vm->vtsi->pgci_ut == NULL) {
             link_values.command = Exit;
             break;
           }
-	  (vm->state).domain = VTSM_DOMAIN;
-	} else {
-	  /* This happens on some discs like "Captain Scarlet & the Mysterons" or
-	   * the German RC2 of "Anatomie" in VTSM. */
-	  assert((vm->state).domain == VTSM_DOMAIN ||
-	    (vm->state).domain == VMGM_DOMAIN || (vm->state).domain == FP_DOMAIN); /* ?? */
+          (vm->state).domain = VTSM_DOMAIN;
+        } else {
+          /* This happens on some discs like "Captain Scarlet & the Mysterons" or
+           * the German RC2 of "Anatomie" in VTSM. */
+          assert((vm->state).domain == VTSM_DOMAIN ||
+            (vm->state).domain == VMGM_DOMAIN || (vm->state).domain == FP_DOMAIN); /* ?? */
           if(vm->vtsi == NULL || vm->vtsi->pgci_ut == NULL) {
             link_values.command = Exit;
             break;
           }
-	  (vm->state).domain = VTSM_DOMAIN;
-	}
+          (vm->state).domain = VTSM_DOMAIN;
+        }
       } else {
-	/*  This happens on 'The Fifth Element' region 2. */
-	assert((vm->state).domain == VTSM_DOMAIN);
+        /*  This happens on 'The Fifth Element' region 2. */
+        assert((vm->state).domain == VTSM_DOMAIN);
       }
       /*  I don't know what title is supposed to be used for. */
       /*  Alien or Aliens has this != 1, I think. */
@@ -979,9 +996,10 @@ static int process_command(vm_t *vm, link_t link_values) {
       /* so if one changes, the others must change to match it. */
       (vm->state).TTN_REG     = get_TT(vm, (vm->state).vtsN, (vm->state).VTS_TTN_REG);
       if(!set_MENU(vm, link_values.data3))
-	assert(0);
+        assert(0);
       link_values = play_PGC(vm);
       break;
+
     case JumpSS_VMGM_PGC:
       /* set_PGCN:data1 */
       /* Stop SPRM9 Timer and any GPRM counters */
@@ -992,7 +1010,7 @@ static int process_command(vm_t *vm, link_t link_values) {
       }
       (vm->state).domain = VMGM_DOMAIN;
       if(!set_PGCN(vm, link_values.data1))
-	assert(0);
+        assert(0);
       link_values = play_PGC(vm);
       break;
 
@@ -1004,6 +1022,7 @@ static int process_command(vm_t *vm, link_t link_values) {
       set_FP_PGC(vm);
       link_values = play_PGC(vm);
       break;
+
     case CallSS_VMGM_MENU:
       /* set_MENU:data1 */
       /* set_RSMinfo:data2 */
@@ -1016,9 +1035,10 @@ static int process_command(vm_t *vm, link_t link_values) {
       set_RSMinfo(vm, link_values.data2, /* We dont have block info */ 0);
       (vm->state).domain = VMGM_DOMAIN;
       if(!set_MENU(vm, link_values.data1))
-	assert(0);
+        assert(0);
       link_values = play_PGC(vm);
       break;
+
     case CallSS_VTSM:
       /* set_MENU:data1 */
       /* set_RSMinfo:data2 */
@@ -1031,9 +1051,10 @@ static int process_command(vm_t *vm, link_t link_values) {
       set_RSMinfo(vm, link_values.data2, /* We dont have block info */ 0);
       (vm->state).domain = VTSM_DOMAIN;
       if(!set_MENU(vm, link_values.data1))
-	assert(0);
+        assert(0);
       link_values = play_PGC(vm);
       break;
+
     case CallSS_VMGM_PGC:
       /* set_PGC:data1 */
       /* set_RSMinfo:data2 */
@@ -1046,9 +1067,10 @@ static int process_command(vm_t *vm, link_t link_values) {
       set_RSMinfo(vm, link_values.data2, /* We dont have block info */ 0);
       (vm->state).domain = VMGM_DOMAIN;
       if(!set_PGCN(vm, link_values.data1))
-	assert(0);
+        assert(0);
       link_values = play_PGC(vm);
       break;
+
     case PlayThis:
       /* Should never happen. */
       assert(0);
