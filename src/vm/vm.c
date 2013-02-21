@@ -94,7 +94,7 @@ void vm_position_print(vm_t *vm, vm_position_t *position) {
 static void vm_print_current_domain_state(vm_t *vm) {
   const char *domain;
 
-  switch((vm->state).domain) {
+  switch(vm->state.domain) {
     case VTS_DOMAIN:  domain = "Video Title";        break;
     case VTSM_DOMAIN: domain = "Video Title Menu";   break;
     case VMGM_DOMAIN: domain = "Video Manager Menu"; break;
@@ -103,14 +103,14 @@ static void vm_print_current_domain_state(vm_t *vm) {
   }
   fprintf(MSG_OUT, "libdvdnav: %s Domain: VTS:%d PGC:%d PG:%u CELL:%u BLOCK:%u VTS_TTN:%u TTN:%u TT_PGCN:%u\n",
                    domain,
-                   (vm->state).vtsN,
+                   vm->state.vtsN,
                    get_PGCN(vm),
-                   (vm->state).pgN,
-                   (vm->state).cellN,
-                   (vm->state).blockN,
-                   (vm->state).VTS_TTN_REG,
-                   (vm->state).TTN_REG,
-                   (vm->state).TT_PGCN_REG);
+                   vm->state.pgN,
+                   vm->state.cellN,
+                   vm->state.blockN,
+                   vm->state.VTS_TTN_REG,
+                   vm->state.TTN_REG,
+                   vm->state.TT_PGCN_REG);
 }
 #endif
 
@@ -220,7 +220,7 @@ fail:
 }
 
 int ifoOpenNewVTSI(vm_t *vm, dvd_reader_t *dvd, int vtsN) {
-  if((vm->state).vtsN == vtsN) {
+  if(vm->state.vtsN == vtsN) {
     return 1; /*  We alread have it */
   }
 
@@ -252,7 +252,7 @@ int ifoOpenNewVTSI(vm_t *vm, dvd_reader_t *dvd, int vtsN) {
     fprintf(MSG_OUT, "libdvdnav: ifoRead_TITLE_VOBU_ADMAP vtsi failed\n");
     return 0;
   }
-  (vm->state).vtsN = vtsN;
+  vm->state.vtsN = vtsN;
 
   return 1;
 }
@@ -325,37 +325,37 @@ static void vm_close(vm_t *vm) {
 
 int vm_reset(vm_t *vm, const char *dvdroot) {
   /*  Setup State */
-  memset((vm->state).registers.SPRM, 0, sizeof((vm->state).registers.SPRM));
-  memset((vm->state).registers.GPRM, 0, sizeof((vm->state).registers.GPRM));
-  memset((vm->state).registers.GPRM_mode, 0, sizeof((vm->state).registers.GPRM_mode));
-  memset((vm->state).registers.GPRM_mode, 0, sizeof((vm->state).registers.GPRM_mode));
-  memset((vm->state).registers.GPRM_time, 0, sizeof((vm->state).registers.GPRM_time));
-  (vm->state).registers.SPRM[0]  = ('e'<<8)|'n'; /* Player Menu Languange code */
-  (vm->state).AST_REG            = 15;           /* 15 why? */
-  (vm->state).SPST_REG           = 62;           /* 62 why? */
-  (vm->state).AGL_REG            = 1;
-  (vm->state).TTN_REG            = 1;
-  (vm->state).VTS_TTN_REG        = 1;
-  /* (vm->state).TT_PGCN_REG        = 0 */
-  (vm->state).PTTN_REG           = 1;
-  (vm->state).HL_BTNN_REG        = 1 << 10;
-  (vm->state).PTL_REG            = 15;           /* Parental Level */
-  (vm->state).registers.SPRM[12] = ('U'<<8)|'S'; /* Parental Management Country Code */
-  (vm->state).registers.SPRM[16] = ('e'<<8)|'n'; /* Initial Language Code for Audio */
-  (vm->state).registers.SPRM[18] = ('e'<<8)|'n'; /* Initial Language Code for Spu */
-  (vm->state).registers.SPRM[20] = 0x1;          /* Player Regional Code Mask. Region free! */
-  (vm->state).registers.SPRM[14] = 0x100;        /* Try Pan&Scan */
+  memset(vm->state.registers.SPRM, 0, sizeof(vm->state.registers.SPRM));
+  memset(vm->state.registers.GPRM, 0, sizeof(vm->state.registers.GPRM));
+  memset(vm->state.registers.GPRM_mode, 0, sizeof(vm->state.registers.GPRM_mode));
+  memset(vm->state.registers.GPRM_mode, 0, sizeof(vm->state.registers.GPRM_mode));
+  memset(vm->state.registers.GPRM_time, 0, sizeof(vm->state.registers.GPRM_time));
+  vm->state.registers.SPRM[0]  = ('e'<<8)|'n'; /* Player Menu Languange code */
+  vm->state.AST_REG            = 15;           /* 15 why? */
+  vm->state.SPST_REG           = 62;           /* 62 why? */
+  vm->state.AGL_REG            = 1;
+  vm->state.TTN_REG            = 1;
+  vm->state.VTS_TTN_REG        = 1;
+  /* vm->state.TT_PGCN_REG        = 0 */
+  vm->state.PTTN_REG           = 1;
+  vm->state.HL_BTNN_REG        = 1 << 10;
+  vm->state.PTL_REG            = 15;           /* Parental Level */
+  vm->state.registers.SPRM[12] = ('U'<<8)|'S'; /* Parental Management Country Code */
+  vm->state.registers.SPRM[16] = ('e'<<8)|'n'; /* Initial Language Code for Audio */
+  vm->state.registers.SPRM[18] = ('e'<<8)|'n'; /* Initial Language Code for Spu */
+  vm->state.registers.SPRM[20] = 0x1;          /* Player Regional Code Mask. Region free! */
+  vm->state.registers.SPRM[14] = 0x100;        /* Try Pan&Scan */
 
-  (vm->state).pgN                = 0;
-  (vm->state).cellN              = 0;
-  (vm->state).cell_restart       = 0;
+  vm->state.pgN                = 0;
+  vm->state.cellN              = 0;
+  vm->state.cell_restart       = 0;
 
-  (vm->state).domain             = FP_DOMAIN;
-  (vm->state).rsm_vtsN           = 0;
-  (vm->state).rsm_cellN          = 0;
-  (vm->state).rsm_blockN         = 0;
+  vm->state.domain             = FP_DOMAIN;
+  vm->state.rsm_vtsN           = 0;
+  vm->state.rsm_cellN          = 0;
+  vm->state.rsm_blockN         = 0;
 
-  (vm->state).vtsN               = -1;
+  vm->state.vtsN               = -1;
 
   if (vm->dvd && dvdroot) {
     /* a new dvd device has been requested */
@@ -467,22 +467,22 @@ void vm_free_copy(vm_t *vm) {
 /* regular playback */
 
 void vm_position_get(vm_t *vm, vm_position_t *position) {
-  position->button = (vm->state).HL_BTNN_REG >> 10;
-  position->vts = (vm->state).vtsN;
-  position->domain = (vm->state).domain;
-  position->spu_channel = (vm->state).SPST_REG;
-  position->audio_channel = (vm->state).AST_REG;
-  position->angle_channel = (vm->state).AGL_REG;
+  position->button = vm->state.HL_BTNN_REG >> 10;
+  position->vts = vm->state.vtsN;
+  position->domain = vm->state.domain;
+  position->spu_channel = vm->state.SPST_REG;
+  position->audio_channel = vm->state.AST_REG;
+  position->angle_channel = vm->state.AGL_REG;
   position->hop_channel = vm->hop_channel; /* Increases by one on each hop */
-  position->cell = (vm->state).cellN;
-  position->cell_restart = (vm->state).cell_restart;
-  position->cell_start = (vm->state).pgc->cell_playback[(vm->state).cellN - 1].first_sector;
-  position->still = (vm->state).pgc->cell_playback[(vm->state).cellN - 1].still_time;
-  position->block = (vm->state).blockN;
+  position->cell = vm->state.cellN;
+  position->cell_restart = vm->state.cell_restart;
+  position->cell_start = vm->state.pgc->cell_playback[vm->state.cellN - 1].first_sector;
+  position->still = vm->state.pgc->cell_playback[vm->state.cellN - 1].still_time;
+  position->block = vm->state.blockN;
 
   /* handle PGC stills at PGC end */
-  if ((vm->state).cellN == (vm->state).pgc->nr_of_cells)
-    position->still += (vm->state).pgc->still_time;
+  if (vm->state.cellN == vm->state.pgc->nr_of_cells)
+    position->still += vm->state.pgc->still_time;
   /* still already determined */
   if (position->still)
     return;
@@ -494,19 +494,19 @@ void vm_position_get(vm_t *vm, vm_position_t *position) {
    * are equal and the cells are very short, so we abuse these conditions to
    * detect such discs. I consider these discs broken, so the fix is somewhat
    * broken, too. */
-  if (((vm->state).pgc->cell_playback[(vm->state).cellN - 1].last_sector ==
-       (vm->state).pgc->cell_playback[(vm->state).cellN - 1].last_vobu_start_sector) &&
-      ((vm->state).pgc->cell_playback[(vm->state).cellN - 1].last_sector -
-       (vm->state).pgc->cell_playback[(vm->state).cellN - 1].first_sector < 1024)) {
+  if ((vm->state.pgc->cell_playback[vm->state.cellN - 1].last_sector ==
+       vm->state.pgc->cell_playback[vm->state.cellN - 1].last_vobu_start_sector) &&
+      (vm->state.pgc->cell_playback[vm->state.cellN - 1].last_sector -
+       vm->state.pgc->cell_playback[vm->state.cellN - 1].first_sector < 1024)) {
     int time;
-    int size = (vm->state).pgc->cell_playback[(vm->state).cellN - 1].last_sector -
-               (vm->state).pgc->cell_playback[(vm->state).cellN - 1].first_sector;
-    time  = ((vm->state).pgc->cell_playback[(vm->state).cellN - 1].playback_time.hour   >> 4  ) * 36000;
-    time += ((vm->state).pgc->cell_playback[(vm->state).cellN - 1].playback_time.hour   & 0x0f) * 3600;
-    time += ((vm->state).pgc->cell_playback[(vm->state).cellN - 1].playback_time.minute >> 4  ) * 600;
-    time += ((vm->state).pgc->cell_playback[(vm->state).cellN - 1].playback_time.minute & 0x0f) * 60;
-    time += ((vm->state).pgc->cell_playback[(vm->state).cellN - 1].playback_time.second >> 4  ) * 10;
-    time += ((vm->state).pgc->cell_playback[(vm->state).cellN - 1].playback_time.second & 0x0f) * 1;
+    int size = vm->state.pgc->cell_playback[vm->state.cellN - 1].last_sector -
+               vm->state.pgc->cell_playback[vm->state.cellN - 1].first_sector;
+    time  = (vm->state.pgc->cell_playback[vm->state.cellN - 1].playback_time.hour   >> 4  ) * 36000;
+    time += (vm->state.pgc->cell_playback[vm->state.cellN - 1].playback_time.hour   & 0x0f) * 3600;
+    time += (vm->state.pgc->cell_playback[vm->state.cellN - 1].playback_time.minute >> 4  ) * 600;
+    time += (vm->state.pgc->cell_playback[vm->state.cellN - 1].playback_time.minute & 0x0f) * 60;
+    time += (vm->state.pgc->cell_playback[vm->state.cellN - 1].playback_time.second >> 4  ) * 10;
+    time += (vm->state.pgc->cell_playback[vm->state.cellN - 1].playback_time.second & 0x0f) * 1;
     if (!time || size / time > 30)
       /* datarate is too high, it might be a very short, but regular cell */
       return;
@@ -523,17 +523,17 @@ void vm_get_next_cell(vm_t *vm) {
 /* Jumping */
 
 int vm_jump_pg(vm_t *vm, int pg) {
-  (vm->state).pgN = pg;
+  vm->state.pgN = pg;
   process_command(vm, play_PG(vm));
   return 1;
 }
 
 int vm_jump_cell_block(vm_t *vm, int cell, int block) {
-  (vm->state).cellN = cell;
+  vm->state.cellN = cell;
   process_command(vm, play_Cell(vm));
   /* play_Cell can jump to a different cell in case of angles */
-  if ((vm->state).cellN == cell)
-    (vm->state).blockN = block;
+  if (vm->state.cellN == cell)
+    vm->state.blockN = block;
   return 1;
 }
 
@@ -545,8 +545,8 @@ int vm_jump_title_program(vm_t *vm, int title, int pgcn, int pgn) {
   /* Some DVDs do not want us to jump directly into a title and have
    * PGC pre commands taking us back to some menu. Since we do not like that,
    * we do not execute PGC pre commands that would do a jump. */
-  /* process_command(vm, play_PGC_PG(vm, (vm->state).pgN)); */
-  link = play_PGC_PG(vm, (vm->state).pgN);
+  /* process_command(vm, play_PGC_PG(vm, vm->state.pgN)); */
+  link = play_PGC_PG(vm, vm->state.pgN);
   if (link.command != PlayThis)
     /* jump occured -> ignore it and play the PG anyway */
     process_command(vm, play_PG(vm));
@@ -563,8 +563,8 @@ int vm_jump_title_part(vm_t *vm, int title, int part) {
   /* Some DVDs do not want us to jump directly into a title and have
    * PGC pre commands taking us back to some menu. Since we do not like that,
    * we do not execute PGC pre commands that would do a jump. */
-  /* process_command(vm, play_PGC_PG(vm, (vm->state).pgN)); */
-  link = play_PGC_PG(vm, (vm->state).pgN);
+  /* process_command(vm, play_PGC_PG(vm, vm->state.pgN)); */
+  link = play_PGC_PG(vm, vm->state.pgN);
   if (link.command != PlayThis)
     /* jump occured -> ignore it and play the PG anyway */
     process_command(vm, play_PG(vm));
@@ -579,33 +579,33 @@ int vm_jump_top_pg(vm_t *vm) {
 }
 
 int vm_jump_next_pg(vm_t *vm) {
-  if((vm->state).pgN >= (vm->state).pgc->nr_of_programs) {
+  if(vm->state.pgN >= vm->state.pgc->nr_of_programs) {
     /* last program -> move to TailPGC */
     process_command(vm, play_PGC_post(vm));
     return 1;
   } else {
-    vm_jump_pg(vm, (vm->state).pgN + 1);
+    vm_jump_pg(vm, vm->state.pgN + 1);
     return 1;
   }
 }
 
 int vm_jump_prev_pg(vm_t *vm) {
-  if ((vm->state).pgN <= 1) {
+  if (vm->state.pgN <= 1) {
     /* first program -> move to last program of previous PGC */
-    if ((vm->state).pgc->prev_pgc_nr && set_PGCN(vm, (vm->state).pgc->prev_pgc_nr)) {
+    if (vm->state.pgc->prev_pgc_nr && set_PGCN(vm, vm->state.pgc->prev_pgc_nr)) {
       process_command(vm, play_PGC(vm));
-      vm_jump_pg(vm, (vm->state).pgc->nr_of_programs);
+      vm_jump_pg(vm, vm->state.pgc->nr_of_programs);
       return 1;
     }
     return 0;
   } else {
-    vm_jump_pg(vm, (vm->state).pgN - 1);
+    vm_jump_pg(vm, vm->state.pgN - 1);
     return 1;
   }
 }
 
 int vm_jump_up(vm_t *vm) {
-  if((vm->state).pgc->goup_pgc_nr && set_PGCN(vm, (vm->state).pgc->goup_pgc_nr)) {
+  if(vm->state.pgc->goup_pgc_nr && set_PGCN(vm, vm->state.pgc->goup_pgc_nr)) {
     process_command(vm, play_PGC(vm));
     return 1;
   }
@@ -613,41 +613,38 @@ int vm_jump_up(vm_t *vm) {
 }
 
 int vm_jump_menu(vm_t *vm, DVDMenuID_t menuid) {
-  domain_t old_domain = (vm->state).domain;
+  domain_t old_domain = vm->state.domain;
 
-  switch ((vm->state).domain) {
+  switch (vm->state.domain) {
+  case FP_DOMAIN: /* FIXME XXX $$$ What should we do here? */
+    break;
   case VTS_DOMAIN:
-    set_RSMinfo(vm, 0, (vm->state).blockN);
+    set_RSMinfo(vm, 0, vm->state.blockN);
     /* FALL THROUGH */
   case VTSM_DOMAIN:
   case VMGM_DOMAIN:
     switch(menuid) {
     case DVD_MENU_Title:
     case DVD_MENU_Escape:
-      if(vm->vmgi == NULL || vm->vmgi->pgci_ut == NULL) {
+      if(vm->vmgi == NULL || vm->vmgi->pgci_ut == NULL)
         return 0;
-      }
-      (vm->state).domain = VMGM_DOMAIN;
+      vm->state.domain = VMGM_DOMAIN;
       break;
     case DVD_MENU_Root:
     case DVD_MENU_Subpicture:
     case DVD_MENU_Audio:
     case DVD_MENU_Angle:
     case DVD_MENU_Part:
-      if(vm->vtsi == NULL || vm->vtsi->pgci_ut == NULL) {
+      if(vm->vtsi == NULL || vm->vtsi->pgci_ut == NULL)
         return 0;
-      }
-      (vm->state).domain = VTSM_DOMAIN;
+      vm->state.domain = VTSM_DOMAIN;
       break;
     }
     if(get_PGCIT(vm) && set_MENU(vm, menuid)) {
       process_command(vm, play_PGC(vm));
       return 1;  /* Jump */
-    } else {
-      (vm->state).domain = old_domain;
-    }
-    break;
-  case FP_DOMAIN: /* FIXME XXX $$$ What should we do here? */
+    } else
+      vm->state.domain = old_domain;
     break;
   }
 
@@ -657,22 +654,19 @@ int vm_jump_menu(vm_t *vm, DVDMenuID_t menuid) {
 int vm_jump_resume(vm_t *vm) {
   link_t link_values = { LinkRSM, 0, 0, 0 };
 
-  if (!(vm->state).rsm_vtsN) /* Do we have resume info? */
+  if (!vm->state.rsm_vtsN) /* Do we have resume info? */
     return 0;
-  if (!process_command(vm, link_values))
-    return 0;
-  return 1;
+  return !!process_command(vm, link_values);
 }
 
 int vm_exec_cmd(vm_t *vm, vm_cmd_t *cmd) {
   link_t link_values;
 
-  if(vmEval_CMD(cmd, 1, &(vm->state).registers, &link_values))
+  if(vmEval_CMD(cmd, 1, &vm->state.registers, &link_values))
     return process_command(vm, link_values);
   else
     return 0; /*  It updated some state thats all... */
 }
-
 
 /* link processing */
 
@@ -694,14 +688,14 @@ static int process_command(vm_t *vm, link_t link_values) {
     case LinkNoLink:
       /* BUTTON number:data1 */
       if(link_values.data1 != 0)
-        (vm->state).HL_BTNN_REG = link_values.data1 << 10;
+        vm->state.HL_BTNN_REG = link_values.data1 << 10;
       return 0;  /* no actual jump */
 
     case LinkTopC:
       /* Restart playing from the beginning of the current Cell. */
       /* BUTTON number:data1 */
       if(link_values.data1 != 0)
-        (vm->state).HL_BTNN_REG = link_values.data1 << 10;
+        vm->state.HL_BTNN_REG = link_values.data1 << 10;
       link_values = play_Cell(vm);
       break;
 
@@ -709,8 +703,8 @@ static int process_command(vm_t *vm, link_t link_values) {
       /* Link to Next Cell */
       /* BUTTON number:data1 */
       if(link_values.data1 != 0)
-        (vm->state).HL_BTNN_REG = link_values.data1 << 10;
-      (vm->state).cellN += 1;
+        vm->state.HL_BTNN_REG = link_values.data1 << 10;
+      vm->state.cellN += 1;
       link_values = play_Cell(vm);
       break;
 
@@ -718,9 +712,9 @@ static int process_command(vm_t *vm, link_t link_values) {
       /* Link to Previous Cell */
       /* BUTTON number:data1 */
       if(link_values.data1 != 0)
-        (vm->state).HL_BTNN_REG = link_values.data1 << 10;
-      assert((vm->state).cellN > 1);
-      (vm->state).cellN -= 1;
+        vm->state.HL_BTNN_REG = link_values.data1 << 10;
+      assert(vm->state.cellN > 1);
+      vm->state.cellN -= 1;
       link_values = play_Cell(vm);
       break;
 
@@ -728,7 +722,7 @@ static int process_command(vm_t *vm, link_t link_values) {
       /* Link to Top of current Program */
       /* BUTTON number:data1 */
       if(link_values.data1 != 0)
-        (vm->state).HL_BTNN_REG = link_values.data1 << 10;
+        vm->state.HL_BTNN_REG = link_values.data1 << 10;
       link_values = play_PG(vm);
       break;
 
@@ -736,8 +730,8 @@ static int process_command(vm_t *vm, link_t link_values) {
       /* Link to Next Program */
       /* BUTTON number:data1 */
       if(link_values.data1 != 0)
-        (vm->state).HL_BTNN_REG = link_values.data1 << 10;
-      (vm->state).pgN += 1;
+        vm->state.HL_BTNN_REG = link_values.data1 << 10;
+      vm->state.pgN += 1;
       link_values = play_PG(vm);
       break;
 
@@ -745,9 +739,9 @@ static int process_command(vm_t *vm, link_t link_values) {
       /* Link to Previous Program */
       /* BUTTON number:data1 */
       if(link_values.data1 != 0)
-        (vm->state).HL_BTNN_REG = link_values.data1 << 10;
-      assert((vm->state).pgN > 1);
-      (vm->state).pgN -= 1;
+        vm->state.HL_BTNN_REG = link_values.data1 << 10;
+      assert(vm->state.pgN > 1);
+      vm->state.pgN -= 1;
       link_values = play_PG(vm);
       break;
 
@@ -755,7 +749,7 @@ static int process_command(vm_t *vm, link_t link_values) {
       /* Restart playing from beginning of current Program Chain */
       /* BUTTON number:data1 */
       if(link_values.data1 != 0)
-        (vm->state).HL_BTNN_REG = link_values.data1 << 10;
+        vm->state.HL_BTNN_REG = link_values.data1 << 10;
       link_values = play_PGC(vm);
       break;
 
@@ -763,9 +757,9 @@ static int process_command(vm_t *vm, link_t link_values) {
       /* Link to Next Program Chain */
       /* BUTTON number:data1 */
       if(link_values.data1 != 0)
-        (vm->state).HL_BTNN_REG = link_values.data1 << 10;
-      assert((vm->state).pgc->next_pgc_nr != 0);
-      if(set_PGCN(vm, (vm->state).pgc->next_pgc_nr))
+        vm->state.HL_BTNN_REG = link_values.data1 << 10;
+      assert(vm->state.pgc->next_pgc_nr != 0);
+      if(set_PGCN(vm, vm->state.pgc->next_pgc_nr))
         link_values = play_PGC(vm);
       else
         link_values.command = Exit;
@@ -775,9 +769,9 @@ static int process_command(vm_t *vm, link_t link_values) {
       /* Link to Previous Program Chain */
       /* BUTTON number:data1 */
       if(link_values.data1 != 0)
-        (vm->state).HL_BTNN_REG = link_values.data1 << 10;
-      assert((vm->state).pgc->prev_pgc_nr != 0);
-      if(set_PGCN(vm, (vm->state).pgc->prev_pgc_nr))
+        vm->state.HL_BTNN_REG = link_values.data1 << 10;
+      assert(vm->state.pgc->prev_pgc_nr != 0);
+      if(set_PGCN(vm, vm->state.pgc->prev_pgc_nr))
         link_values = play_PGC(vm);
       else
         link_values.command = Exit;
@@ -787,9 +781,9 @@ static int process_command(vm_t *vm, link_t link_values) {
       /* Link to GoUp Program Chain */
       /* BUTTON number:data1 */
       if(link_values.data1 != 0)
-        (vm->state).HL_BTNN_REG = link_values.data1 << 10;
-      assert((vm->state).pgc->goup_pgc_nr != 0);
-      if(set_PGCN(vm, (vm->state).pgc->goup_pgc_nr))
+        vm->state.HL_BTNN_REG = link_values.data1 << 10;
+      assert(vm->state.pgc->goup_pgc_nr != 0);
+      if(set_PGCN(vm, vm->state.pgc->goup_pgc_nr))
         link_values = play_PGC(vm);
       else
         link_values.command = Exit;
@@ -799,44 +793,44 @@ static int process_command(vm_t *vm, link_t link_values) {
       /* Link to Tail of Program Chain */
       /* BUTTON number:data1 */
       if(link_values.data1 != 0)
-        (vm->state).HL_BTNN_REG = link_values.data1 << 10;
+        vm->state.HL_BTNN_REG = link_values.data1 << 10;
       link_values = play_PGC_post(vm);
     break;
 
     case LinkRSM:
         /* Check and see if there is any rsm info!! */
-        if (!(vm->state).rsm_vtsN) {
+        if (!vm->state.rsm_vtsN) {
           fprintf(MSG_OUT, "libdvdnav: trying to resume without any resume info set\n");
           link_values.command = Exit;
           break;
         }
 
-        (vm->state).domain = VTS_DOMAIN;
-        if (!ifoOpenNewVTSI(vm, vm->dvd, (vm->state).rsm_vtsN))
+        vm->state.domain = VTS_DOMAIN;
+        if (!ifoOpenNewVTSI(vm, vm->dvd, vm->state.rsm_vtsN))
           assert(0);
-        set_PGCN(vm, (vm->state).rsm_pgcN);
+        set_PGCN(vm, vm->state.rsm_pgcN);
 
         /* These should never be set in SystemSpace and/or MenuSpace */
-        /* (vm->state).TTN_REG = rsm_tt; ?? */
-        /* (vm->state).TT_PGCN_REG = (vm->state).rsm_pgcN; ?? */
+        /* vm->state.TTN_REG = rsm_tt; ?? */
+        /* vm->state.TT_PGCN_REG = vm->state.rsm_pgcN; ?? */
         int i;
         for(i = 0; i < 5; i++) {
-          (vm->state).registers.SPRM[4 + i] = (vm->state).rsm_regs[i];
+          vm->state.registers.SPRM[4 + i] = vm->state.rsm_regs[i];
         }
 
         if(link_values.data1 != 0)
-          (vm->state).HL_BTNN_REG = link_values.data1 << 10;
+          vm->state.HL_BTNN_REG = link_values.data1 << 10;
 
-        if((vm->state).rsm_cellN == 0) {
-          assert((vm->state).cellN); /*  Checking if this ever happens */
-          (vm->state).pgN = 1;
+        if(vm->state.rsm_cellN == 0) {
+          assert(vm->state.cellN); /*  Checking if this ever happens */
+          vm->state.pgN = 1;
           link_values = play_PG(vm);
         } else {
-          /* (vm->state).pgN = ?? this gets the right value in set_PGN() below */
-          (vm->state).cellN = (vm->state).rsm_cellN;
+          /* vm->state.pgN = ?? this gets the right value in set_PGN() below */
+          vm->state.cellN = vm->state.rsm_cellN;
           link_values.command = PlayThis;
-          link_values.data1 = (vm->state).rsm_blockN & 0xffff;
-          link_values.data2 = (vm->state).rsm_blockN >> 16;
+          link_values.data1 = vm->state.rsm_blockN & 0xffff;
+          link_values.data2 = vm->state.rsm_blockN >> 16;
           if(!set_PGN(vm)) {
             /* Were at the end of the PGC, should not happen for a RSM */
             assert(0);
@@ -857,10 +851,10 @@ static int process_command(vm_t *vm, link_t link_values) {
       /* Link to Part of current Title Number:data1 */
       /* BUTTON number:data2 */
       /* PGC Pre-Commands are not executed */
-      assert((vm->state).domain == VTS_DOMAIN);
+      assert(vm->state.domain == VTS_DOMAIN);
       if(link_values.data2 != 0)
-        (vm->state).HL_BTNN_REG = link_values.data2 << 10;
-      if(!set_VTS_PTT(vm, (vm->state).vtsN, (vm->state).VTS_TTN_REG, link_values.data1))
+        vm->state.HL_BTNN_REG = link_values.data2 << 10;
+      if(!set_VTS_PTT(vm, vm->state.vtsN, vm->state.VTS_TTN_REG, link_values.data1))
         link_values.command = Exit;
       else
         link_values = play_PG(vm);
@@ -870,9 +864,9 @@ static int process_command(vm_t *vm, link_t link_values) {
       /* Link to Program Number:data1 */
       /* BUTTON number:data2 */
       if(link_values.data2 != 0)
-        (vm->state).HL_BTNN_REG = link_values.data2 << 10;
+        vm->state.HL_BTNN_REG = link_values.data2 << 10;
       /* Update any other state, PTTN perhaps? */
-      (vm->state).pgN = link_values.data1;
+      vm->state.pgN = link_values.data1;
       link_values = play_PG(vm);
       break;
 
@@ -880,9 +874,9 @@ static int process_command(vm_t *vm, link_t link_values) {
       /* Link to Cell Number:data1 */
       /* BUTTON number:data2 */
       if(link_values.data2 != 0)
-        (vm->state).HL_BTNN_REG = link_values.data2 << 10;
+        vm->state.HL_BTNN_REG = link_values.data2 << 10;
       /* Update any other state, pgN, PTTN perhaps? */
-      (vm->state).cellN = link_values.data1;
+      vm->state.cellN = link_values.data1;
       link_values = play_Cell(vm);
       break;
 
@@ -896,7 +890,7 @@ static int process_command(vm_t *vm, link_t link_values) {
       /* or the Video Manager domain (VMG) */
       /* Stop SPRM9 Timer */
       /* Set SPRM1 and SPRM2 */
-      assert((vm->state).domain == VMGM_DOMAIN || (vm->state).domain == FP_DOMAIN); /* ?? */
+      assert(vm->state.domain == VMGM_DOMAIN || vm->state.domain == FP_DOMAIN); /* ?? */
       if(set_TT(vm, link_values.data1))
         link_values = play_PGC(vm);
       else
@@ -909,8 +903,8 @@ static int process_command(vm_t *vm, link_t link_values) {
       /* or the Video Title Set Domain(VTS) */
       /* Stop SPRM9 Timer */
       /* Set SPRM1 and SPRM2 */
-      assert((vm->state).domain == VTSM_DOMAIN || (vm->state).domain == VTS_DOMAIN); /* ?? */
-      if(!set_VTS_TT(vm, (vm->state).vtsN, link_values.data1))
+      assert(vm->state.domain == VTSM_DOMAIN || vm->state.domain == VTS_DOMAIN); /* ?? */
+      if(!set_VTS_TT(vm, vm->state.vtsN, link_values.data1))
         link_values.command = Exit;
       else
         link_values = play_PGC(vm);
@@ -922,11 +916,11 @@ static int process_command(vm_t *vm, link_t link_values) {
       /* or the Video Title Set Domain(VTS) */
       /* Stop SPRM9 Timer */
       /* Set SPRM1 and SPRM2 */
-      assert((vm->state).domain == VTSM_DOMAIN || (vm->state).domain == VTS_DOMAIN); /* ?? */
-      if(!set_VTS_PTT(vm, (vm->state).vtsN, link_values.data1, link_values.data2))
+      assert(vm->state.domain == VTSM_DOMAIN || vm->state.domain == VTS_DOMAIN); /* ?? */
+      if(!set_VTS_PTT(vm, vm->state.vtsN, link_values.data1, link_values.data2))
         link_values.command = Exit;
       else
-        link_values = play_PGC_PG(vm, (vm->state).pgN);
+        link_values = play_PGC_PG(vm, vm->state.pgN);
       break;
 
     case JumpSS_FP:
@@ -934,7 +928,7 @@ static int process_command(vm_t *vm, link_t link_values) {
       /* Only allowed from the VTS Menu Domain(VTSM) */
       /* or the Video Manager domain (VMG) */
       /* Stop SPRM9 Timer and any GPRM counters */
-      assert((vm->state).domain == VMGM_DOMAIN || (vm->state).domain == VTSM_DOMAIN); /* ?? */
+      assert(vm->state.domain == VMGM_DOMAIN || vm->state.domain == VTSM_DOMAIN); /* ?? */
       if (!set_FP_PGC(vm))
         assert(0);
       link_values = play_PGC(vm);
@@ -944,12 +938,12 @@ static int process_command(vm_t *vm, link_t link_values) {
       /* Jump to Video Manager domain - Title Menu:data1 or any PGC in VMG */
       /* Allowed from anywhere except the VTS Title domain */
       /* Stop SPRM9 Timer and any GPRM counters */
-      assert((vm->state).domain != VTS_DOMAIN); /* ?? */
+      assert(vm->state.domain != VTS_DOMAIN); /* ?? */
       if(vm->vmgi == NULL || vm->vmgi->pgci_ut == NULL) {
         link_values.command = Exit;
         break;
       }
-      (vm->state).domain = VMGM_DOMAIN;
+      vm->state.domain = VMGM_DOMAIN;
       if(!set_MENU(vm, link_values.data1))
         assert(0);
       link_values = play_PGC(vm);
@@ -963,38 +957,38 @@ static int process_command(vm_t *vm, link_t link_values) {
       /* VTS_TTN_REG:data2 */
       /* get_MENU:data3 */
       if(link_values.data1 != 0) {
-        if (link_values.data1 != (vm->state).vtsN) {
+        if (link_values.data1 != vm->state.vtsN) {
           /* the normal case */
-          assert((vm->state).domain == VMGM_DOMAIN || (vm->state).domain == FP_DOMAIN); /* ?? */
-          if (!ifoOpenNewVTSI(vm, vm->dvd, link_values.data1))  /* Also sets (vm->state).vtsN */
+          assert(vm->state.domain == VMGM_DOMAIN || vm->state.domain == FP_DOMAIN); /* ?? */
+          if (!ifoOpenNewVTSI(vm, vm->dvd, link_values.data1))  /* Also sets vm->state.vtsN */
             assert(0);
           if(vm->vtsi == NULL || vm->vtsi->pgci_ut == NULL) {
             link_values.command = Exit;
             break;
           }
-          (vm->state).domain = VTSM_DOMAIN;
+          vm->state.domain = VTSM_DOMAIN;
         } else {
           /* This happens on some discs like "Captain Scarlet & the Mysterons" or
            * the German RC2 of "Anatomie" in VTSM. */
-          assert((vm->state).domain == VTSM_DOMAIN ||
-            (vm->state).domain == VMGM_DOMAIN || (vm->state).domain == FP_DOMAIN); /* ?? */
+          assert(vm->state.domain == VTSM_DOMAIN ||
+            vm->state.domain == VMGM_DOMAIN || vm->state.domain == FP_DOMAIN); /* ?? */
           if(vm->vtsi == NULL || vm->vtsi->pgci_ut == NULL) {
             link_values.command = Exit;
             break;
           }
-          (vm->state).domain = VTSM_DOMAIN;
+          vm->state.domain = VTSM_DOMAIN;
         }
       } else {
         /*  This happens on 'The Fifth Element' region 2. */
-        assert((vm->state).domain == VTSM_DOMAIN);
+        assert(vm->state.domain == VTSM_DOMAIN);
       }
       /*  I don't know what title is supposed to be used for. */
       /*  Alien or Aliens has this != 1, I think. */
       /* assert(link_values.data2 == 1); */
-      (vm->state).VTS_TTN_REG = link_values.data2;
+      vm->state.VTS_TTN_REG = link_values.data2;
       /* TTN_REG (SPRM4), VTS_TTN_REG (SPRM5), TT_PGCN_REG (SPRM6) are linked, */
       /* so if one changes, the others must change to match it. */
-      (vm->state).TTN_REG     = get_TT(vm, (vm->state).vtsN, (vm->state).VTS_TTN_REG);
+      vm->state.TTN_REG     = get_TT(vm, vm->state.vtsN, vm->state.VTS_TTN_REG);
       if(!set_MENU(vm, link_values.data3))
         assert(0);
       link_values = play_PGC(vm);
@@ -1003,12 +997,12 @@ static int process_command(vm_t *vm, link_t link_values) {
     case JumpSS_VMGM_PGC:
       /* set_PGCN:data1 */
       /* Stop SPRM9 Timer and any GPRM counters */
-      assert((vm->state).domain != VTS_DOMAIN); /* ?? */
+      assert(vm->state.domain != VTS_DOMAIN); /* ?? */
       if(vm->vmgi == NULL || vm->vmgi->pgci_ut == NULL) {
         link_values.command = Exit;
         break;
       }
-      (vm->state).domain = VMGM_DOMAIN;
+      vm->state.domain = VMGM_DOMAIN;
       if(!set_PGCN(vm, link_values.data1))
         assert(0);
       link_values = play_PGC(vm);
@@ -1016,7 +1010,7 @@ static int process_command(vm_t *vm, link_t link_values) {
 
     case CallSS_FP:
       /* set_RSMinfo:data1 */
-      assert((vm->state).domain == VTS_DOMAIN); /* ?? */
+      assert(vm->state.domain == VTS_DOMAIN); /* ?? */
       /* Must be called before domain is changed */
       set_RSMinfo(vm, link_values.data1, /* We dont have block info */ 0);
       set_FP_PGC(vm);
@@ -1026,14 +1020,14 @@ static int process_command(vm_t *vm, link_t link_values) {
     case CallSS_VMGM_MENU:
       /* set_MENU:data1 */
       /* set_RSMinfo:data2 */
-      assert((vm->state).domain == VTS_DOMAIN); /* ?? */
+      assert(vm->state.domain == VTS_DOMAIN); /* ?? */
       /* Must be called before domain is changed */
       if(vm->vmgi == NULL || vm->vmgi->pgci_ut == NULL) {
         link_values.command = Exit;
         break;
       }
       set_RSMinfo(vm, link_values.data2, /* We dont have block info */ 0);
-      (vm->state).domain = VMGM_DOMAIN;
+      vm->state.domain = VMGM_DOMAIN;
       if(!set_MENU(vm, link_values.data1))
         assert(0);
       link_values = play_PGC(vm);
@@ -1042,14 +1036,14 @@ static int process_command(vm_t *vm, link_t link_values) {
     case CallSS_VTSM:
       /* set_MENU:data1 */
       /* set_RSMinfo:data2 */
-      assert((vm->state).domain == VTS_DOMAIN); /* ?? */
+      assert(vm->state.domain == VTS_DOMAIN); /* ?? */
       /* Must be called before domain is changed */
       if(vm->vtsi == NULL || vm->vtsi->pgci_ut == NULL) {
         link_values.command = Exit;
         break;
       }
       set_RSMinfo(vm, link_values.data2, /* We dont have block info */ 0);
-      (vm->state).domain = VTSM_DOMAIN;
+      vm->state.domain = VTSM_DOMAIN;
       if(!set_MENU(vm, link_values.data1))
         assert(0);
       link_values = play_PGC(vm);
@@ -1058,14 +1052,14 @@ static int process_command(vm_t *vm, link_t link_values) {
     case CallSS_VMGM_PGC:
       /* set_PGC:data1 */
       /* set_RSMinfo:data2 */
-      assert((vm->state).domain == VTS_DOMAIN); /* ?? */
+      assert(vm->state.domain == VTS_DOMAIN); /* ?? */
       /* Must be called before domain is changed */
       if(vm->vmgi == NULL || vm->vmgi->pgci_ut == NULL) {
         link_values.command = Exit;
         break;
       }
       set_RSMinfo(vm, link_values.data2, /* We dont have block info */ 0);
-      (vm->state).domain = VMGM_DOMAIN;
+      vm->state.domain = VMGM_DOMAIN;
       if(!set_PGCN(vm, link_values.data1))
         assert(0);
       link_values = play_PGC(vm);
@@ -1085,27 +1079,22 @@ static int process_command(vm_t *vm, link_t link_values) {
 
   }
 
-  (vm->state).blockN = link_values.data1 | (link_values.data2 << 16);
+  vm->state.blockN = link_values.data1 | (link_values.data2 << 16);
   return 1;
 }
-
-
 
 //return the ifo_handle_t describing required title, used to
 //identify chapters
 ifo_handle_t *vm_get_title_ifo(vm_t *vm, uint32_t title)
 {
-  ifo_handle_t *ifo = NULL;
   uint8_t titleset_nr;
   if((title < 1) || (title > vm->vmgi->tt_srpt->nr_of_srpts))
     return NULL;
   titleset_nr = vm->vmgi->tt_srpt->title[title-1].title_set_nr;
-  ifo = ifoOpen(vm->dvd, titleset_nr);
-  return ifo;
+  return ifoOpen(vm->dvd, titleset_nr);
 }
 
 void vm_ifo_close(ifo_handle_t *ifo)
 {
   ifoClose(ifo);
 }
-
