@@ -795,10 +795,6 @@ static int process_command(vm_t *vm, link_t link_values) {
     break;
 
     case LinkRSM:
-      {
-	/* Link to Resume point */
-	int i;
-
 	/* Check and see if there is any rsm info!! */
 	if (!(vm->state).rsm_vtsN) {
 	  fprintf(MSG_OUT, "libdvdnav: trying to resume without any resume info set\n");
@@ -814,6 +810,7 @@ static int process_command(vm_t *vm, link_t link_values) {
 	/* These should never be set in SystemSpace and/or MenuSpace */
 	/* (vm->state).TTN_REG = rsm_tt; ?? */
 	/* (vm->state).TT_PGCN_REG = (vm->state).rsm_pgcN; ?? */
+    int i;
 	for(i = 0; i < 5; i++) {
 	  (vm->state).registers.SPRM[4 + i] = (vm->state).rsm_regs[i];
 	}
@@ -838,7 +835,6 @@ static int process_command(vm_t *vm, link_t link_values) {
 	    link_values.data1 = 0;  /* No button */
 	  }
 	}
-      }
       break;
     case LinkPGCN:
       /* Link to Program Chain Number:data1 */
@@ -1066,6 +1062,7 @@ static int process_command(vm_t *vm, link_t link_values) {
 #endif
 
   }
+
   (vm->state).blockN = link_values.data1 | (link_values.data2 << 16);
   return 1;
 }
