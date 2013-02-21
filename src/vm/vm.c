@@ -72,7 +72,24 @@ static int process_command(vm_t *vm,link_t link_values);
 /* Helper functions */
 static void vm_close(vm_t *vm);
 
+/* Debug functions */
+
 #ifdef TRACE
+void vm_position_print(vm_t *vm, vm_position_t *position) {
+  fprintf(MSG_OUT, "libdvdnav: But=%x Spu=%x Aud=%x Ang=%x Hop=%x vts=%x dom=%x cell=%x cell_restart=%x cell_start=%x still=%x block=%x\n",
+  position->button,
+  position->spu_channel,
+  position->audio_channel,
+  position->angle_channel,
+  position->hop_channel,
+  position->vts,
+  position->domain,
+  position->cell,
+  position->cell_restart,
+  position->cell_start,
+  position->still,
+  position->block);
+}
 
 static void vm_print_current_domain_state(vm_t *vm) {
   const char *domain;
@@ -1072,24 +1089,4 @@ void vm_ifo_close(ifo_handle_t *ifo)
 {
   ifoClose(ifo);
 }
-
-/* Debug functions */
-
-#ifdef TRACE
-void vm_position_print(vm_t *vm, vm_position_t *position) {
-  fprintf(MSG_OUT, "libdvdnav: But=%x Spu=%x Aud=%x Ang=%x Hop=%x vts=%x dom=%x cell=%x cell_restart=%x cell_start=%x still=%x block=%x\n",
-  position->button,
-  position->spu_channel,
-  position->audio_channel,
-  position->angle_channel,
-  position->hop_channel,
-  position->vts,
-  position->domain,
-  position->cell,
-  position->cell_restart,
-  position->cell_start,
-  position->still,
-  position->block);
-}
-#endif
 
