@@ -73,29 +73,19 @@ static int process_command(vm_t *vm,link_t link_values);
 static void vm_close(vm_t *vm);
 
 #ifdef TRACE
+
 static void vm_print_current_domain_state(vm_t *vm) {
+  const char *domain;
+
   switch((vm->state).domain) {
-    case VTS_DOMAIN:
-      fprintf(MSG_OUT, "libdvdnav: Video Title Domain: -\n");
-      break;
-
-    case VTSM_DOMAIN:
-      fprintf(MSG_OUT, "libdvdnav: Video Title Menu Domain: -\n");
-      break;
-
-    case VMGM_DOMAIN:
-      fprintf(MSG_OUT, "libdvdnav: Video Manager Menu Domain: -\n");
-      break;
-
-    case FP_DOMAIN:
-      fprintf(MSG_OUT, "libdvdnav: First Play Domain: -\n");
-      break;
-
-    default:
-      fprintf(MSG_OUT, "libdvdnav: Unknown Domain: -\n");
-      break;
+    case VTS_DOMAIN:  domain = "Video Title";        break;
+    case VTSM_DOMAIN: domain = "Video Title Menu";   break;
+    case VMGM_DOMAIN: domain = "Video Manager Menu"; break;
+    case FP_DOMAIN:   domain = "First Play";         break;
+    default:          domain = "Unknown";            break;
   }
-  fprintf(MSG_OUT, "libdvdnav: VTS:%d PGC:%d PG:%u CELL:%u BLOCK:%u VTS_TTN:%u TTN:%u TT_PGCN:%u\n",
+  fprintf(MSG_OUT, "libdvdnav: %s Domain: VTS:%d PGC:%d PG:%u CELL:%u BLOCK:%u VTS_TTN:%u TTN:%u TT_PGCN:%u\n",
+                   domain,
                    (vm->state).vtsN,
                    get_PGCN(vm),
                    (vm->state).pgN,
