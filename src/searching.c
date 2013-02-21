@@ -653,7 +653,7 @@ uint32_t dvdnav_describe_title_chapters(dvdnav_t *this, int32_t title, uint64_t 
       printerr("PGC start unaligned.");
       continue;
     }
-    if (0 != ((int)(ifo->vts_pgcit->pgci_srp[ptt[i].pgcn-1].pgc) & 1)) {
+    if (0 != ((uintptr_t)(ifo->vts_pgcit->pgci_srp[ptt[i].pgcn-1].pgc) & 1)) {
       printerr("PGC pointer unaligned.");
       continue;
     }
