@@ -177,5 +177,7 @@ void vm_ifo_close(ifo_handle_t *ifo);
 void vm_position_print(vm_t *vm, vm_position_t *position);
 #endif
 
+int ifoOpenNewVTSI(vm_t *vm, dvd_reader_t *dvd, int vtsN);
+
 
 #endif /* LIBDVDNAV_VM_H */

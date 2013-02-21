@@ -28,6 +28,11 @@ libdvdnav_la_SOURCES = \
 	src/vm/decoder.h \
 	src/vm/vm.c \
 	src/vm/vm.h \
+	src/vm/play.c \
+	src/vm/play.h \
+	src/vm/getset.c \
+	src/vm/getset.h \
+	src/vm/vmget.c \
 	src/vm/vmcmd.c \
 	src/vm/vmcmd.h
 
