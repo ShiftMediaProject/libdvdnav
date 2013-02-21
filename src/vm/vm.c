@@ -957,27 +957,23 @@ static int process_command(vm_t *vm, link_t link_values) {
       /* VTS_TTN_REG:data2 */
       /* get_MENU:data3 */
       if(link_values.data1 != 0) {
+          assert(vm->state.domain == VTSM_DOMAIN ||
+                  vm->state.domain == VMGM_DOMAIN || vm->state.domain == FP_DOMAIN); /* ?? */
         if (link_values.data1 != vm->state.vtsN) {
           /* the normal case */
-          assert(vm->state.domain == VMGM_DOMAIN || vm->state.domain == FP_DOMAIN); /* ?? */
+          assert(vm->state.domain != VTSM_DOMAIN);
           if (!ifoOpenNewVTSI(vm, vm->dvd, link_values.data1))  /* Also sets vm->state.vtsN */
             assert(0);
-          if(vm->vtsi == NULL || vm->vtsi->pgci_ut == NULL) {
-            link_values.command = Exit;
-            break;
-          }
-          vm->state.domain = VTSM_DOMAIN;
         } else {
           /* This happens on some discs like "Captain Scarlet & the Mysterons" or
            * the German RC2 of "Anatomie" in VTSM. */
-          assert(vm->state.domain == VTSM_DOMAIN ||
-            vm->state.domain == VMGM_DOMAIN || vm->state.domain == FP_DOMAIN); /* ?? */
-          if(vm->vtsi == NULL || vm->vtsi->pgci_ut == NULL) {
-            link_values.command = Exit;
-            break;
-          }
-          vm->state.domain = VTSM_DOMAIN;
         }
+
+        if(vm->vtsi == NULL || vm->vtsi->pgci_ut == NULL) {
+          link_values.command = Exit;
+          break;
+        }
+        vm->state.domain = VTSM_DOMAIN;
       } else {
         /*  This happens on 'The Fifth Element' region 2. */
         assert(vm->state.domain == VTSM_DOMAIN);
