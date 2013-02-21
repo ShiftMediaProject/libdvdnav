@@ -963,7 +963,7 @@ static int process_command(vm_t *vm, link_t link_values) {
           /* the normal case */
           assert(vm->state.domain != VTSM_DOMAIN);
           if (!ifoOpenNewVTSI(vm, vm->dvd, link_values.data1))  /* Also sets vm->state.vtsN */
-            assert(0);
+            vm->vtsi = NULL;
         } else {
           /* This happens on some discs like "Captain Scarlet & the Mysterons" or
            * the German RC2 of "Anatomie" in VTSM. */
