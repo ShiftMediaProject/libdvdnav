@@ -22,6 +22,8 @@
 #ifndef LIBDVDNAV_DECODER_H
 #define LIBDVDNAV_DECODER_H
 
+#include <sys/time.h>
+
 /* link command types */
 typedef enum {
   LinkNoLink  = 0,
