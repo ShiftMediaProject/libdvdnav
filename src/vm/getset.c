@@ -61,7 +61,7 @@ int set_VTS_TT(vm_t *vm, int vtsN, int vts_ttn) {
 int set_VTS_PTT(vm_t *vm, int vtsN, int vts_ttn, int part) {
   int pgcN, pgN, res;
 
-  (vm->state).domain = VTS_DOMAIN;
+  (vm->state).domain = DVD_DOMAIN_VTSTitle;
 
   if (vtsN != (vm->state).vtsN)
     if (!ifoOpenNewVTSI(vm, vm->dvd, vtsN))  /* Also sets (vm->state).vtsN */
@@ -99,7 +99,7 @@ int set_PROG(vm_t *vm, int tt, int pgcn, int pgn) {
 int set_VTS_PROG(vm_t *vm, int vtsN, int vts_ttn, int pgcn, int pgn) {
   int pgcN, pgN, res, title, part = 0;
 
-  (vm->state).domain = VTS_DOMAIN;
+  (vm->state).domain = DVD_DOMAIN_VTSTitle;
 
   if (vtsN != (vm->state).vtsN)
     if (!ifoOpenNewVTSI(vm, vm->dvd, vtsN))  /* Also sets (vm->state).vtsN */
@@ -127,7 +127,7 @@ int set_VTS_PROG(vm_t *vm, int vtsN, int vts_ttn, int pgcn, int pgn) {
 }
 
 int set_FP_PGC(vm_t *vm) {
-  (vm->state).domain = FP_DOMAIN;
+  (vm->state).domain = DVD_DOMAIN_FirstPlay;
   if (!vm->vmgi->first_play_pgc) {
     return set_PGCN(vm, 1);
   }
@@ -138,7 +138,7 @@ int set_FP_PGC(vm_t *vm) {
 
 
 int set_MENU(vm_t *vm, int menu) {
-  assert((vm->state).domain == VMGM_DOMAIN || (vm->state).domain == VTSM_DOMAIN);
+  assert((vm->state).domain == DVD_DOMAIN_VMGM || (vm->state).domain == DVD_DOMAIN_VTSMenu);
   return set_PGCN(vm, get_ID(vm, menu));
 }
 
@@ -160,7 +160,7 @@ int set_PGCN(vm_t *vm, int pgcN) {
   (vm->state).pgcN = pgcN;
   (vm->state).pgN = 1;
 
-  if((vm->state).domain == VTS_DOMAIN)
+  if((vm->state).domain == DVD_DOMAIN_VTSTitle)
     (vm->state).TT_PGCN_REG = pgcN;
 
   return 1;
@@ -181,7 +181,7 @@ int set_PGN(vm_t *vm) {
 
   (vm->state).pgN = new_pgN;
 
-  if((vm->state).domain == VTS_DOMAIN) {
+  if((vm->state).domain == DVD_DOMAIN_VTSTitle) {
     if((vm->state).TTN_REG > vm->vmgi->tt_srpt->nr_of_srpts)
       return 0; /* ?? */
 
@@ -205,7 +205,7 @@ void set_RSMinfo(vm_t *vm, int cellN, int blockN) {
   (vm->state).rsm_vtsN = (vm->state).vtsN;
   (vm->state).rsm_pgcN = get_PGCN(vm);
 
-  /* assert((vm->state).rsm_pgcN == (vm->state).TT_PGCN_REG);  for VTS_DOMAIN */
+  /* assert((vm->state).rsm_pgcN == (vm->state).TT_PGCN_REG);  for DVD_DOMAIN_VTSTitle */
 
   for(i = 0; i < 5; i++) {
     (vm->state).rsm_regs[i] = (vm->state).registers.SPRM[4 + i];
@@ -327,16 +327,16 @@ pgcit_t* get_PGCIT(vm_t *vm) {
   pgcit_t *pgcit = NULL;
 
   switch ((vm->state).domain) {
-  case VTS_DOMAIN:
+  case DVD_DOMAIN_VTSTitle:
     if(!vm->vtsi) return NULL;
     pgcit = vm->vtsi->vts_pgcit;
     break;
-  case VTSM_DOMAIN:
+  case DVD_DOMAIN_VTSMenu:
     if(!vm->vtsi) return NULL;
     pgcit = get_MENU_PGCIT(vm, vm->vtsi, (vm->state).registers.SPRM[0]);
     break;
-  case VMGM_DOMAIN:
-  case FP_DOMAIN:
+  case DVD_DOMAIN_VMGM:
+  case DVD_DOMAIN_FirstPlay:
     pgcit = get_MENU_PGCIT(vm, vm->vmgi, (vm->state).registers.SPRM[0]);
     break;
   default:

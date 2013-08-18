@@ -112,7 +112,7 @@ int vm_get_current_title_part(vm_t *vm, int *title_result, int *part_result) {
 int vm_get_audio_stream(vm_t *vm, int audioN) {
   int streamN = -1;
 
-  if((vm->state).domain != VTS_DOMAIN)
+  if((vm->state).domain != DVD_DOMAIN_VTSTitle)
     audioN = 0;
 
   if(audioN < 8) {
@@ -122,7 +122,7 @@ int vm_get_audio_stream(vm_t *vm, int audioN) {
     }
   }
 
-  if((vm->state).domain != VTS_DOMAIN && streamN == -1)
+  if((vm->state).domain != DVD_DOMAIN_VTSTitle && streamN == -1)
     streamN = 0;
 
   /* FIXME: Should also check in vtsi/vmgi status what kind of stream
@@ -140,7 +140,7 @@ int vm_get_subp_stream(vm_t *vm, int subpN, int mode) {
   int streamN = -1;
   int source_aspect = vm_get_video_aspect(vm);
 
-  if((vm->state).domain != VTS_DOMAIN)
+  if((vm->state).domain != DVD_DOMAIN_VTSTitle)
     subpN = 0;
 
   if(subpN < 32) { /* a valid logical stream */
@@ -162,7 +162,7 @@ int vm_get_subp_stream(vm_t *vm, int subpN, int mode) {
     }
   }
 
-  if((vm->state).domain != VTS_DOMAIN && streamN == -1)
+  if((vm->state).domain != DVD_DOMAIN_VTSTitle && streamN == -1)
     streamN = 0;
 
   /* FIXME: Should also check in vtsi/vmgi status what kind of stream it is. */
@@ -204,7 +204,7 @@ int vm_get_subp_active_stream(vm_t *vm, int mode) {
     }
   }
 
-  if((vm->state).domain == VTS_DOMAIN && !((vm->state).SPST_REG & 0x40))
+  if((vm->state).domain == DVD_DOMAIN_VTSTitle && !((vm->state).SPST_REG & 0x40))
     /* Bit 7 set means hide, and only let Forced display show */
     return (streamN | 0x80);
   else
@@ -215,7 +215,7 @@ void vm_get_angle_info(vm_t *vm, int *current, int *num_avail) {
   *num_avail = 1;
   *current = 1;
 
-  if((vm->state).domain == VTS_DOMAIN) {
+  if((vm->state).domain == DVD_DOMAIN_VTSTitle) {
     title_info_t *title;
     /* TTN_REG does not allways point to the correct title.. */
     if((vm->state).TTN_REG > vm->vmgi->tt_srpt->nr_of_srpts)
@@ -233,16 +233,16 @@ void vm_get_angle_info(vm_t *vm, int *current, int *num_avail) {
 /* currently unused */
 void vm_get_audio_info(vm_t *vm, int *current, int *num_avail) {
   switch ((vm->state).domain) {
-  case VTS_DOMAIN:
+  case DVD_DOMAIN_VTSTitle:
     *num_avail = vm->vtsi->vtsi_mat->nr_of_vts_audio_streams;
     *current = (vm->state).AST_REG;
     break;
-  case VTSM_DOMAIN:
+  case DVD_DOMAIN_VTSMenu:
     *num_avail = vm->vtsi->vtsi_mat->nr_of_vtsm_audio_streams; /*  1 */
     *current = 1;
     break;
-  case VMGM_DOMAIN:
-  case FP_DOMAIN:
+  case DVD_DOMAIN_VMGM:
+  case DVD_DOMAIN_FirstPlay:
     *num_avail = vm->vmgi->vmgi_mat->nr_of_vmgm_audio_streams; /*  1 */
     *current = 1;
     break;
@@ -252,16 +252,16 @@ void vm_get_audio_info(vm_t *vm, int *current, int *num_avail) {
 /* currently unused */
 void vm_get_subp_info(vm_t *vm, int *current, int *num_avail) {
   switch ((vm->state).domain) {
-  case VTS_DOMAIN:
+  case DVD_DOMAIN_VTSTitle:
     *num_avail = vm->vtsi->vtsi_mat->nr_of_vts_subp_streams;
     *current = (vm->state).SPST_REG;
     break;
-  case VTSM_DOMAIN:
+  case DVD_DOMAIN_VTSMenu:
     *num_avail = vm->vtsi->vtsi_mat->nr_of_vtsm_subp_streams; /*  1 */
     *current = 0x41;
     break;
-  case VMGM_DOMAIN:
-  case FP_DOMAIN:
+  case DVD_DOMAIN_VMGM:
+  case DVD_DOMAIN_FirstPlay:
     *num_avail = vm->vmgi->vmgi_mat->nr_of_vmgm_subp_streams; /*  1 */
     *current = 0x41;
     break;
@@ -309,12 +309,12 @@ int vm_get_video_scale_permission(vm_t *vm) {
 
 video_attr_t vm_get_video_attr(vm_t *vm) {
   switch ((vm->state).domain) {
-  case VTS_DOMAIN:
+  case DVD_DOMAIN_VTSTitle:
     return vm->vtsi->vtsi_mat->vts_video_attr;
-  case VTSM_DOMAIN:
+  case DVD_DOMAIN_VTSMenu:
     return vm->vtsi->vtsi_mat->vtsm_video_attr;
-  case VMGM_DOMAIN:
-  case FP_DOMAIN:
+  case DVD_DOMAIN_VMGM:
+  case DVD_DOMAIN_FirstPlay:
     return vm->vmgi->vmgi_mat->vmgm_video_attr;
   default:
     abort();
@@ -323,12 +323,12 @@ video_attr_t vm_get_video_attr(vm_t *vm) {
 
 audio_attr_t vm_get_audio_attr(vm_t *vm, int streamN) {
   switch ((vm->state).domain) {
-  case VTS_DOMAIN:
+  case DVD_DOMAIN_VTSTitle:
     return vm->vtsi->vtsi_mat->vts_audio_attr[streamN];
-  case VTSM_DOMAIN:
+  case DVD_DOMAIN_VTSMenu:
     return vm->vtsi->vtsi_mat->vtsm_audio_attr;
-  case VMGM_DOMAIN:
-  case FP_DOMAIN:
+  case DVD_DOMAIN_VMGM:
+  case DVD_DOMAIN_FirstPlay:
     return vm->vmgi->vmgi_mat->vmgm_audio_attr;
   default:
     abort();
@@ -337,12 +337,12 @@ audio_attr_t vm_get_audio_attr(vm_t *vm, int streamN) {
 
 subp_attr_t vm_get_subp_attr(vm_t *vm, int streamN) {
   switch ((vm->state).domain) {
-  case VTS_DOMAIN:
+  case DVD_DOMAIN_VTSTitle:
     return vm->vtsi->vtsi_mat->vts_subp_attr[streamN];
-  case VTSM_DOMAIN:
+  case DVD_DOMAIN_VTSMenu:
     return vm->vtsi->vtsi_mat->vtsm_subp_attr;
-  case VMGM_DOMAIN:
-  case FP_DOMAIN:
+  case DVD_DOMAIN_VMGM:
+  case DVD_DOMAIN_FirstPlay:
     return vm->vmgi->vmgi_mat->vmgm_subp_attr;
   default:
     abort();
