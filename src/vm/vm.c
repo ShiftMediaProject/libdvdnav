@@ -261,7 +261,7 @@ int ifoOpenNewVTSI(vm_t *vm, dvd_reader_t *dvd, int vtsN) {
 /* Initialisation & Destruction */
 
 vm_t* vm_new_vm() {
-  return (vm_t*)calloc(sizeof(vm_t), sizeof(char));
+  return (vm_t*)calloc(1, sizeof(vm_t));
 }
 
 void vm_free_vm(vm_t *vm) {
