@@ -1,25 +1,25 @@
-This fork of dvdnav was created to overcome the lack of responsiveness
-of the official development channel, not to bastardize this library in
-something for specific usage by mplayer, so these are the rules to follow
-when developing code:
-- don't remove pre-existing code that mplayer doesn't need
-- don't add code to expose the internals of dvdnav
-- don't add code that binds applications to side-effects of the library
-- don't alter the API in an incompatible manner
+This fork of (the fork of) dvdnav was created to overcome the lack of
+responsiveness of the official development channel (once again).
 
+This new fork will try to simplify, stabilize, fix the security issues and the
+numerous crashes and maintain a correct player-agnostic library for DVD playback.
+
+This fork will try to maintain correct authorship tracking and a community
+management.
+
+When developing code:
+- Try to not add code to expose the internals of dvdnav, unless necessary
+- Try to maintain and extend the API in an compatible manner
+- Try to not add code that binds applications to side-effects of the library
+- Don't remove pre-existing code because your player doesn't need
 
 When committing code to the repository always follow these rules:
-- don't break the compilability of the library - always keep svn checkouts usable
-- never mix cosmetical and functional changes
-- don't commit unrelated changes as a single transaction
-- don't split strictly related changes over multiple commits
-- never alter the indentation / bracing / prototyping style of existing files
-- if you break something by accident fix it as soon as possible using the appropriate
-  svn tools to revert your commit(s). If in doubt ask explanations to the
-  mailing list
-- trivial patches such as spell fixes, prototype mismatch, missing includes,
-  more proper variable typization and similar should be committed without asking
-  prior authorization
+- Maintain compilability of the library for every commit
+- Split cosmetical and functional changes in different commits
+- One change == One commit
+- Keep the coding style consistent
+- If you break something by accident, fix it as soon as possible.
+- Trivial patches such as spell fixes, prototype mismatch, missing includes,
+  more proper variable typization and similar can be committed right away
 
-
-If in reiterated violation of these rules your account will be deleted.
+Please don't break these rules, or we'll need to act :)

@@ -14,7 +14,7 @@ encapsulated.
 Where does it come from?
 ------------------------
 
-This library is based on a lot of code and expertise from the Ogle project.
+This library was based on a lot of code and expertise from the Ogle project.
 Ogle was the first DVD player who implemented free DVD navigation. The
 libdvdnav developers wish to express their gratitude to the Ogle people
 for all the valuable research work they have done.
@@ -23,18 +23,17 @@ Initially, the dvdnav code was part of a plugin to the xine media player
 called xine-dvdnav. Later on, the DVD VM specific code was split
 from xine-dvdnav and went into the first version of libdvdnav.
 
-Where is it now?
-----------------
+Then, it was forked, and forked again on MPlayer repositories.
+libdvdnav and libdvdread were merged, and then split again.
 
-libdvdnav is hosted at http://dvdnav.mplayerhq.hu/ .
-Please report bugs to the developers mailinglist at
-mailto:dvdnav-discuss@mplayerhq.hu .
+This is now a new fork libdvdnav, that was created to overcome the lack of
+responsiveness of the official development channel (once again).
 
-We are still in beta stage, but libdvdnav is already quite usable. With
-regular DVD playback, there should not be any serious issues. The library
-also makes some limited effort to handle error situations gracefully, but
-there are still assertions in the code that may trigger on some DVDs. Please
-send a report to the developer mailinglist, if you encounter such problems.
+This new fork will try to simplify, stabilize, fix the security issues and the
+numerous crashes and maintain a correct player-agnostic library for DVD playback.
+
+This fork will try to maintain correct authorship tracking, by using git and a
+proper history.
 
 How can I use it?
 -----------------
