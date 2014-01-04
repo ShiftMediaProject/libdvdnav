@@ -51,7 +51,7 @@ int set_TT(vm_t *vm, int tt) {
 int set_PTT(vm_t *vm, int tt, int ptt) {
   assert(tt <= vm->vmgi->tt_srpt->nr_of_srpts);
   return set_VTS_PTT(vm, vm->vmgi->tt_srpt->title[tt - 1].title_set_nr,
-		     vm->vmgi->tt_srpt->title[tt - 1].vts_ttn, ptt);
+                     vm->vmgi->tt_srpt->title[tt - 1].vts_ttn, ptt);
 }
 
 int set_VTS_TT(vm_t *vm, int vtsN, int vts_ttn) {
@@ -93,7 +93,7 @@ int set_VTS_PTT(vm_t *vm, int vtsN, int vts_ttn, int part) {
 int set_PROG(vm_t *vm, int tt, int pgcn, int pgn) {
   assert(tt <= vm->vmgi->tt_srpt->nr_of_srpts);
   return set_VTS_PROG(vm, vm->vmgi->tt_srpt->title[tt - 1].title_set_nr,
-		     vm->vmgi->tt_srpt->title[tt - 1].vts_ttn, pgcn, pgn);
+                     vm->vmgi->tt_srpt->title[tt - 1].vts_ttn, pgcn, pgn);
 }
 
 int set_VTS_PROG(vm_t *vm, int vtsN, int vts_ttn, int pgcn, int pgn) {
@@ -172,7 +172,7 @@ int set_PGN(vm_t *vm) {
   int dummy, part = 0;
 
   while(new_pgN < (vm->state).pgc->nr_of_programs
-	&& (vm->state).cellN >= (vm->state).pgc->program_map[new_pgN])
+        && (vm->state).cellN >= (vm->state).pgc->program_map[new_pgN])
     new_pgN++;
 
   if(new_pgN == (vm->state).pgc->nr_of_programs) /* We are at the last program */
@@ -281,8 +281,8 @@ int get_PGCN(vm_t *vm) {
   if (pgcit) {
     while(pgcN <= pgcit->nr_of_pgci_srp) {
       if(pgcit->pgci_srp[pgcN - 1].pgc == (vm->state).pgc) {
-	assert((vm->state).pgcN == pgcN);
-	return pgcN;
+        assert((vm->state).pgcN == pgcN);
+        return pgcN;
       }
       pgcN++;
     }
@@ -302,18 +302,18 @@ pgcit_t* get_MENU_PGCIT(vm_t *vm, ifo_handle_t *h, uint16_t lang) {
 
   i = 0;
   while(i < h->pgci_ut->nr_of_lus
-	&& h->pgci_ut->lu[i].lang_code != lang)
+        && h->pgci_ut->lu[i].lang_code != lang)
     i++;
   if(i == h->pgci_ut->nr_of_lus) {
     fprintf(MSG_OUT, "libdvdnav: Language '%c%c' not found, using '%c%c' instead\n",
-	    (char)(lang >> 8), (char)(lang & 0xff),
- 	    (char)(h->pgci_ut->lu[0].lang_code >> 8),
-	    (char)(h->pgci_ut->lu[0].lang_code & 0xff));
+            (char)(lang >> 8), (char)(lang & 0xff),
+             (char)(h->pgci_ut->lu[0].lang_code >> 8),
+            (char)(h->pgci_ut->lu[0].lang_code & 0xff));
     fprintf(MSG_OUT, "libdvdnav: Menu Languages available: ");
     for(i = 0; i < h->pgci_ut->nr_of_lus; i++) {
       fprintf(MSG_OUT, "%c%c ",
- 	    (char)(h->pgci_ut->lu[i].lang_code >> 8),
-	    (char)(h->pgci_ut->lu[i].lang_code & 0xff));
+             (char)(h->pgci_ut->lu[i].lang_code >> 8),
+            (char)(h->pgci_ut->lu[i].lang_code & 0xff));
     }
     fprintf(MSG_OUT, "\n");
     i = 0; /*  error? */

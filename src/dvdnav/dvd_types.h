@@ -56,7 +56,7 @@ typedef enum {
  */
 typedef struct {
   uint32_t palette;     /* The CLUT entries for the highlight palette
-			   (4-bits per entry -> 4 entries) */
+                           (4-bits per entry -> 4 entries) */
   uint16_t sx,sy,ex,ey; /* The start/end x,y positions */
   uint32_t pts;         /* Highlight PTS to match with SPU */
 

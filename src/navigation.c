@@ -245,7 +245,7 @@ dvdnav_status_t dvdnav_part_play(dvdnav_t *this, int32_t title, int32_t part) {
 }
 
 dvdnav_status_t dvdnav_part_play_auto_stop(dvdnav_t *this, int32_t title,
-					   int32_t part, int32_t parts_to_play) {
+                                           int32_t part, int32_t parts_to_play) {
   /* FIXME: Implement auto-stop */
  if (dvdnav_part_play(this, title, part) == DVDNAV_STATUS_OK)
    printerr("Not implemented yet.");
@@ -253,7 +253,7 @@ dvdnav_status_t dvdnav_part_play_auto_stop(dvdnav_t *this, int32_t title,
 }
 
 dvdnav_status_t dvdnav_time_play(dvdnav_t *this, int32_t title,
-				 uint64_t time) {
+                                 uint64_t time) {
   /* FIXME: Implement */
   printerr("Not implemented yet.");
   return DVDNAV_STATUS_ERR;

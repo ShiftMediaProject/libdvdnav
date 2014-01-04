@@ -403,18 +403,18 @@ static int32_t dvdnav_get_vobu(dvdnav_t *this, dsi_t *nav_dsi, pci_t *nav_pci, d
 
     if((next = nav_pci->nsml_agli.nsml_agl_dsta[angle-1]) != 0) {
       if((next & 0x3fffffff) != 0) {
-	if(next & 0x80000000)
-	  vobu->vobu_next = - (int32_t)(next & 0x3fffffff);
-	else
-	  vobu->vobu_next = + (int32_t)(next & 0x3fffffff);
+        if(next & 0x80000000)
+          vobu->vobu_next = - (int32_t)(next & 0x3fffffff);
+        else
+          vobu->vobu_next = + (int32_t)(next & 0x3fffffff);
       }
     } else if((next = nav_dsi->sml_agli.data[angle-1].address) != 0) {
       vobu->vobu_length = nav_dsi->sml_pbi.ilvu_ea;
 
       if((next & 0x80000000) && (next != 0x7fffffff))
-	vobu->vobu_next =  - (int32_t)(next & 0x3fffffff);
+        vobu->vobu_next =  - (int32_t)(next & 0x3fffffff);
       else
-	vobu->vobu_next =  + (int32_t)(next & 0x3fffffff);
+        vobu->vobu_next =  + (int32_t)(next & 0x3fffffff);
     }
   }
 
@@ -433,7 +433,7 @@ static int32_t dvdnav_get_vobu(dvdnav_t *this, dsi_t *nav_dsi, pci_t *nav_pci, d
  */
 
 dvdnav_status_t dvdnav_get_next_block(dvdnav_t *this, uint8_t *buf,
-				      int32_t *event, int32_t *len) {
+                                      int32_t *event, int32_t *len) {
   unsigned char *block;
   dvdnav_status_t status;
 
@@ -465,7 +465,7 @@ int64_t dvdnav_get_current_time(dvdnav_t *this) {
 }
 
 dvdnav_status_t dvdnav_get_next_cache_block(dvdnav_t *this, uint8_t **buf,
-					    int32_t *event, int32_t *len) {
+                                            int32_t *event, int32_t *len) {
   dvd_state_t *state;
   int32_t result;
 
@@ -516,29 +516,29 @@ dvdnav_status_t dvdnav_get_next_cache_block(dvdnav_t *this, uint8_t **buf,
       vm_get_angle_info(this->vm, &current, &num_angles);
       if (num_angles > 1) {
         int32_t result, block;
-	/* we have to skip the first VOBU when seeking in a multiangle feature,
-	 * because it might belong to the wrong angle */
-	block = this->position_next.cell_start + this->position_next.block;
-	result = dvdnav_read_cache_block(this->cache, block, 1, buf);
-	if(result <= 0) {
-	  printerr("Error reading NAV packet.");
-	  pthread_mutex_unlock(&this->vm_lock);
-	  return DVDNAV_STATUS_ERR;
-	}
-	/* Decode nav into pci and dsi. Then get next VOBU info. */
-	if(!dvdnav_decode_packet(this, *buf, &this->dsi, &this->pci)) {
-	  printerr("Expected NAV packet but none found.");
-	  pthread_mutex_unlock(&this->vm_lock);
-	  return DVDNAV_STATUS_ERR;
-	}
-	dvdnav_get_vobu(this, &this->dsi, &this->pci, &this->vobu);
-	/* skip to next, if there is a next */
-	if (this->vobu.vobu_next != SRI_END_OF_CELL) {
-	  this->vobu.vobu_start += this->vobu.vobu_next;
-	  this->vobu.vobu_next   = 0;
-	}
-	/* update VM state */
-	this->vm->state.blockN = this->vobu.vobu_start - this->position_next.cell_start;
+        /* we have to skip the first VOBU when seeking in a multiangle feature,
+         * because it might belong to the wrong angle */
+        block = this->position_next.cell_start + this->position_next.block;
+        result = dvdnav_read_cache_block(this->cache, block, 1, buf);
+        if(result <= 0) {
+          printerr("Error reading NAV packet.");
+          pthread_mutex_unlock(&this->vm_lock);
+          return DVDNAV_STATUS_ERR;
+        }
+        /* Decode nav into pci and dsi. Then get next VOBU info. */
+        if(!dvdnav_decode_packet(this, *buf, &this->dsi, &this->pci)) {
+          printerr("Expected NAV packet but none found.");
+          pthread_mutex_unlock(&this->vm_lock);
+          return DVDNAV_STATUS_ERR;
+        }
+        dvdnav_get_vobu(this, &this->dsi, &this->pci, &this->vobu);
+        /* skip to next, if there is a next */
+        if (this->vobu.vobu_next != SRI_END_OF_CELL) {
+          this->vobu.vobu_start += this->vobu.vobu_next;
+          this->vobu.vobu_next   = 0;
+        }
+        /* update VM state */
+        this->vm->state.blockN = this->vobu.vobu_start - this->position_next.cell_start;
       }
     }
     this->position_current.hop_channel = this->position_next.hop_channel;
@@ -799,11 +799,11 @@ dvdnav_status_t dvdnav_get_next_cache_block(dvdnav_t *this, uint8_t **buf,
         this->sync_wait = 1;
 
       if(!this->position_current.still || this->skip_still ) {
-	/* no active cell still -> get us to the next cell */
-	vm_get_next_cell(this->vm);
-	this->position_current.still = 0; /* still gets activated at end of cell */
-	this->skip_still = 0;
-	this->sync_wait_skip = 0;
+        /* no active cell still -> get us to the next cell */
+        vm_get_next_cell(this->vm);
+        this->position_current.still = 0; /* still gets activated at end of cell */
+        this->skip_still = 0;
+        this->sync_wait_skip = 0;
       }
       /* handle related state changes in next iteration */
       (*event) = DVDNAV_NOP;
@@ -1193,7 +1193,7 @@ dvdnav_status_t dvdnav_angle_change(dvdnav_t *this, int32_t angle) {
 }
 
 dvdnav_status_t dvdnav_get_angle_info(dvdnav_t *this, int32_t *current_angle,
-				      int32_t *number_of_angles) {
+                                      int32_t *number_of_angles) {
   pthread_mutex_lock(&this->vm_lock);
   vm_get_angle_info(this->vm, current_angle, number_of_angles);
   pthread_mutex_unlock(&this->vm_lock);

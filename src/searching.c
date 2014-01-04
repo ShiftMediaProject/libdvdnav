@@ -99,7 +99,7 @@ static dvdnav_status_t dvdnav_scan_admap(dvdnav_t *this, int32_t domain, uint32_
 /* FIXME: right now, this function does not use the time tables but interpolates
    only the cell times */
 dvdnav_status_t dvdnav_time_search(dvdnav_t *this,
-				   uint64_t time) {
+                                   uint64_t time) {
 
   uint64_t target = time;
   uint64_t length = 0;
@@ -158,7 +158,7 @@ dvdnav_status_t dvdnav_time_search(dvdnav_t *this,
     uint32_t vobu;
 #ifdef LOG_DEBUG
     fprintf(MSG_OUT, "libdvdnav: Seeking to cell %i from choice of %i to %i\n",
-	    cell_nr, first_cell_nr, last_cell_nr);
+            cell_nr, first_cell_nr, last_cell_nr);
 #endif
     if (dvdnav_scan_admap(this, state->domain, target, 0, &vobu) == DVDNAV_STATUS_OK) {
       uint32_t start = state->pgc->cell_playback[cell_nr-1].first_sector;
@@ -182,7 +182,7 @@ dvdnav_status_t dvdnav_time_search(dvdnav_t *this,
 }
 
 dvdnav_status_t dvdnav_sector_search(dvdnav_t *this,
-				     int64_t offset, int32_t origin) {
+                                     int64_t offset, int32_t origin) {
   uint32_t target = 0;
   uint32_t current_pos;
   uint32_t cur_sector;
@@ -314,7 +314,7 @@ dvdnav_status_t dvdnav_sector_search(dvdnav_t *this,
     uint32_t vobu;
 #ifdef LOG_DEBUG
     fprintf(MSG_OUT, "libdvdnav: Seeking to cell %i from choice of %i to %i\n",
-	    cell_nr, first_cell_nr, last_cell_nr);
+            cell_nr, first_cell_nr, last_cell_nr);
 #endif
     if (dvdnav_scan_admap(this, state->domain, target, 0, &vobu) == DVDNAV_STATUS_OK) {
       int32_t start = state->pgc->cell_playback[cell_nr-1].first_sector;
@@ -506,7 +506,7 @@ fail:
 }
 
 dvdnav_status_t dvdnav_get_position(dvdnav_t *this, uint32_t *pos,
-				    uint32_t *len) {
+                                    uint32_t *len) {
   uint32_t cur_sector;
   int32_t cell_nr, first_cell_nr, last_cell_nr;
   cell_playback_t *cell;
@@ -571,8 +571,8 @@ dvdnav_status_t dvdnav_get_position(dvdnav_t *this, uint32_t *pos,
 }
 
 dvdnav_status_t dvdnav_get_position_in_title(dvdnav_t *this,
-					     uint32_t *pos,
-					     uint32_t *len) {
+                                             uint32_t *pos,
+                                             uint32_t *len) {
   uint32_t cur_sector;
   uint32_t first_cell_nr;
   uint32_t last_cell_nr;

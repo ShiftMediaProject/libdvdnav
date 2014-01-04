@@ -70,8 +70,8 @@ link_t play_PGC(vm_t *vm) {
      - or an error (are there more cases?) */
   if((vm->state).pgc->command_tbl && (vm->state).pgc->command_tbl->nr_of_pre) {
     if(vmEval_CMD((vm->state).pgc->command_tbl->pre_cmds,
-		  (vm->state).pgc->command_tbl->nr_of_pre,
-		  &(vm->state).registers, &link_values)) {
+                  (vm->state).pgc->command_tbl->nr_of_pre,
+                  &(vm->state).registers, &link_values)) {
       /*  link_values contains the 'jump' return value */
       return link_values;
     } else {
@@ -110,8 +110,8 @@ link_t play_PGC_PG(vm_t *vm, int pgN) {
      - or an error (are there more cases?) */
   if((vm->state).pgc->command_tbl && (vm->state).pgc->command_tbl->nr_of_pre) {
     if(vmEval_CMD((vm->state).pgc->command_tbl->pre_cmds,
-		  (vm->state).pgc->command_tbl->nr_of_pre,
-		  &(vm->state).registers, &link_values)) {
+                  (vm->state).pgc->command_tbl->nr_of_pre,
+                  &(vm->state).registers, &link_values)) {
       /*  link_values contains the 'jump' return value */
       return link_values;
     } else {
@@ -137,8 +137,8 @@ link_t play_PGC_post(vm_t *vm) {
      - or an error (are there more cases?) */
   if((vm->state).pgc->command_tbl && (vm->state).pgc->command_tbl->nr_of_post &&
      vmEval_CMD((vm->state).pgc->command_tbl->post_cmds,
-		(vm->state).pgc->command_tbl->nr_of_post,
-		&(vm->state).registers, &link_values)) {
+                (vm->state).pgc->command_tbl->nr_of_post,
+                &(vm->state).registers, &link_values)) {
     return link_values;
   }
 
@@ -162,7 +162,7 @@ link_t play_PG(vm_t *vm) {
   if((vm->state).pgN > (vm->state).pgc->nr_of_programs) {
 #ifdef TRACE
     fprintf(MSG_OUT, "libdvdnav: play_PG: (vm->state).pgN (%i) > pgc->nr_of_programs (%i)\n",
-	    (vm->state).pgN, (vm->state).pgc->nr_of_programs );
+            (vm->state).pgN, (vm->state).pgc->nr_of_programs );
 #endif
     assert((vm->state).pgN == (vm->state).pgc->nr_of_programs + 1);
     return play_PGC_post(vm);
@@ -184,7 +184,7 @@ link_t play_Cell(vm_t *vm) {
   if((vm->state).cellN > (vm->state).pgc->nr_of_cells) {
 #ifdef TRACE
     fprintf(MSG_OUT, "libdvdnav: (vm->state).cellN (%i) > pgc->nr_of_cells (%i)\n",
-	    (vm->state).cellN, (vm->state).pgc->nr_of_cells );
+            (vm->state).cellN, (vm->state).pgc->nr_of_cells );
 #endif
     assert((vm->state).cellN == (vm->state).pgc->nr_of_cells + 1);
     return play_PGC_post(vm);
@@ -210,9 +210,9 @@ link_t play_Cell(vm_t *vm) {
 #else
       if (!((vm->state).cellN <= (vm->state).pgc->nr_of_cells) ||
           !((vm->state).pgc->cell_playback[(vm->state).cellN - 1].block_mode != 0) ||
-	  !((vm->state).pgc->cell_playback[(vm->state).cellN - 1].block_type == 1)) {
-	fprintf(MSG_OUT, "libdvdnav: Invalid angle block\n");
-	(vm->state).cellN -= (vm->state).AGL_REG - 1;
+          !((vm->state).pgc->cell_playback[(vm->state).cellN - 1].block_type == 1)) {
+        fprintf(MSG_OUT, "libdvdnav: Invalid angle block\n");
+        (vm->state).cellN -= (vm->state).AGL_REG - 1;
       }
 #endif
       break;
@@ -220,8 +220,8 @@ link_t play_Cell(vm_t *vm) {
     case 3: /*  ?? */
     default:
       fprintf(MSG_OUT, "libdvdnav: Invalid? Cell block_mode (%d), block_type (%d)\n",
-	      (vm->state).pgc->cell_playback[(vm->state).cellN - 1].block_mode,
-	      (vm->state).pgc->cell_playback[(vm->state).cellN - 1].block_type);
+              (vm->state).pgc->cell_playback[(vm->state).cellN - 1].block_mode,
+              (vm->state).pgc->cell_playback[(vm->state).cellN - 1].block_type);
       assert(0);
     }
     break;
@@ -267,7 +267,7 @@ link_t play_Cell_post(vm_t *vm) {
       fprintf(MSG_OUT, "libdvdnav: Cell command present, executing\n");
 #endif
       if(vmEval_CMD(&(vm->state).pgc->command_tbl->cell_cmds[cell->cell_cmd_nr - 1], 1,
-		    &(vm->state).registers, &link_values)) {
+                    &(vm->state).registers, &link_values)) {
         return link_values;
       } else {
 #ifdef TRACE
@@ -300,16 +300,16 @@ link_t play_Cell_post(vm_t *vm) {
       /* Skip the 'other' angles */
       (vm->state).cellN++;
       while((vm->state).cellN <= (vm->state).pgc->nr_of_cells &&
-	    (vm->state).pgc->cell_playback[(vm->state).cellN - 1].block_mode >= 2) {
-	(vm->state).cellN++;
+            (vm->state).pgc->cell_playback[(vm->state).cellN - 1].block_mode >= 2) {
+        (vm->state).cellN++;
       }
       break;
     case 2: /*  ?? */
     case 3: /*  ?? */
     default:
       fprintf(MSG_OUT, "libdvdnav: Invalid? Cell block_mode (%d), block_type (%d)\n",
-	      (vm->state).pgc->cell_playback[(vm->state).cellN - 1].block_mode,
-	      (vm->state).pgc->cell_playback[(vm->state).cellN - 1].block_type);
+              (vm->state).pgc->cell_playback[(vm->state).cellN - 1].block_mode,
+              (vm->state).pgc->cell_playback[(vm->state).cellN - 1].block_type);
       assert(0);
     }
     break;

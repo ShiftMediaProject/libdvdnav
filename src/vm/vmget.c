@@ -68,16 +68,16 @@ int vm_get_current_title_part(vm_t *vm, int *title_result, int *part_result) {
   for (vts_ttn = 0; (vts_ttn < vts_ptt_srpt->nr_of_srpts) && !found; vts_ttn++) {
     for (part = 0; (part < vts_ptt_srpt->title[vts_ttn].nr_of_ptts) && !found; part++) {
       if (vts_ptt_srpt->title[vts_ttn].ptt[part].pgcn == pgcN) {
-	if (vts_ptt_srpt->title[vts_ttn].ptt[part].pgn  == pgN) {
-	  found = 1;
+        if (vts_ptt_srpt->title[vts_ttn].ptt[part].pgn  == pgN) {
+          found = 1;
           break;
-	}
-	if (part > 0 && vts_ptt_srpt->title[vts_ttn].ptt[part].pgn > pgN &&
-	    vts_ptt_srpt->title[vts_ttn].ptt[part - 1].pgn < pgN) {
-	  part--;
-	  found = 1;
-	  break;
-	}
+        }
+        if (part > 0 && vts_ptt_srpt->title[vts_ttn].ptt[part].pgn > pgN &&
+            vts_ptt_srpt->title[vts_ttn].ptt[part - 1].pgn < pgN) {
+          part--;
+          found = 1;
+          break;
+        }
       }
     }
     if (found) break;
@@ -147,18 +147,18 @@ int vm_get_subp_stream(vm_t *vm, int subpN, int mode) {
     /* Is this logical stream present */
     if((vm->state).pgc->subp_control[subpN] & (1<<31)) {
       if(source_aspect == 0) /* 4:3 */
-	streamN = ((vm->state).pgc->subp_control[subpN] >> 24) & 0x1f;
+        streamN = ((vm->state).pgc->subp_control[subpN] >> 24) & 0x1f;
       if(source_aspect == 3) /* 16:9 */
         switch (mode) {
-	case 0:
-	  streamN = ((vm->state).pgc->subp_control[subpN] >> 16) & 0x1f;
-	  break;
-	case 1:
-	  streamN = ((vm->state).pgc->subp_control[subpN] >> 8) & 0x1f;
-	  break;
-	case 2:
-	  streamN = (vm->state).pgc->subp_control[subpN] & 0x1f;
-	}
+        case 0:
+          streamN = ((vm->state).pgc->subp_control[subpN] >> 16) & 0x1f;
+          break;
+        case 1:
+          streamN = ((vm->state).pgc->subp_control[subpN] >> 8) & 0x1f;
+          break;
+        case 2:
+          streamN = (vm->state).pgc->subp_control[subpN] & 0x1f;
+        }
     }
   }
 

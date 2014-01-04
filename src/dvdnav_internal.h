@@ -187,17 +187,17 @@ int64_t dvdnav_convert_time(dvd_time_t *time);
 
 #ifdef __GNUC__
 #define printerrf(format, args...) \
-	do { if (this) snprintf(this->err_str, MAX_ERR_LEN, format, ## args); } while (0)
+    do { if (this) snprintf(this->err_str, MAX_ERR_LEN, format, ## args); } while (0)
 #else
 #ifdef _MSC_VER
 #define printerrf(str) \
-	do { if (this) snprintf(this->err_str, MAX_ERR_LEN, str); } while (0)
+    do { if (this) snprintf(this->err_str, MAX_ERR_LEN, str); } while (0)
 #else
 #define printerrf(...) \
-	do { if (this) snprintf(this->err_str, MAX_ERR_LEN, __VA_ARGS__); } while (0)
+    do { if (this) snprintf(this->err_str, MAX_ERR_LEN, __VA_ARGS__); } while (0)
 #endif /* WIN32 */
 #endif
 #define printerr(str) \
-	do { if (this) strncpy(this->err_str, str, MAX_ERR_LEN - 1); } while (0)
+    do { if (this) strncpy(this->err_str, str, MAX_ERR_LEN - 1); } while (0)
 
 #endif /* LIBDVDNAV_DVDNAV_INTERNAL_H */
