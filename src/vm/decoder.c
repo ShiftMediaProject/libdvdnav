@@ -30,6 +30,8 @@
 #include <limits.h>
 #include <string.h>  /* For memset */
 #include <sys/time.h>
+#include <assert.h>
+
 #include <dvdread/nav_types.h>
 #include <dvdread/ifo_types.h> /* vm_cmd_t */
 
@@ -517,7 +519,7 @@ static int32_t eval_command(uint8_t *bytes, registers_t* registers, link_t *retu
       res = eval_special_instruction(&command, cond);
       if(res == -1) {
         fprintf(MSG_OUT, "libdvdnav: Unknown Instruction!\n");
-        abort();
+        assert(0);
       }
       break;
     case 1: /*  Link/jump instructions */
@@ -571,7 +573,7 @@ static int32_t eval_command(uint8_t *bytes, registers_t* registers, link_t *retu
       break;
     default: /* Unknown command */
       fprintf(MSG_OUT, "libdvdnav: WARNING: Unknown Command=%x\n", vm_getbits(&command, 63, 3));
-      abort();
+      assert(0);
   }
   /*  Check if there are bits not yet examined */
 

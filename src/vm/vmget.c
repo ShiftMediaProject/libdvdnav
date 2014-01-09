@@ -317,7 +317,7 @@ video_attr_t vm_get_video_attr(vm_t *vm) {
   case DVD_DOMAIN_FirstPlay:
     return vm->vmgi->vmgi_mat->vmgm_video_attr;
   default:
-    abort();
+    assert(0);
   }
 }
 
@@ -331,7 +331,7 @@ audio_attr_t vm_get_audio_attr(vm_t *vm, int streamN) {
   case DVD_DOMAIN_FirstPlay:
     return vm->vmgi->vmgi_mat->vmgm_audio_attr;
   default:
-    abort();
+    assert(0);
   }
 }
 
@@ -345,6 +345,6 @@ subp_attr_t vm_get_subp_attr(vm_t *vm, int streamN) {
   case DVD_DOMAIN_FirstPlay:
     return vm->vmgi->vmgi_mat->vmgm_subp_attr;
   default:
-    abort();
+    assert(0);
   }
 }
