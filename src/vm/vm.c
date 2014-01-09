@@ -198,7 +198,7 @@ static int dvd_read_name(char *name, char *serial, const char *device) {
       fprintf(MSG_OUT, " ");
     }
   }
-  strncpy(serial, (char*) &data[73], (i-73));
+  strncpy(serial, (char*) &data[73], 14);
   serial[14] = 0;
   fprintf(MSG_OUT, "\nlibdvdnav: DVD Title (Alternative): ");
   for(i=89; i < 128; i++ ) {
