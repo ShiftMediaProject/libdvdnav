@@ -1,3 +1,5 @@
+libdvdnav (5.0.0)
+
 libdvdnav (4.2.0)
   * OS/2 support
   * added dvdnav_get_serial_string() function

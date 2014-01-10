@@ -5,8 +5,8 @@ dnl Making releases: dvdnav_sub += 1; change DVDNAV_LT_* accordingly
 dnl
 dnl These are defined in m4 so they can be passed to AC_INIT
 dnl --------------------------------------------------------------
-m4_define([dvdnav_major], [4])
-m4_define([dvdnav_minor], [2])
+m4_define([dvdnav_major], [5])
+m4_define([dvdnav_minor], [0])
 m4_define([dvdnav_sub],   [0])
 m4_define([dvdnav_pre],   [])
 
