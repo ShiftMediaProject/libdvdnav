@@ -311,8 +311,9 @@ int dvdnav_read_cache_block(read_cache_t *self, int sector, size_t block_count, 
 
   } else {
 
-    if (self->dvd_self->use_read_ahead)
+    if (self->dvd_self->use_read_ahead) {
       dprintf("cache miss on sector %d\n", sector);
+    }
 
     res = DVDReadBlocks(self->dvd_self->file,
                         sector,
