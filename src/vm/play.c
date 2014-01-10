@@ -38,6 +38,7 @@
 #include "remap.h"
 #include "vm.h"
 #include "play.h"
+#include "vm/getset.h"
 
 #include "dvdnav_internal.h"
 
