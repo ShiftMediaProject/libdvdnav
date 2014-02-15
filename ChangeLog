@@ -1,4 +1,13 @@
 libdvdnav (5.0.0)
+ * fixed failed assertion on menu-less DVDs
+ * fixed playback issues on multi-angle DVDs
+ * fixed crash when playing a DVD from different region than currently set
+   in the DVD drive
+ * fixed segfaults when reading certain DVDs (including "Jack Reacher",
+   "Ghost Protocol", "Inside Man", "The Dictator" and "Tangled")
+ * fixed numerous crashes, assertions and corruptions
+ * rewrite of the build-system
+ * clean code, simplify and remove warnings
 
 libdvdnav (4.2.0)
   * OS/2 support
