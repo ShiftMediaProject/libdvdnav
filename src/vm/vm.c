@@ -55,6 +55,7 @@
 
 #ifdef __OS2__
 #define INCL_DOS
+#include <os2safe.h>
 #include <os2.h>
 #include <io.h>     /* setmode() */
 #include <fcntl.h>  /* O_BINARY  */
