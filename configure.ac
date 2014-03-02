@@ -82,8 +82,8 @@ case $host in
     ;;
   *)
     AC_CHECK_LIB(pthread, pthread_create,
-	[THREAD_LIBS="-lpthread"],
-	AC_MSG_ERROR(pthread needed))
+        [THREAD_LIBS="-lpthread"],
+        AC_MSG_ERROR(pthread needed))
     ;;
 esac
 AC_SUBST(THREAD_LIBS)
