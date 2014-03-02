@@ -37,13 +37,11 @@
 #include <dvdread/dvd_reader.h>
 #include <dvdread/nav_types.h>
 #include <dvdread/ifo_types.h> /* For vm_cmd_t */
-#include "remap.h"
 #include "vm/decoder.h"
 #include "vm/vm.h"
 #include "dvdnav_internal.h"
 #include "read_cache.h"
 #include <dvdread/nav_read.h>
-#include "remap.h"
 
 static dvdnav_status_t dvdnav_clear(dvdnav_t * this) {
   /* clear everything except file, vm, mutex, readahead */

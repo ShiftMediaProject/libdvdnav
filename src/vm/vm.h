@@ -23,6 +23,8 @@
 #ifndef LIBDVDNAV_VM_H
 #define LIBDVDNAV_VM_H
 
+#include "remap.h"
+
 /**
  * State: SPRM, GPRM, Domain, pgc, pgN, cellN, ?
  */

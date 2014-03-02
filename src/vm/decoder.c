@@ -36,7 +36,6 @@
 #include <dvdread/ifo_types.h> /* vm_cmd_t */
 
 #include "dvdnav/dvdnav.h"
-#include "remap.h"
 #include "decoder.h"
 #include "vm.h"
 #include "vmcmd.h"
