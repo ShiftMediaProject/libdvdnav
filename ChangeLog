@@ -8,6 +8,7 @@ libdvdnav (5.0.0)
  * fixed numerous crashes, assertions and corruptions
  * rewrite of the build-system
  * clean code, simplify and remove warnings
+ * removal of remap .MAP files unused feature
 
 libdvdnav (4.2.0)
   * OS/2 support

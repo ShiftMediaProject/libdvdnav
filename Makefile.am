@@ -22,10 +22,8 @@ libdvdnav_la_SOURCES = \
 	src/highlight.c \
 	src/searching.c \
 	src/settings.c \
-	src/remap.c \
 	src/dvdnav_internal.h \
 	src/read_cache.h \
-	src/remap.h \
 	src/vm/decoder.c \
 	src/vm/decoder.h \
 	src/vm/vm.c \

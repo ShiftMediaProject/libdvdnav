@@ -813,15 +813,6 @@ dvdnav_status_t dvdnav_get_next_cache_block(dvdnav_t *this, uint8_t **buf,
       return DVDNAV_STATUS_OK;
     }
 
-    /* Perform remapping jump if necessary (this is always a
-     * VOBU boundary). */
-    if (this->vm->map) {
-      this->vobu.vobu_next = remap_block( this->vm->map,
-        this->vm->state.domain, this->vm->state.TTN_REG,
-        this->vm->state.pgN,
-        this->vobu.vobu_start, this->vobu.vobu_next);
-    }
-
     /* at the start of the next VOBU -> expecting NAV packet */
     result = dvdnav_read_cache_block(this->cache, this->vobu.vobu_start + this->vobu.vobu_next, 1, buf);
 
