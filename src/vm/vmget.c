@@ -296,7 +296,11 @@ void vm_get_video_res(vm_t *vm, int *width, int *height) {
 int vm_get_video_aspect(vm_t *vm) {
   int aspect = vm_get_video_attr(vm).display_aspect_ratio;
 
-  assert(aspect == 0 || aspect == 3);
+  if(aspect != 0 && aspect != 3) {
+    fprintf(MSG_OUT, "libdvdnav: display aspect ratio is unexpected: %d!\n", aspect);
+    return -1;
+  }
+
   (vm->state).registers.SPRM[14] &= ~(0x3 << 10);
   (vm->state).registers.SPRM[14] |= aspect << 10;
 
