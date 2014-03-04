@@ -127,6 +127,8 @@ int set_VTS_PROG(vm_t *vm, int vtsN, int vts_ttn, int pgcn, int pgn) {
 }
 
 int set_FP_PGC(vm_t *vm) {
+  if (!vm || !vm->vmgi)
+      return 1;
   (vm->state).domain = DVD_DOMAIN_FirstPlay;
   if (!vm->vmgi->first_play_pgc) {
     return set_PGCN(vm, 1);
