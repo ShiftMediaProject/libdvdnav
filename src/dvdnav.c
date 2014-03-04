@@ -469,6 +469,9 @@ dvdnav_status_t dvdnav_get_next_cache_block(dvdnav_t *this, uint8_t **buf,
   dvd_state_t *state;
   int32_t result;
 
+  if(!this)
+      return DVDNAV_STATUS_ERR;
+
   pthread_mutex_lock(&this->vm_lock);
 
   if(!this->started) {
