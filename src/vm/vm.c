@@ -180,7 +180,7 @@ static int dvd_read_name(char *name, char *serial, const char *device) {
 
   fprintf(MSG_OUT, "libdvdnav: DVD Title: ");
   for(i=25; i < 73; i++ ) {
-    if((data[i] == 0)) break;
+    if(data[i] == 0) break;
     if((data[i] > 32) && (data[i] < 127)) {
       fprintf(MSG_OUT, "%c", data[i]);
     } else {
@@ -191,7 +191,7 @@ static int dvd_read_name(char *name, char *serial, const char *device) {
   name[48] = 0;
   fprintf(MSG_OUT, "\nlibdvdnav: DVD Serial Number: ");
   for(i=73; i < 89; i++ ) {
-    if((data[i] == 0)) break;
+    if(data[i] == 0) break;
     if((data[i] > 32) && (data[i] < 127)) {
       fprintf(MSG_OUT, "%c", data[i]);
     } else {
@@ -202,7 +202,7 @@ static int dvd_read_name(char *name, char *serial, const char *device) {
   serial[14] = 0;
   fprintf(MSG_OUT, "\nlibdvdnav: DVD Title (Alternative): ");
   for(i=89; i < 128; i++ ) {
-    if((data[i] == 0)) break;
+    if(data[i] == 0) break;
     if((data[i] > 32) && (data[i] < 127)) {
       fprintf(MSG_OUT, "%c", data[i]);
     } else {
