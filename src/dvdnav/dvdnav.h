@@ -84,7 +84,7 @@ typedef int32_t dvdnav_status_t;
 dvdnav_status_t dvdnav_open(dvdnav_t **dest, const char *path);
 
 dvdnav_status_t dvdnav_dup(dvdnav_t **dest, dvdnav_t *src);
-dvdnav_status_t dvdnav_free_dup(dvdnav_t *this);
+dvdnav_status_t dvdnav_free_dup(dvdnav_t * _this);
 
 /*
  * Closes a dvdnav_t previously opened with dvdnav_open(), freeing any
