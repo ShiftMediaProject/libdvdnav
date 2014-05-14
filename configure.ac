@@ -80,6 +80,8 @@ case $host in
     ;;
   *mingw32* | *cygwin*)
     ;;
+  *android*)
+    ;;
   *)
     AC_CHECK_LIB(pthread, pthread_create,
         [THREAD_LIBS="-lpthread"],
