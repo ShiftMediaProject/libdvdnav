@@ -59,6 +59,13 @@ static inline int _private_gettimeofday( struct timeval *tv, void *tz )
 
 #endif /* WIN32 */
 
+#ifdef __ANDROID__
+# undef  lseek
+# define lseek lseek64
+# undef  off_t
+# define off_t off64_t
+#endif
+
 /* where should libdvdnav write its messages (stdout/stderr) */
 #define MSG_OUT stderr
 
