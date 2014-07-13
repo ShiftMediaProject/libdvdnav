@@ -3,6 +3,9 @@ libdvdnav (5.0.0)
  * rewrite of the build-system
  * clean code, simplify and remove warnings
  * removal of remap .MAP files unused feature
+ * Android support
+ * fix compilation in C++ applications
+ * remove the dvdnavmini library
 
 libdvdnav (4.2.1)
  * fixed failed assertion on menu-less DVDs
