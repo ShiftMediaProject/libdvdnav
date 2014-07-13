@@ -72,6 +72,9 @@ AC_C_BIGENDIAN
 AS_CASE([$host],
   [*mingw32* | *cygwin*], [AC_CHECK_FUNCS(gettimeofday)])
 
+AS_CASE([$host],
+  [*os2*], [LDFLAGS="$LDFLAGS -no-undefined"])
+
 dnl ---------------------------------------------
 dnl threads
 dnl ---------------------------------------------
