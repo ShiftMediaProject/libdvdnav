@@ -1,5 +1,3 @@
-AC_PREREQ([2.53])
-
 dnl --------------------------------------------------------------
 dnl Making releases: dvdnav_sub += 1; change DVDNAV_LT_* accordingly
 dnl
@@ -12,11 +10,18 @@ m4_define([dvdnav_pre],   [])
 
 AC_INIT([libdvdnav], [dvdnav_major.dvdnav_minor.dvdnav_sub[]dvdnav_pre])
 AC_CONFIG_SRCDIR([src/dvdnav.c])
+
+AC_PREREQ([2.53])
+AC_CANONICAL_HOST
+
+AM_INIT_AUTOMAKE([1.6 foreign dist-bzip2 no-dist-gzip subdir-objects])
+m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES([yes])])
 m4_include([m4/ax_check_compile_flag.m4])
-AM_INIT_AUTOMAKE([1.6 foreign])
+
+LT_INIT
 
 AC_CONFIG_HEADERS([config.h])
-AC_CANONICAL_HOST
+AC_CONFIG_MACRO_DIR([m4])
 
 DVDNAV_MAJOR="dvdnav_major"
 DVDNAV_MINOR="dvdnav_minor"
@@ -61,7 +66,6 @@ AC_SUBST(DVDNAV_LT_AGE)
 AC_SUBST(DVDNAV_LT_REVISION)
 
 AC_PROG_CC
-LT_INIT
 
 AC_SYS_LARGEFILE
 AC_C_BIGENDIAN
