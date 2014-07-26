@@ -115,6 +115,5 @@ dnl ---------------------------------------------
 AC_OUTPUT([
 Makefile
 misc/dvdnav.pc
-misc/dvdnavmini.pc
 misc/libdvdnav.spec
 ])
