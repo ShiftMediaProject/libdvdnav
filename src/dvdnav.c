@@ -287,7 +287,7 @@ int64_t dvdnav_convert_time(dvd_time_t *time) {
  * Most of the code in here is copied from xine's MPEG demuxer
  * so any bugs which are found in that should be corrected here also.
  */
-static int32_t dvdnav_decode_packet(dvdnav_t *this, uint8_t *p, dsi_t *nav_dsi, pci_t *nav_pci) {
+static int32_t dvdnav_decode_packet(uint8_t *p, dsi_t *nav_dsi, pci_t *nav_pci) {
   int32_t        bMpeg1 = 0;
   uint32_t       nHeaderLen;
   uint32_t       nPacketLen;
@@ -527,7 +527,7 @@ dvdnav_status_t dvdnav_get_next_cache_block(dvdnav_t *this, uint8_t **buf,
           return DVDNAV_STATUS_ERR;
         }
         /* Decode nav into pci and dsi. Then get next VOBU info. */
-        if(!dvdnav_decode_packet(this, *buf, &this->dsi, &this->pci)) {
+        if(!dvdnav_decode_packet(*buf, &this->dsi, &this->pci)) {
           printerr("Expected NAV packet but none found.");
           pthread_mutex_unlock(&this->vm_lock);
           return DVDNAV_STATUS_ERR;
@@ -822,7 +822,7 @@ dvdnav_status_t dvdnav_get_next_cache_block(dvdnav_t *this, uint8_t **buf,
       return DVDNAV_STATUS_ERR;
     }
     /* Decode nav into pci and dsi. Then get next VOBU info. */
-    if(!dvdnav_decode_packet(this, *buf, &this->dsi, &this->pci)) {
+    if(!dvdnav_decode_packet(*buf, &this->dsi, &this->pci)) {
       printerr("Expected NAV packet but none found.");
       pthread_mutex_unlock(&this->vm_lock);
       return DVDNAV_STATUS_ERR;
