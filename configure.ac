@@ -16,7 +16,6 @@ AC_CANONICAL_HOST
 
 AM_INIT_AUTOMAKE([1.6 foreign dist-bzip2 no-dist-gzip subdir-objects])
 m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES([yes])])
-m4_include([m4/ax_check_compile_flag.m4])
 
 LT_INIT
 
@@ -100,7 +99,7 @@ PKG_CHECK_MODULES([DVDREAD], [dvdread])
 dnl ---------------------------------------------
 dnl Check for bitfield compiler flag
 dnl ---------------------------------------------
-AX_CHECK_COMPILE_FLAG([-mno-ms-bitfields], [CFLAGS="-mno-ms-bitfields $CFLAGS"])
+CC_CHECK_CFLAG_APPEND([-mno-ms-bitfields])
 
 dnl ---------------------------------------------
 dnl Check for doxygen (dynamic documentation generator)
