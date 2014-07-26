@@ -101,6 +101,9 @@ dnl Check for bitfield compiler flag
 dnl ---------------------------------------------
 CC_CHECK_CFLAG_APPEND([-mno-ms-bitfields])
 
+dnl check for -Wall -Wextra support
+CC_CHECK_CFLAG_APPEND([-Wall -Wsign-compare -Wextra])
+
 dnl ---------------------------------------------
 dnl Check for doxygen (dynamic documentation generator)
 dnl ---------------------------------------------
