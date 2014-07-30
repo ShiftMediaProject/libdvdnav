@@ -162,9 +162,10 @@ dvdnav_status_t dvdnav_open(dvdnav_t** dest, const char *path) {
     return DVDNAV_STATUS_ERR;
   }
 
-  /* Set the path. FIXME: Is a deep copy 'right' */
-  strncpy(this->path, path, MAX_PATH_LEN - 1);
-  this->path[MAX_PATH_LEN - 1] = '\0';
+  /* Set the path. */
+  this->path = strdup(path);
+  if(!this->path)
+    return DVDNAV_STATUS_ERR;
 
   /* Pre-open and close a file so that the CSS-keys are cached. */
   this->file = DVDOpenFile(vm_get_dvd_reader(this->vm), 0, DVD_READ_MENU_VOBS);

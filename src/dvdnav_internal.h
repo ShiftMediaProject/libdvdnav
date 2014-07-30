@@ -72,13 +72,6 @@ static inline int _private_gettimeofday( struct timeval *tv, void *tz )
 /* Maximum length of an error string */
 #define MAX_ERR_LEN 255
 
-/* Use the POSIX PATH_MAX if available */
-#ifdef PATH_MAX
-#define MAX_PATH_LEN PATH_MAX
-#else
-#define MAX_PATH_LEN 255 /* Arbitrary */
-#endif
-
 #ifndef DVD_VIDEO_LB_LEN
 #define DVD_VIDEO_LB_LEN 2048
 #endif
@@ -190,7 +183,7 @@ typedef struct dvdnav_vobu_s {
 
 struct dvdnav_s {
   /* General data */
-  char        path[MAX_PATH_LEN]; /* Path to DVD device/dir */
+  char       *path;               /* Path to DVD device/dir */
   dvd_file_t *file;               /* Currently opened file */
 
   /* Position data */
