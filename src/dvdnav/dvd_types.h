@@ -26,6 +26,8 @@
 #ifndef LIBDVDNAV_DVD_TYPES_H
 #define LIBDVDNAV_DVD_TYPES_H
 
+#include <stdint.h>
+
 /*
  * DVD Menu ID
  * (see dvdnav_menu_call())
