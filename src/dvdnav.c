@@ -138,10 +138,9 @@ dvdnav_status_t dvdnav_open(dvdnav_t** dest, const char *path) {
   fprintf(MSG_OUT, "libdvdnav: Using dvdnav version %s\n", VERSION);
 
   (*dest) = NULL;
-  this = (dvdnav_t*)malloc(sizeof(dvdnav_t));
+  this = (dvdnav_t*)calloc(1, sizeof(dvdnav_t));
   if(!this)
     return DVDNAV_STATUS_ERR;
-  memset(this, 0, (sizeof(dvdnav_t) ) ); /* Make sure this structure is clean */
 
   pthread_mutex_init(&this->vm_lock, NULL);
   /* Initialise the error string */
