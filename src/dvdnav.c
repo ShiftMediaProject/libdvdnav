@@ -150,28 +150,25 @@ dvdnav_status_t dvdnav_open(dvdnav_t** dest, const char *path) {
   this->vm = vm_new_vm();
   if(!this->vm) {
     printerr("Error initialising the DVD VM.");
-    pthread_mutex_destroy(&this->vm_lock);
-    free(this);
-    return DVDNAV_STATUS_ERR;
+    goto fail;
   }
   if(!vm_reset(this->vm, path)) {
     printerr("Error starting the VM / opening the DVD device.");
-    pthread_mutex_destroy(&this->vm_lock);
-    vm_free_vm(this->vm);
-    free(this);
-    return DVDNAV_STATUS_ERR;
+    goto fail;
   }
 
   /* Set the path. */
   this->path = strdup(path);
   if(!this->path)
-    return DVDNAV_STATUS_ERR;
+    goto fail;
 
   /* Pre-open and close a file so that the CSS-keys are cached. */
   this->file = DVDOpenFile(vm_get_dvd_reader(this->vm), 0, DVD_READ_MENU_VOBS);
 
   /* Start the read-ahead cache. */
   this->cache = dvdnav_read_cache_new(this);
+  if(!this->cache)
+    goto fail;
 
   /* Seed the random numbers. So that the DVD VM Command rand()
    * gives a different start value each time a DVD is played. */
@@ -182,6 +179,12 @@ dvdnav_status_t dvdnav_open(dvdnav_t** dest, const char *path) {
 
   (*dest) = this;
   return DVDNAV_STATUS_OK;
+
+fail:
+  pthread_mutex_destroy(&this->vm_lock);
+  vm_free_vm(this->vm);
+  free(this);
+  return DVDNAV_STATUS_ERR;
 }
 
 dvdnav_status_t dvdnav_close(dvdnav_t *this) {
