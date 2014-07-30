@@ -100,23 +100,19 @@ read_cache_t *dvdnav_read_cache_new(dvdnav_t* dvd_self) {
   read_cache_t *self;
   int i;
 
-  self = (read_cache_t *)malloc(sizeof(read_cache_t));
+  self = (read_cache_t *)calloc(1, sizeof(read_cache_t));
 
   if(!self)
     return NULL;
 
-    self->current = 0;
-    self->freeing = 0;
-    self->dvd_self = dvd_self;
-    self->last_sector = 0;
-    self->read_ahead_size = READ_AHEAD_SIZE_MIN;
-    self->read_ahead_incr = 0;
-    pthread_mutex_init(&self->lock, NULL);
-    dvdnav_read_cache_clear(self);
-    for (i = 0; i < READ_CACHE_CHUNKS; i++) {
-      self->chunk[i].cache_buffer = NULL;
-      self->chunk[i].usage_count = 0;
-    }
+  self->dvd_self = dvd_self;
+  self->read_ahead_size = READ_AHEAD_SIZE_MIN;
+  pthread_mutex_init(&self->lock, NULL);
+  dvdnav_read_cache_clear(self);
+  for (i = 0; i < READ_CACHE_CHUNKS; i++) {
+    self->chunk[i].cache_buffer = NULL;
+    self->chunk[i].usage_count = 0;
+  }
 
   return self;
 }
