@@ -119,6 +119,8 @@ dvdnav_status_t dvdnav_free_dup(dvdnav_t *this) {
 
   pthread_mutex_destroy(&this->vm_lock);
 
+  free(this->path);
+
   /* We leave the final freeing of the entire structure to the cache,
    * because we don't know, if there are still buffers out in the wild,
    * that must return first. */
@@ -183,6 +185,7 @@ dvdnav_status_t dvdnav_open(dvdnav_t** dest, const char *path) {
 fail:
   pthread_mutex_destroy(&this->vm_lock);
   vm_free_vm(this->vm);
+  free(this->path);
   free(this);
   return DVDNAV_STATUS_ERR;
 }
@@ -208,6 +211,8 @@ dvdnav_status_t dvdnav_close(dvdnav_t *this) {
     vm_free_vm(this->vm);
 
   pthread_mutex_destroy(&this->vm_lock);
+
+  free(this->path);
 
   /* We leave the final freeing of the entire structure to the cache,
    * because we don't know, if there are still buffers out in the wild,
