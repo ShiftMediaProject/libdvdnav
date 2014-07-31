@@ -6,6 +6,7 @@ libdvdnav (5.0.0)
  * fix compilation in C++ applications
  * removal of remap .MAP files unused feature
  * remove the dvdnavmini library
+ * fix compilation on OS/2 and Hurd
 
 libdvdnav (4.2.1)
  * fixed failed assertion on menu-less DVDs
