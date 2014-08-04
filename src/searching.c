@@ -1287,12 +1287,12 @@ dvdnav_status_t dvdnav_jump_to_sector_by_time(dvdnav_t *this,
 
   /* jump to sector */
   sector_off = jump->sector - cell_data->bgn->sector;
+  result = vm_jump_cell_block(this->vm, cell_data->idx, sector_off);
   this->cur_cell_time = 0;
-  if (vm_jump_cell_block(this->vm, cell_data->idx, sector_off)) {
+  if (result) {
     pthread_mutex_lock(&this->vm_lock);
     this->vm->hop_channel += HOP_SEEK;
     pthread_mutex_unlock(&this->vm_lock);
-    result = DVDNAV_STATUS_OK;
   }
 
 exit:
