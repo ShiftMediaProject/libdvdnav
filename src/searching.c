@@ -1089,7 +1089,7 @@ static int32_t dvdnav_tmap_calc_time_for_tmap_entry(dvdnav_jump_args_t *args,
   }
 
   /* calc time of lo */
-  time_adj = (uint64_t)((args->tmap_interval * vobu_pct) / 1000);
+  time_adj = ((uint64_t)args->tmap_interval * vobu_pct) / 1000;
   *out_time = pos->time - time_adj;
   return 1;
 }
