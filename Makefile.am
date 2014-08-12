@@ -47,7 +47,7 @@ pkginclude_HEADERS = \
 	src/dvdnav/dvd_types.h
 
 pkgconfigdir = $(libdir)/pkgconfig
-pkgconfig_DATA = misc/dvdnav.pc misc/dvdnavmini.pc
+pkgconfig_DATA = misc/dvdnav.pc
 
 EXTRA_PROGRAMS = menus
 

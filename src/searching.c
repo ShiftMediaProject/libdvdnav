@@ -1052,7 +1052,7 @@ static int32_t dvdnav_tmap_calc_time_for_tmap_entry(dvdnav_jump_args_t *args,
             dvdnav_pos_data_t *lo, dvdnav_pos_data_t *hi,
             dvdnav_pos_data_t *pos, uint64_t *out_time) {
   int32_t result = 0;
-  uint32_t vobu_pct = 0;
+  int32_t vobu_pct = 0;
   uint64_t time_adj = 0;
 
   if (lo->sector == hi->sector) {
@@ -1095,8 +1095,8 @@ static int32_t dvdnav_tmap_calc_time_for_tmap_entry(dvdnav_jump_args_t *args,
 }
 
 /* Find the tmap entries on either side of a given sector */
-static int32_t dvdnav_tmap_get_entries_for_sector(dvdnav_t *this,
-            dvd_state_t *state, dvdnav_jump_args_t *args,
+static int32_t dvdnav_tmap_get_entries_for_sector(
+            dvdnav_jump_args_t *args,
             dvdnav_cell_data_t *cell_data, uint32_t find_sector,
             dvdnav_pos_data_t *lo, dvdnav_pos_data_t *hi) {
   int32_t result = 0;
@@ -1158,7 +1158,7 @@ static int32_t dvdnav_find_vobu_by_tmap(dvdnav_t *this, dvd_state_t *state,
   /* get tmap entries on either side of cell_bgn */
   cell_bgn_lo = &(dvdnav_pos_data_t){0};
   cell_bgn_hi = &(dvdnav_pos_data_t){0};
-  result = dvdnav_tmap_get_entries_for_sector(this, state, args, cell_data,
+  result = dvdnav_tmap_get_entries_for_sector(args, cell_data,
       cell_data->bgn->sector, cell_bgn_lo, cell_bgn_hi);
   if (!result) return 0;
 
@@ -1204,11 +1204,11 @@ static int32_t dvdnav_find_vobu_by_tmap(dvdnav_t *this, dvd_state_t *state,
 }
 
 /* Find the nearest vobu by using the cell boundaries */
-static int32_t dvdnav_find_vobu_by_cell_boundaries(dvdnav_t *this,
+static int32_t dvdnav_find_vobu_by_cell_boundaries(
             dvdnav_jump_args_t *args, dvdnav_cell_data_t *cell_data,
             dvdnav_pos_data_t *jump) {
-  uint64_t jump_offset = 0;
-  uint64_t cell_len = 0;
+  int64_t jump_offset = 0;
+  int64_t cell_len = 0;
   uint32_t jump_pct = 0;
   int32_t result = 0;
 
@@ -1279,7 +1279,7 @@ dvdnav_status_t dvdnav_jump_to_sector_by_time(dvdnav_t *this,
   /* find sector */
   result = dvdnav_find_vobu_by_tmap(this, state, args, cell_data, jump);
   if (!result) {/* bad tmap; interpolate over cell */
-    result = dvdnav_find_vobu_by_cell_boundaries(this, args, cell_data, jump);
+    result = dvdnav_find_vobu_by_cell_boundaries(args, cell_data, jump);
     if (!result) {
       goto exit;
     }

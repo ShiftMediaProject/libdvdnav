@@ -308,6 +308,8 @@ void vm_stop(vm_t *vm) {
 }
 
 static void vm_close(vm_t *vm) {
+  if(!vm)
+    return;
   if(vm->vmgi) {
     ifoClose(vm->vmgi);
     vm->vmgi=NULL;

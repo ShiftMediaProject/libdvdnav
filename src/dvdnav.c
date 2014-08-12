@@ -119,6 +119,8 @@ dvdnav_status_t dvdnav_free_dup(dvdnav_t *this) {
 
   pthread_mutex_destroy(&this->vm_lock);
 
+  free(this->path);
+
   /* We leave the final freeing of the entire structure to the cache,
    * because we don't know, if there are still buffers out in the wild,
    * that must return first. */
@@ -138,10 +140,9 @@ dvdnav_status_t dvdnav_open(dvdnav_t** dest, const char *path) {
   fprintf(MSG_OUT, "libdvdnav: Using dvdnav version %s\n", VERSION);
 
   (*dest) = NULL;
-  this = (dvdnav_t*)malloc(sizeof(dvdnav_t));
+  this = (dvdnav_t*)calloc(1, sizeof(dvdnav_t));
   if(!this)
     return DVDNAV_STATUS_ERR;
-  memset(this, 0, (sizeof(dvdnav_t) ) ); /* Make sure this structure is clean */
 
   pthread_mutex_init(&this->vm_lock, NULL);
   /* Initialise the error string */
@@ -151,27 +152,25 @@ dvdnav_status_t dvdnav_open(dvdnav_t** dest, const char *path) {
   this->vm = vm_new_vm();
   if(!this->vm) {
     printerr("Error initialising the DVD VM.");
-    pthread_mutex_destroy(&this->vm_lock);
-    free(this);
-    return DVDNAV_STATUS_ERR;
+    goto fail;
   }
   if(!vm_reset(this->vm, path)) {
     printerr("Error starting the VM / opening the DVD device.");
-    pthread_mutex_destroy(&this->vm_lock);
-    vm_free_vm(this->vm);
-    free(this);
-    return DVDNAV_STATUS_ERR;
+    goto fail;
   }
 
-  /* Set the path. FIXME: Is a deep copy 'right' */
-  strncpy(this->path, path, MAX_PATH_LEN - 1);
-  this->path[MAX_PATH_LEN - 1] = '\0';
+  /* Set the path. */
+  this->path = strdup(path);
+  if(!this->path)
+    goto fail;
 
   /* Pre-open and close a file so that the CSS-keys are cached. */
   this->file = DVDOpenFile(vm_get_dvd_reader(this->vm), 0, DVD_READ_MENU_VOBS);
 
   /* Start the read-ahead cache. */
   this->cache = dvdnav_read_cache_new(this);
+  if(!this->cache)
+    goto fail;
 
   /* Seed the random numbers. So that the DVD VM Command rand()
    * gives a different start value each time a DVD is played. */
@@ -182,6 +181,13 @@ dvdnav_status_t dvdnav_open(dvdnav_t** dest, const char *path) {
 
   (*dest) = this;
   return DVDNAV_STATUS_OK;
+
+fail:
+  pthread_mutex_destroy(&this->vm_lock);
+  vm_free_vm(this->vm);
+  free(this->path);
+  free(this);
+  return DVDNAV_STATUS_ERR;
 }
 
 dvdnav_status_t dvdnav_close(dvdnav_t *this) {
@@ -205,6 +211,8 @@ dvdnav_status_t dvdnav_close(dvdnav_t *this) {
     vm_free_vm(this->vm);
 
   pthread_mutex_destroy(&this->vm_lock);
+
+  free(this->path);
 
   /* We leave the final freeing of the entire structure to the cache,
    * because we don't know, if there are still buffers out in the wild,
@@ -287,7 +295,7 @@ int64_t dvdnav_convert_time(dvd_time_t *time) {
  * Most of the code in here is copied from xine's MPEG demuxer
  * so any bugs which are found in that should be corrected here also.
  */
-static int32_t dvdnav_decode_packet(dvdnav_t *this, uint8_t *p, dsi_t *nav_dsi, pci_t *nav_pci) {
+static int32_t dvdnav_decode_packet(uint8_t *p, dsi_t *nav_dsi, pci_t *nav_pci) {
   int32_t        bMpeg1 = 0;
   uint32_t       nHeaderLen;
   uint32_t       nPacketLen;
@@ -527,7 +535,7 @@ dvdnav_status_t dvdnav_get_next_cache_block(dvdnav_t *this, uint8_t **buf,
           return DVDNAV_STATUS_ERR;
         }
         /* Decode nav into pci and dsi. Then get next VOBU info. */
-        if(!dvdnav_decode_packet(this, *buf, &this->dsi, &this->pci)) {
+        if(!dvdnav_decode_packet(*buf, &this->dsi, &this->pci)) {
           printerr("Expected NAV packet but none found.");
           pthread_mutex_unlock(&this->vm_lock);
           return DVDNAV_STATUS_ERR;
@@ -822,7 +830,7 @@ dvdnav_status_t dvdnav_get_next_cache_block(dvdnav_t *this, uint8_t **buf,
       return DVDNAV_STATUS_ERR;
     }
     /* Decode nav into pci and dsi. Then get next VOBU info. */
-    if(!dvdnav_decode_packet(this, *buf, &this->dsi, &this->pci)) {
+    if(!dvdnav_decode_packet(*buf, &this->dsi, &this->pci)) {
       printerr("Expected NAV packet but none found.");
       pthread_mutex_unlock(&this->vm_lock);
       return DVDNAV_STATUS_ERR;
