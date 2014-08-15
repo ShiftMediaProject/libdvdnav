@@ -753,7 +753,6 @@ static vobu_admap_t* dvdnav_admap_get(dvdnav_t *this, dvd_state_t *state,
 /* Get a tmap, tmap_len and tmap_interval */
 static vts_tmap_t* dvdnav_tmap_get(dvdnav_t *this, dvd_state_t *state,
             int32_t *tmap_len, int32_t *tmap_interval) {
-  int32_t vts_idx = 0;
   int32_t domain;
   ifo_handle_t *ifo = NULL;
   vts_tmapt_t *tmapt = NULL;
@@ -762,7 +761,6 @@ static vts_tmap_t* dvdnav_tmap_get(dvdnav_t *this, dvd_state_t *state,
   vts_tmap_t *tmap = NULL;
   int32_t result = 0;
 
-  vts_idx = state->vtsN;
   domain = state->domain;
   switch(domain) {
   case DVD_DOMAIN_FirstPlay:
@@ -870,8 +868,10 @@ static int32_t dvdnav_admap_search(vobu_admap_t *admap, uint32_t admap_len,
     /* need to add 1 when prv_len == 3 (cur_len shoud go to 2, not 1) */
     if (prv_len % 2 == 1) ++cur_len;
     cur_idx = prv_pos + (cur_len * adj);
-    if       (cur_idx < 0)           cur_idx = 0;
-    else if  (cur_idx >= admap_len)  cur_idx = admap_len - 1;
+    if       (cur_idx < 0)
+      cur_idx = 0;
+    else if  (cur_idx >= (int32_t)admap_len)
+      cur_idx = admap_len - 1;
 
     cur_sector = admap->vobu_start_sectors[cur_idx];
     if      (find_sector <  cur_sector) adj = -1;
@@ -908,8 +908,10 @@ static int32_t dvdnav_tmap_search(vts_tmap_t *tmap, uint32_t tmap_len,
     /* need to add 1 when prv_len == 3 (cur_len shoud go to 2, not 1) */
     if (prv_len % 2 == 1) ++cur_len;
     cur_idx = prv_pos + (cur_len * adj);
-    if      (cur_idx < 0)         cur_idx = 0;
-    else if (cur_idx >= tmap_len) cur_idx = tmap_len - 1;
+    if      (cur_idx < 0)
+      cur_idx = 0;
+    else if (cur_idx >= (int32_t)tmap_len)
+      cur_idx = tmap_len - 1;
     cur_sector = 0;
     result = dvdnav_tmap_get_entry(tmap, tmap_len, cur_idx, &cur_sector);
     if (!result) return 0;
@@ -1039,7 +1041,7 @@ static int32_t dvdnav_admap_interpolate_vobu(dvdnav_jump_args_t *args,
   /* HACK: need to add +1, or else will land too soon (not sure why) */
   vobu_adj++;
   vobu_idx = bgn->vobu_idx + vobu_adj;
-  if (vobu_idx >= args->admap_len) {
+  if ((int32_t)vobu_idx >= args->admap_len) {
     fprintf(MSG_OUT, "admap_interpolate: vobu_idx >= admap_len");
     return 0;
   }
