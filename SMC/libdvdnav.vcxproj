@@ -90,7 +90,7 @@
     <None Include="libdvdnav.def" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{2016A4DB-B9BA-4521-BDA7-0EB3806E1FC8}</ProjectGuid>
+    <ProjectGuid>{D1EFB851-A9A8-4812-ABEE-EFBCB902657B}</ProjectGuid>
     <RootNamespace>libdvdnav</RootNamespace>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
