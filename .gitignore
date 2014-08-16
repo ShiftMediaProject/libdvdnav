@@ -34,3 +34,11 @@
 /src/vm/*.o
 /src/vm/.libs/
 /src/vm/.dirstamp
+
+*.obj
+*.log
+*.tlog
+*.pdb
+*.ildb
+*.suo
+*.sdf
