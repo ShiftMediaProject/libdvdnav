@@ -1,5 +1,7 @@
 libdvdnav (5.0.1)
-
+ * removed assert on unknown VM commands, fixing playback of some DVDs
+ * fixed a double free in dvdnav_free_dup
+ * fixed an integer overflow, a data race condition and return inconsistency
 
 libdvdnav (5.0.0)
  * Android support
