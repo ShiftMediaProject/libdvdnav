@@ -228,7 +228,7 @@ int64_t dvdnav_convert_time(dvd_time_t *time);
 #define printerrf(format, args...) \
     do { if (this) snprintf(this->err_str, MAX_ERR_LEN, format, ## args); } while (0)
 #else
-#ifdef _MSC_VER
+#if defined(_MSC_VER) && ( _MSC_VER < 1800 )
 #define printerrf(str) \
     do { if (this) snprintf(this->err_str, MAX_ERR_LEN, str); } while (0)
 #else
