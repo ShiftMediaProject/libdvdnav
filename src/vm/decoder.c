@@ -570,9 +570,8 @@ static int32_t eval_command(uint8_t *bytes, registers_t* registers, link_t *retu
       if(res)
         res = -1;
       break;
-    default: /* Unknown command */
-      fprintf(MSG_OUT, "libdvdnav: WARNING: Unknown Command=%x\n", vm_getbits(&command, 63, 3));
-      assert(0);
+    default: /* Unknown command type */
+      fprintf(MSG_OUT, "libdvdnav: WARNING: Unknown Command Type=%x\n", vm_getbits(&command, 63, 3));
   }
   /*  Check if there are bits not yet examined */
 

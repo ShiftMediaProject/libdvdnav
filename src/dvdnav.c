@@ -74,27 +74,40 @@ dvdnav_status_t dvdnav_dup(dvdnav_t **dest, dvdnav_t *src) {
 
   (*dest) = NULL;
   this = (dvdnav_t*)malloc(sizeof(dvdnav_t));
-  if(!this)
+  if (!this)
     return DVDNAV_STATUS_ERR;
 
   memcpy(this, src, sizeof(dvdnav_t));
   this->file = NULL;
+  this->vm = NULL;
+  this->path = NULL;
+  this->cache = NULL;
 
   pthread_mutex_init(&this->vm_lock, NULL);
 
   this->vm = vm_new_copy(src->vm);
-  if(!this->vm) {
-    printerr("Error initialising the DVD VM.");
-    pthread_mutex_destroy(&this->vm_lock);
-    free(this);
-    return DVDNAV_STATUS_ERR;
-  }
+  if (!this->vm)
+    goto fail;
+
+  this->path = strdup(src->path);
+  if (!this->path)
+    goto fail;
 
   /* Start the read-ahead cache. */
   this->cache = dvdnav_read_cache_new(this);
+  if (!this->cache)
+    goto fail;
 
   (*dest) = this;
   return DVDNAV_STATUS_OK;
+
+fail:
+    printerr("Error initialising the DVD VM.");
+    pthread_mutex_destroy(&this->vm_lock);
+    vm_free_vm(this->vm);
+    free(this->path);
+    free(this);
+    return DVDNAV_STATUS_ERR;
 }
 
 dvdnav_status_t dvdnav_free_dup(dvdnav_t *this) {

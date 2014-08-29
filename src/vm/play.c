@@ -48,7 +48,7 @@ link_t play_PGC(vm_t *vm) {
 
 #ifdef TRACE
   fprintf(MSG_OUT, "libdvdnav: play_PGC:");
-  if((vm->state).domain != FP_DOMAIN) {
+  if((vm->state).domain != DVD_DOMAIN_FirstPlay) {
     fprintf(MSG_OUT, " (vm->state).pgcN (%i)\n", get_PGCN(vm));
   } else {
     fprintf(MSG_OUT, " first_play_pgc\n");
@@ -88,7 +88,7 @@ link_t play_PGC_PG(vm_t *vm, int pgN) {
 
 #ifdef TRACE
   fprintf(MSG_OUT, "libdvdnav: play_PGC_PG:");
-  if((vm->state).domain != FP_DOMAIN) {
+  if((vm->state).domain != DVD_DOMAIN_FirstPlay) {
     fprintf(MSG_OUT, " (vm->state).pgcN (%i)\n", get_PGCN(vm));
   } else {
     fprintf(MSG_OUT, " first_play_pgc\n");

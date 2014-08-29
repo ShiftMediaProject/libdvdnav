@@ -74,7 +74,7 @@ static dvdnav_status_t dvdnav_scan_admap(dvdnav_t *this, int32_t domain, uint32_
   if(admap) {
     uint32_t address = 0;
     uint32_t vobu_start, next_vobu = 0;
-    int admap_entries = (admap->last_byte + 1 - VOBU_ADMAP_SIZE)/VOBU_ADMAP_SIZE;
+    uint32_t admap_entries = (admap->last_byte + 1 - VOBU_ADMAP_SIZE)/VOBU_ADMAP_SIZE;
 
     /* Search through ADMAP for best sector */
     vobu_start = SRI_END_OF_CELL;
@@ -753,7 +753,6 @@ static vobu_admap_t* dvdnav_admap_get(dvdnav_t *this, dvd_state_t *state,
 /* Get a tmap, tmap_len and tmap_interval */
 static vts_tmap_t* dvdnav_tmap_get(dvdnav_t *this, dvd_state_t *state,
             int32_t *tmap_len, int32_t *tmap_interval) {
-  int32_t vts_idx = 0;
   int32_t domain;
   ifo_handle_t *ifo = NULL;
   vts_tmapt_t *tmapt = NULL;
@@ -762,7 +761,6 @@ static vts_tmap_t* dvdnav_tmap_get(dvdnav_t *this, dvd_state_t *state,
   vts_tmap_t *tmap = NULL;
   int32_t result = 0;
 
-  vts_idx = state->vtsN;
   domain = state->domain;
   switch(domain) {
   case DVD_DOMAIN_FirstPlay:
@@ -870,8 +868,10 @@ static int32_t dvdnav_admap_search(vobu_admap_t *admap, uint32_t admap_len,
     /* need to add 1 when prv_len == 3 (cur_len shoud go to 2, not 1) */
     if (prv_len % 2 == 1) ++cur_len;
     cur_idx = prv_pos + (cur_len * adj);
-    if       (cur_idx < 0)           cur_idx = 0;
-    else if  (cur_idx >= admap_len)  cur_idx = admap_len - 1;
+    if       (cur_idx < 0)
+      cur_idx = 0;
+    else if  (cur_idx >= (int32_t)admap_len)
+      cur_idx = admap_len - 1;
 
     cur_sector = admap->vobu_start_sectors[cur_idx];
     if      (find_sector <  cur_sector) adj = -1;
@@ -908,8 +908,10 @@ static int32_t dvdnav_tmap_search(vts_tmap_t *tmap, uint32_t tmap_len,
     /* need to add 1 when prv_len == 3 (cur_len shoud go to 2, not 1) */
     if (prv_len % 2 == 1) ++cur_len;
     cur_idx = prv_pos + (cur_len * adj);
-    if      (cur_idx < 0)         cur_idx = 0;
-    else if (cur_idx >= tmap_len) cur_idx = tmap_len - 1;
+    if      (cur_idx < 0)
+      cur_idx = 0;
+    else if (cur_idx >= (int32_t)tmap_len)
+      cur_idx = tmap_len - 1;
     cur_sector = 0;
     result = dvdnav_tmap_get_entry(tmap, tmap_len, cur_idx, &cur_sector);
     if (!result) return 0;
@@ -1039,7 +1041,7 @@ static int32_t dvdnav_admap_interpolate_vobu(dvdnav_jump_args_t *args,
   /* HACK: need to add +1, or else will land too soon (not sure why) */
   vobu_adj++;
   vobu_idx = bgn->vobu_idx + vobu_adj;
-  if (vobu_idx >= args->admap_len) {
+  if ((int32_t)vobu_idx >= args->admap_len) {
     fprintf(MSG_OUT, "admap_interpolate: vobu_idx >= admap_len");
     return 0;
   }
@@ -1089,7 +1091,7 @@ static int32_t dvdnav_tmap_calc_time_for_tmap_entry(dvdnav_jump_args_t *args,
   }
 
   /* calc time of lo */
-  time_adj = (uint64_t)((args->tmap_interval * vobu_pct) / 1000);
+  time_adj = ((uint64_t)args->tmap_interval * vobu_pct) / 1000;
   *out_time = pos->time - time_adj;
   return 1;
 }
@@ -1287,13 +1289,13 @@ dvdnav_status_t dvdnav_jump_to_sector_by_time(dvdnav_t *this,
 
   /* jump to sector */
   sector_off = jump->sector - cell_data->bgn->sector;
+  result = vm_jump_cell_block(this->vm, cell_data->idx, sector_off);
+  pthread_mutex_lock(&this->vm_lock);
   this->cur_cell_time = 0;
-  if (vm_jump_cell_block(this->vm, cell_data->idx, sector_off)) {
-    pthread_mutex_lock(&this->vm_lock);
+  if (result) { /* vm_jump_cell_block was sucessful */
     this->vm->hop_channel += HOP_SEEK;
-    pthread_mutex_unlock(&this->vm_lock);
-    result = DVDNAV_STATUS_OK;
   }
+  pthread_mutex_unlock(&this->vm_lock);
 
 exit:
   return result;
