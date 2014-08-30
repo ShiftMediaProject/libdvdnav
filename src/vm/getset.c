@@ -242,7 +242,10 @@ int get_ID(vm_t *vm, int id) {
 
   /* Relies on state to get the correct pgcit. */
   pgcit = get_PGCIT(vm);
-  assert(pgcit != NULL);
+  if(pgcit == NULL) {
+    fprintf(MSG_OUT, "libdvdnav: PGCIT null!\n");
+    return 0;
+  }
 #ifdef TRACE
   fprintf(MSG_OUT, "libdvdnav: ** Searching for menu (0x%x) entry PGC\n", id);
 #endif
