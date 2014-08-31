@@ -563,10 +563,10 @@ dvdnav_status_t dvdnav_get_position(dvdnav_t *this, uint32_t *pos,
     *len += cell->last_sector - cell->first_sector + 1;
   }
 
+  pthread_mutex_unlock(&this->vm_lock);
+
   if((signed)*pos == -1)
     return DVDNAV_STATUS_ERR;
-
-  pthread_mutex_unlock(&this->vm_lock);
 
   return DVDNAV_STATUS_OK;
 }
