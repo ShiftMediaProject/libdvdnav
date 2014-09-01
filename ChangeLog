@@ -1,3 +1,6 @@
+libdvdnav (5.0.2)
+ * fixed 2 wrong asserts (LP #1236939, #570790)
+
 libdvdnav (5.0.1)
  * removed assert on unknown VM commands, fixing playback of some DVDs
  * fixed a double free in dvdnav_free_dup
