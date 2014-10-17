@@ -55,6 +55,8 @@ typedef struct dvdnav_s dvdnav_t;
 /* Status as reported by most of libdvdnav's functions */
 typedef int32_t dvdnav_status_t;
 
+typedef dvd_reader_stream_cb dvdnav_stream_cb;
+
 /*
  * Unless otherwise stated, all functions return DVDNAV_STATUS_OK if
  * they succeeded, otherwise DVDNAV_STATUS_ERR is returned and the error may
@@ -73,15 +75,19 @@ typedef int32_t dvdnav_status_t;
  */
 
 /*
- * Attempts to open the DVD drive at the specified path and pre-cache
- * the CSS-keys. libdvdread is used to access the DVD, so any source
- * supported by libdvdread can be given with "path". Currently,
- * libdvdread can access: DVD drives, DVD image files, DVD file-by-file
- * copies.
+ * Attempts to open the DVD drive at the specified path or using external
+ * seek/read functions (dvdnav_open_stream) and pre-cache the CSS-keys.
+ * libdvdread is used to access the DVD, so any source supported by libdvdread
+ * can be given with "path" or "stream_cb".  Currently, using dvdnav_open,
+ * libdvdread can access : DVD drives, DVD image files, DVD file-by-file
+ * copies. Using dvdnav_open_stream, libdvdread can access any kind of DVD
+ * storage via custom implementation of seek/read functions.
  *
  * The resulting dvdnav_t handle will be written to *dest.
  */
 dvdnav_status_t dvdnav_open(dvdnav_t **dest, const char *path);
+dvdnav_status_t
+dvdnav_open_stream(dvdnav_t **dest, void *stream, dvdnav_stream_cb *stream_cb);
 
 dvdnav_status_t dvdnav_dup(dvdnav_t **dest, dvdnav_t *src);
 dvdnav_status_t dvdnav_free_dup(dvdnav_t * _this);

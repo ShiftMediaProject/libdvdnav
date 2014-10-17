@@ -145,7 +145,9 @@ dvdnav_status_t dvdnav_free_dup(dvdnav_t *this) {
   return DVDNAV_STATUS_OK;
 }
 
-dvdnav_status_t dvdnav_open(dvdnav_t** dest, const char *path) {
+static dvdnav_status_t dvdnav_open_common(dvdnav_t** dest, const char *path,
+                                          void *stream,
+                                          dvdnav_stream_cb *stream_cb) {
   dvdnav_t *this;
   struct timeval time;
 
@@ -167,15 +169,18 @@ dvdnav_status_t dvdnav_open(dvdnav_t** dest, const char *path) {
     printerr("Error initialising the DVD VM.");
     goto fail;
   }
-  if(!vm_reset(this->vm, path)) {
+  if(!vm_reset(this->vm, path, stream, stream_cb)) {
     printerr("Error starting the VM / opening the DVD device.");
     goto fail;
   }
 
   /* Set the path. */
-  this->path = strdup(path);
-  if(!this->path)
-    goto fail;
+  if(path != NULL)
+  {
+    this->path = strdup(path);
+    if(!this->path)
+      goto fail;
+  }
 
   /* Pre-open and close a file so that the CSS-keys are cached. */
   this->file = DVDOpenFile(vm_get_dvd_reader(this->vm), 0, DVD_READ_MENU_VOBS);
@@ -201,6 +206,15 @@ fail:
   free(this->path);
   free(this);
   return DVDNAV_STATUS_ERR;
+}
+
+dvdnav_status_t dvdnav_open(dvdnav_t** dest, const char *path) {
+  return dvdnav_open_common(dest, path, NULL, NULL);
+}
+
+dvdnav_status_t dvdnav_open_stream(dvdnav_t** dest,
+                                   void *stream, dvdnav_stream_cb *stream_cb) {
+  return dvdnav_open_common(dest, NULL, stream, stream_cb);
 }
 
 dvdnav_status_t dvdnav_close(dvdnav_t *this) {
@@ -250,7 +264,7 @@ dvdnav_status_t dvdnav_reset(dvdnav_t *this) {
 #ifdef LOG_DEBUG
   fprintf(MSG_OUT, "libdvdnav: reseting vm\n");
 #endif
-  if(!vm_reset(this->vm, NULL)) {
+  if(!vm_reset(this->vm, NULL, NULL, NULL)) {
     printerr("Error restarting the VM.");
     pthread_mutex_unlock(&this->vm_lock);
     return DVDNAV_STATUS_ERR;
