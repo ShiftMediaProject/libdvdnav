@@ -587,6 +587,11 @@ dvdnav_status_t dvdnav_get_position_in_title(dvdnav_t *this,
     return DVDNAV_STATUS_ERR;
   }
 
+  if (state->pgc->program_map == NULL) {
+    printerr("Program map missing.");
+    return DVDNAV_STATUS_ERR;
+  }
+
   /* Get current sector */
   cur_sector = this->vobu.vobu_start + this->vobu.blockN;
 
