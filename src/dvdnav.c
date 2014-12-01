@@ -688,7 +688,7 @@ dvdnav_status_t dvdnav_get_next_cache_block(dvdnav_t *this, uint8_t **buf,
     cell_event->cellN = state->cellN;
     cell_event->pgN   = state->pgN;
     cell_event->cell_length =
-      dvdnav_convert_time(&state->pgc->cell_playback[state->cellN-1].playback_time);
+        (state->pgc->cell_playback[state->cellN - 1].last_sector + 1);
 
     cell_event->pg_length = 0;
     /* Find start cell of program. */
@@ -700,18 +700,19 @@ dvdnav_status_t dvdnav_get_next_cache_block(dvdnav_t *this, uint8_t **buf,
       last_cell_nr = state->pgc->nr_of_cells;
     for (i = first_cell_nr; i <= last_cell_nr; i++)
       cell_event->pg_length +=
-        dvdnav_convert_time(&state->pgc->cell_playback[i - 1].playback_time);
+        (state->pgc->cell_playback[i - 1].last_sector + 1);
+
     cell_event->pgc_length = dvdnav_convert_time(&state->pgc->playback_time);
 
     cell_event->cell_start = 0;
     for (i = 1; i < state->cellN; i++)
       cell_event->cell_start +=
-        dvdnav_convert_time(&state->pgc->cell_playback[i - 1].playback_time);
+          (state->pgc->cell_playback[i - 1].last_sector + 1);
 
     cell_event->pg_start = 0;
     for (i = 1; i < state->pgc->program_map[state->pgN-1]; i++)
       cell_event->pg_start +=
-        dvdnav_convert_time(&state->pgc->cell_playback[i - 1].playback_time);
+        (state->pgc->cell_playback[i - 1].last_sector + 1);
 
     this->position_current.cell         = this->position_next.cell;
     this->position_current.cell_restart = this->position_next.cell_restart;
