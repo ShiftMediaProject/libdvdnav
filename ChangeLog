@@ -1,5 +1,6 @@
 libdvdnav (5.0.2)
  * fixed 2 wrong asserts (LP #1236939, #570790)
+ * fixed 2 crashes (in dvdnav_get_position and dvdnav_get_position_in_title)
 
 libdvdnav (5.0.1)
  * removed assert on unknown VM commands, fixing playback of some DVDs
