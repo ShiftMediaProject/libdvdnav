@@ -563,9 +563,10 @@ dvdnav_status_t dvdnav_get_position(dvdnav_t *this, uint32_t *pos,
     *len += cell->last_sector - cell->first_sector + 1;
   }
 
-  assert((signed)*pos != -1);
-
   pthread_mutex_unlock(&this->vm_lock);
+
+  if((signed)*pos == -1)
+    return DVDNAV_STATUS_ERR;
 
   return DVDNAV_STATUS_OK;
 }
@@ -583,6 +584,11 @@ dvdnav_status_t dvdnav_get_position_in_title(dvdnav_t *this,
   state = &(this->vm->state);
   if(!state->pgc) {
     printerr("No current PGC.");
+    return DVDNAV_STATUS_ERR;
+  }
+
+  if (state->pgc->program_map == NULL) {
+    printerr("Program map missing.");
     return DVDNAV_STATUS_ERR;
   }
 

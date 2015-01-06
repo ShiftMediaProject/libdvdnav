@@ -139,11 +139,11 @@ typedef struct {
 typedef struct {
   int     cellN;       /* the new cell number */
   int     pgN;         /* the current program number */
-  int64_t cell_length; /* the length of the current cell in PTS ticks */
-  int64_t pg_length;   /* the length of the current program in PTS ticks */
+  int64_t cell_length; /* the length of the current cell in sectors */
+  int64_t pg_length;   /* the length of the current program in sectors */
   int64_t pgc_length;  /* the length of the current program chain in PTS ticks */
-  int64_t cell_start;  /* the start time of the current cell relatively to the PGC in PTS ticks */
-  int64_t pg_start;    /* the start time of the current PG relatively to the PGC in PTS ticks */
+  int64_t cell_start;  /* the start offset of the current cell relatively to the PGC in sectors */
+  int64_t pg_start;    /* the start offset of the current PG relatively to the PGC in sectors */
 } dvdnav_cell_change_event_t;
 
 
