@@ -402,6 +402,9 @@ int vm_reset(vm_t *vm, const char *dvdroot) {
       /* return 0; Not really used for now.. */
     }
     /* ifoRead_TXTDT_MGI(vmgi); Not implemented yet */
+    if(dvd_read_name(vm->dvd_name, vm->dvd_serial, dvdroot) != 1) {
+      fprintf(MSG_OUT, "libdvdnav: vm: dvd_read_name failed\n");
+    }
   }
   if (vm->vmgi) {
     int i, mask;
