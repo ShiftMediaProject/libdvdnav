@@ -1,5 +1,6 @@
 libdvdnav (5.0.3)
  * added dvdnav_open_stream to read from external read/seek callbacks
+ * fixed reading DVD label regression
 
 libdvdnav (5.0.2)
  * fixed 2 wrong asserts (LP #1236939, #570790)
