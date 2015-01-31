@@ -5,7 +5,7 @@ dnl These are defined in m4 so they can be passed to AC_INIT
 dnl --------------------------------------------------------------
 m4_define([dvdnav_major], [5])
 m4_define([dvdnav_minor], [0])
-m4_define([dvdnav_sub],   [2])
+m4_define([dvdnav_sub],   [3])
 m4_define([dvdnav_pre],   [])
 
 AC_INIT([libdvdnav], [dvdnav_major.dvdnav_minor.dvdnav_sub[]dvdnav_pre])
@@ -56,9 +56,9 @@ dnl    are platform dependent
 dnl  * in Linux, the library will be named
 dnl    libname.so.(DVDNAV_LT_CURRENT - DVDNAV_LT_AGE).DVDNAV_LT_AGE.DVDNAV_LT_REVISION
 
-DVDNAV_LT_CURRENT=5
-DVDNAV_LT_AGE=1
-DVDNAV_LT_REVISION=2
+DVDNAV_LT_CURRENT=6
+DVDNAV_LT_AGE=2
+DVDNAV_LT_REVISION=0
 
 AC_SUBST(DVDNAV_LT_CURRENT)
 AC_SUBST(DVDNAV_LT_AGE)
@@ -97,7 +97,7 @@ esac
 AC_SUBST(THREAD_LIBS)
 AC_SUBST(THREAD_CFLAGS)
 
-PKG_CHECK_MODULES([DVDREAD], [dvdread])
+PKG_CHECK_MODULES([DVDREAD], [dvdread >= 5.0.2])
 
 dnl ---------------------------------------------
 dnl Check for bitfield compiler flag
