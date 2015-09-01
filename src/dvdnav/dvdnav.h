@@ -26,6 +26,7 @@
 #ifndef LIBDVDNAV_DVDNAV_H
 #define LIBDVDNAV_DVDNAV_H
 
+#define DVDNAV_VERSION 50400
 
 #ifdef __cplusplus
 extern "C" {
