@@ -42,7 +42,7 @@
 
 #ifdef BUTTON_TESTING
 
-#include "nav_print.h"
+#include <dvdread/nav_print.h>
 
 static void print_time(dvd_time_t *dtime) {
   const char *rate;
