@@ -361,9 +361,9 @@
       <AdditionalLibraryDirectories>$(OutDir)\lib\x86\;$(ProjectDir)\..\..\prebuilt\lib\x86\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Lib>
     <PostBuildEvent>
-      <Command>mkdir $(OutDir)\include
-mkdir $(OutDir)\include\dvdnav
-copy ..\src\dvdnav\*.h $(OutDir)\include\dvdnav
+      <Command>mkdir "$(OutDir)"\include
+mkdir "$(OutDir)"\include\dvdnav
+copy ..\src\dvdnav\*.h "$(OutDir)"\include\dvdnav
 mkdir $(OutDir)\licenses
 copy ..\COPYING $(OutDir)\licenses\libdvdnav.txt</Command>
     </PostBuildEvent>
@@ -371,8 +371,8 @@ copy ..\COPYING $(OutDir)\licenses\libdvdnav.txt</Command>
       <Command>if exist ..\config.h (
 del ..\config.h
 )
-if exist $(OutDir)\include\dvdnav (
-rd /s /q $(OutDir)\include\dvdnav
+if exist "$(OutDir)"\include\dvdnav (
+rd /s /q "$(OutDir)"\include\dvdnav
 cd ../
 cd $(ProjectDir)
 )</Command>
@@ -382,8 +382,8 @@ cd $(ProjectDir)
     </CustomBuildStep>
     <CustomBuildStep>
       <Outputs>force_clean</Outputs>
-      <Command>if exist $(OutDir)\include\dvdnav (
-rmdir /s /q $(OutDir)\include\dvdnav
+      <Command>if exist "$(OutDir)"\include\dvdnav (
+rmdir /s /q "$(OutDir)"\include\dvdnav
 )
 if exist $(OutDir)\licenses\libdvdnav.txt (
 del /f /q $(OutDir)\licenses\libdvdnav.txt
@@ -413,9 +413,9 @@ del /f /q $(OutDir)\licenses\libdvdnav.txt
       <AdditionalLibraryDirectories>$(OutDir)\lib\x64\;$(ProjectDir)\..\..\prebuilt\lib\x64\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Lib>
     <PostBuildEvent>
-      <Command>mkdir $(OutDir)\include
-mkdir $(OutDir)\include\dvdnav
-copy ..\src\dvdnav\*.h $(OutDir)\include\dvdnav
+      <Command>mkdir "$(OutDir)"\include
+mkdir "$(OutDir)"\include\dvdnav
+copy ..\src\dvdnav\*.h "$(OutDir)"\include\dvdnav
 mkdir $(OutDir)\licenses
 copy ..\COPYING $(OutDir)\licenses\libdvdnav.txt</Command>
     </PostBuildEvent>
@@ -423,8 +423,8 @@ copy ..\COPYING $(OutDir)\licenses\libdvdnav.txt</Command>
       <Command>if exist ..\config.h (
 del ..\config.h
 )
-if exist $(OutDir)\include\dvdnav (
-rd /s /q $(OutDir)\include\dvdnav
+if exist "$(OutDir)"\include\dvdnav (
+rd /s /q "$(OutDir)"\include\dvdnav
 cd ../
 cd $(ProjectDir)
 )</Command>
@@ -434,8 +434,8 @@ cd $(ProjectDir)
     </CustomBuildStep>
     <CustomBuildStep>
       <Outputs>force_clean</Outputs>
-      <Command>if exist $(OutDir)\include\dvdnav (
-rmdir /s /q $(OutDir)\include\dvdnav
+      <Command>if exist "$(OutDir)"\include\dvdnav (
+rmdir /s /q "$(OutDir)"\include\dvdnav
 )
 if exist $(OutDir)\licenses\libdvdnav.txt (
 del /f /q $(OutDir)\licenses\libdvdnav.txt
@@ -469,9 +469,9 @@ del /f /q $(OutDir)\licenses\libdvdnav.txt
       <MinimumRequiredVersion>5.1</MinimumRequiredVersion>
     </Link>
     <PostBuildEvent>
-      <Command>mkdir $(OutDir)\include
-mkdir $(OutDir)\include\dvdnav
-copy ..\src\dvdnav\*.h $(OutDir)\include\dvdnav
+      <Command>mkdir "$(OutDir)"\include
+mkdir "$(OutDir)"\include\dvdnav
+copy ..\src\dvdnav\*.h "$(OutDir)"\include\dvdnav
 mkdir $(OutDir)\licenses
 copy ..\COPYING $(OutDir)\licenses\libdvdnav.txt</Command>
     </PostBuildEvent>
@@ -479,8 +479,8 @@ copy ..\COPYING $(OutDir)\licenses\libdvdnav.txt</Command>
       <Command>if exist ..\config.h (
 del ..\config.h
 )
-if exist $(OutDir)\include\dvdnav (
-rd /s /q $(OutDir)\include\dvdnav
+if exist "$(OutDir)"\include\dvdnav (
+rd /s /q "$(OutDir)"\include\dvdnav
 cd ../
 cd $(ProjectDir)
 )</Command>
@@ -490,8 +490,8 @@ cd $(ProjectDir)
     </CustomBuildStep>
     <CustomBuildStep>
       <Outputs>force_clean</Outputs>
-      <Command>if exist $(OutDir)\include\dvdnav (
-rmdir /s /q $(OutDir)\include\dvdnav
+      <Command>if exist "$(OutDir)"\include\dvdnav (
+rmdir /s /q "$(OutDir)"\include\dvdnav
 )
 if exist $(OutDir)\licenses\libdvdnav.txt (
 del /f /q $(OutDir)\licenses\libdvdnav.txt
@@ -525,9 +525,9 @@ del /f /q $(OutDir)\licenses\libdvdnav.txt
       <MinimumRequiredVersion>5.1</MinimumRequiredVersion>
     </Link>
     <PostBuildEvent>
-      <Command>mkdir $(OutDir)\include
-mkdir $(OutDir)\include\dvdnav
-copy ..\src\dvdnav\*.h $(OutDir)\include\dvdnav
+      <Command>mkdir "$(OutDir)"\include
+mkdir "$(OutDir)"\include\dvdnav
+copy ..\src\dvdnav\*.h "$(OutDir)"\include\dvdnav
 mkdir $(OutDir)\licenses
 copy ..\COPYING $(OutDir)\licenses\libdvdnav.txt</Command>
     </PostBuildEvent>
@@ -535,8 +535,8 @@ copy ..\COPYING $(OutDir)\licenses\libdvdnav.txt</Command>
       <Command>if exist ..\config.h (
 del ..\config.h
 )
-if exist $(OutDir)\include\dvdnav (
-rd /s /q $(OutDir)\include\dvdnav
+if exist "$(OutDir)"\include\dvdnav (
+rd /s /q "$(OutDir)"\include\dvdnav
 cd ../
 cd $(ProjectDir)
 )</Command>
@@ -546,8 +546,8 @@ cd $(ProjectDir)
     </CustomBuildStep>
     <CustomBuildStep>
       <Outputs>force_clean</Outputs>
-      <Command>if exist $(OutDir)\include\dvdnav (
-rmdir /s /q $(OutDir)\include\dvdnav
+      <Command>if exist "$(OutDir)"\include\dvdnav (
+rmdir /s /q "$(OutDir)"\include\dvdnav
 )
 if exist $(OutDir)\licenses\libdvdnav.txt (
 del /f /q $(OutDir)\licenses\libdvdnav.txt
@@ -579,9 +579,9 @@ del /f /q $(OutDir)\licenses\libdvdnav.txt
       <MinimumRequiredVersion>6.0</MinimumRequiredVersion>
     </Link>
     <PostBuildEvent>
-      <Command>mkdir $(OutDir)\include
-mkdir $(OutDir)\include\dvdnav
-copy ..\src\dvdnav\*.h $(OutDir)\include\dvdnav
+      <Command>mkdir "$(OutDir)"\include
+mkdir "$(OutDir)"\include\dvdnav
+copy ..\src\dvdnav\*.h "$(OutDir)"\include\dvdnav
 mkdir $(OutDir)\licenses
 copy ..\COPYING $(OutDir)\licenses\libdvdnav.txt</Command>
     </PostBuildEvent>
@@ -589,8 +589,8 @@ copy ..\COPYING $(OutDir)\licenses\libdvdnav.txt</Command>
       <Command>if exist ..\config.h (
 del ..\config.h
 )
-if exist $(OutDir)\include\dvdnav (
-rd /s /q $(OutDir)\include\dvdnav
+if exist "$(OutDir)"\include\dvdnav (
+rd /s /q "$(OutDir)"\include\dvdnav
 cd ../
 cd $(ProjectDir)
 )</Command>
@@ -600,8 +600,8 @@ cd $(ProjectDir)
     </CustomBuildStep>
     <CustomBuildStep>
       <Outputs>force_clean</Outputs>
-      <Command>if exist $(OutDir)\include\dvdnav (
-rmdir /s /q $(OutDir)\include\dvdnav
+      <Command>if exist "$(OutDir)"\include\dvdnav (
+rmdir /s /q "$(OutDir)"\include\dvdnav
 )
 if exist $(OutDir)\licenses\libdvdnav.txt (
 del /f /q $(OutDir)\licenses\libdvdnav.txt
@@ -633,9 +633,9 @@ del /f /q $(OutDir)\licenses\libdvdnav.txt
       <MinimumRequiredVersion>6.0</MinimumRequiredVersion>
     </Link>
     <PostBuildEvent>
-      <Command>mkdir $(OutDir)\include
-mkdir $(OutDir)\include\dvdnav
-copy ..\src\dvdnav\*.h $(OutDir)\include\dvdnav
+      <Command>mkdir "$(OutDir)"\include
+mkdir "$(OutDir)"\include\dvdnav
+copy ..\src\dvdnav\*.h "$(OutDir)"\include\dvdnav
 mkdir $(OutDir)\licenses
 copy ..\COPYING $(OutDir)\licenses\libdvdnav.txt</Command>
     </PostBuildEvent>
@@ -643,8 +643,8 @@ copy ..\COPYING $(OutDir)\licenses\libdvdnav.txt</Command>
       <Command>if exist ..\config.h (
 del ..\config.h
 )
-if exist $(OutDir)\include\dvdnav (
-rd /s /q $(OutDir)\include\dvdnav
+if exist "$(OutDir)"\include\dvdnav (
+rd /s /q "$(OutDir)"\include\dvdnav
 cd ../
 cd $(ProjectDir)
 )</Command>
@@ -654,8 +654,8 @@ cd $(ProjectDir)
     </CustomBuildStep>
     <CustomBuildStep>
       <Outputs>force_clean</Outputs>
-      <Command>if exist $(OutDir)\include\dvdnav (
-rmdir /s /q $(OutDir)\include\dvdnav
+      <Command>if exist "$(OutDir)"\include\dvdnav (
+rmdir /s /q "$(OutDir)"\include\dvdnav
 )
 if exist $(OutDir)\licenses\libdvdnav.txt (
 del /f /q $(OutDir)\licenses\libdvdnav.txt
@@ -694,9 +694,9 @@ del /f /q $(OutDir)\licenses\libdvdnav.txt
       <AdditionalLibraryDirectories>$(OutDir)\lib\x86\;$(ProjectDir)\..\..\prebuilt\lib\x86\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Lib>
     <PostBuildEvent>
-      <Command>mkdir $(OutDir)\include
-mkdir $(OutDir)\include\dvdnav
-copy ..\src\dvdnav\*.h $(OutDir)\include\dvdnav
+      <Command>mkdir "$(OutDir)"\include
+mkdir "$(OutDir)"\include\dvdnav
+copy ..\src\dvdnav\*.h "$(OutDir)"\include\dvdnav
 mkdir $(OutDir)\licenses
 copy ..\COPYING $(OutDir)\licenses\libdvdnav.txt</Command>
     </PostBuildEvent>
@@ -704,8 +704,8 @@ copy ..\COPYING $(OutDir)\licenses\libdvdnav.txt</Command>
       <Command>if exist ..\config.h (
 del ..\config.h
 )
-if exist $(OutDir)\include\dvdnav (
-rd /s /q $(OutDir)\include\dvdnav
+if exist "$(OutDir)"\include\dvdnav (
+rd /s /q "$(OutDir)"\include\dvdnav
 cd ../
 cd $(ProjectDir)
 )</Command>
@@ -715,8 +715,8 @@ cd $(ProjectDir)
     </CustomBuildStep>
     <CustomBuildStep>
       <Outputs>force_clean</Outputs>
-      <Command>if exist $(OutDir)\include\dvdnav (
-rmdir /s /q $(OutDir)\include\dvdnav
+      <Command>if exist "$(OutDir)"\include\dvdnav (
+rmdir /s /q "$(OutDir)"\include\dvdnav
 )
 if exist $(OutDir)\licenses\libdvdnav.txt (
 del /f /q $(OutDir)\licenses\libdvdnav.txt
@@ -755,9 +755,9 @@ del /f /q $(OutDir)\licenses\libdvdnav.txt
       <AdditionalLibraryDirectories>$(OutDir)\lib\x86\;$(ProjectDir)\..\..\prebuilt\lib\x86\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Lib>
     <PostBuildEvent>
-      <Command>mkdir $(OutDir)\include
-mkdir $(OutDir)\include\dvdnav
-copy ..\src\dvdnav\*.h $(OutDir)\include\dvdnav
+      <Command>mkdir "$(OutDir)"\include
+mkdir "$(OutDir)"\include\dvdnav
+copy ..\src\dvdnav\*.h "$(OutDir)"\include\dvdnav
 mkdir $(OutDir)\licenses
 copy ..\COPYING $(OutDir)\licenses\libdvdnav.txt</Command>
     </PostBuildEvent>
@@ -765,8 +765,8 @@ copy ..\COPYING $(OutDir)\licenses\libdvdnav.txt</Command>
       <Command>if exist ..\config.h (
 del ..\config.h
 )
-if exist $(OutDir)\include\dvdnav (
-rd /s /q $(OutDir)\include\dvdnav
+if exist "$(OutDir)"\include\dvdnav (
+rd /s /q "$(OutDir)"\include\dvdnav
 cd ../
 cd $(ProjectDir)
 )</Command>
@@ -776,8 +776,8 @@ cd $(ProjectDir)
     </CustomBuildStep>
     <CustomBuildStep>
       <Outputs>force_clean</Outputs>
-      <Command>if exist $(OutDir)\include\dvdnav (
-rmdir /s /q $(OutDir)\include\dvdnav
+      <Command>if exist "$(OutDir)"\include\dvdnav (
+rmdir /s /q "$(OutDir)"\include\dvdnav
 )
 if exist $(OutDir)\licenses\libdvdnav.txt (
 del /f /q $(OutDir)\licenses\libdvdnav.txt
@@ -816,9 +816,9 @@ del /f /q $(OutDir)\licenses\libdvdnav.txt
       <AdditionalLibraryDirectories>$(OutDir)\lib\x64\;$(ProjectDir)\..\..\prebuilt\lib\x64\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Lib>
     <PostBuildEvent>
-      <Command>mkdir $(OutDir)\include
-mkdir $(OutDir)\include\dvdnav
-copy ..\src\dvdnav\*.h $(OutDir)\include\dvdnav
+      <Command>mkdir "$(OutDir)"\include
+mkdir "$(OutDir)"\include\dvdnav
+copy ..\src\dvdnav\*.h "$(OutDir)"\include\dvdnav
 mkdir $(OutDir)\licenses
 copy ..\COPYING $(OutDir)\licenses\libdvdnav.txt</Command>
     </PostBuildEvent>
@@ -826,8 +826,8 @@ copy ..\COPYING $(OutDir)\licenses\libdvdnav.txt</Command>
       <Command>if exist ..\config.h (
 del ..\config.h
 )
-if exist $(OutDir)\include\dvdnav (
-rd /s /q $(OutDir)\include\dvdnav
+if exist "$(OutDir)"\include\dvdnav (
+rd /s /q "$(OutDir)"\include\dvdnav
 cd ../
 cd $(ProjectDir)
 )</Command>
@@ -837,8 +837,8 @@ cd $(ProjectDir)
     </CustomBuildStep>
     <CustomBuildStep>
       <Outputs>force_clean</Outputs>
-      <Command>if exist $(OutDir)\include\dvdnav (
-rmdir /s /q $(OutDir)\include\dvdnav
+      <Command>if exist "$(OutDir)"\include\dvdnav (
+rmdir /s /q "$(OutDir)"\include\dvdnav
 )
 if exist $(OutDir)\licenses\libdvdnav.txt (
 del /f /q $(OutDir)\licenses\libdvdnav.txt
@@ -877,9 +877,9 @@ del /f /q $(OutDir)\licenses\libdvdnav.txt
       <AdditionalLibraryDirectories>$(OutDir)\lib\x64\;$(ProjectDir)\..\..\prebuilt\lib\x64\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Lib>
     <PostBuildEvent>
-      <Command>mkdir $(OutDir)\include
-mkdir $(OutDir)\include\dvdnav
-copy ..\src\dvdnav\*.h $(OutDir)\include\dvdnav
+      <Command>mkdir "$(OutDir)"\include
+mkdir "$(OutDir)"\include\dvdnav
+copy ..\src\dvdnav\*.h "$(OutDir)"\include\dvdnav
 mkdir $(OutDir)\licenses
 copy ..\COPYING $(OutDir)\licenses\libdvdnav.txt</Command>
     </PostBuildEvent>
@@ -887,8 +887,8 @@ copy ..\COPYING $(OutDir)\licenses\libdvdnav.txt</Command>
       <Command>if exist ..\config.h (
 del ..\config.h
 )
-if exist $(OutDir)\include\dvdnav (
-rd /s /q $(OutDir)\include\dvdnav
+if exist "$(OutDir)"\include\dvdnav (
+rd /s /q "$(OutDir)"\include\dvdnav
 cd ../
 cd $(ProjectDir)
 )</Command>
@@ -898,8 +898,8 @@ cd $(ProjectDir)
     </CustomBuildStep>
     <CustomBuildStep>
       <Outputs>force_clean</Outputs>
-      <Command>if exist $(OutDir)\include\dvdnav (
-rmdir /s /q $(OutDir)\include\dvdnav
+      <Command>if exist "$(OutDir)"\include\dvdnav (
+rmdir /s /q "$(OutDir)"\include\dvdnav
 )
 if exist $(OutDir)\licenses\libdvdnav.txt (
 del /f /q $(OutDir)\licenses\libdvdnav.txt
@@ -940,9 +940,9 @@ del /f /q $(OutDir)\licenses\libdvdnav.txt
       <MinimumRequiredVersion>5.1</MinimumRequiredVersion>
     </Link>
     <PostBuildEvent>
-      <Command>mkdir $(OutDir)\include
-mkdir $(OutDir)\include\dvdnav
-copy ..\src\dvdnav\*.h $(OutDir)\include\dvdnav
+      <Command>mkdir "$(OutDir)"\include
+mkdir "$(OutDir)"\include\dvdnav
+copy ..\src\dvdnav\*.h "$(OutDir)"\include\dvdnav
 mkdir $(OutDir)\licenses
 copy ..\COPYING $(OutDir)\licenses\libdvdnav.txt</Command>
     </PostBuildEvent>
@@ -950,8 +950,8 @@ copy ..\COPYING $(OutDir)\licenses\libdvdnav.txt</Command>
       <Command>if exist ..\config.h (
 del ..\config.h
 )
-if exist $(OutDir)\include\dvdnav (
-rd /s /q $(OutDir)\include\dvdnav
+if exist "$(OutDir)"\include\dvdnav (
+rd /s /q "$(OutDir)"\include\dvdnav
 cd ../
 cd $(ProjectDir)
 )</Command>
@@ -961,8 +961,8 @@ cd $(ProjectDir)
     </CustomBuildStep>
     <CustomBuildStep>
       <Outputs>force_clean</Outputs>
-      <Command>if exist $(OutDir)\include\dvdnav (
-rmdir /s /q $(OutDir)\include\dvdnav
+      <Command>if exist "$(OutDir)"\include\dvdnav (
+rmdir /s /q "$(OutDir)"\include\dvdnav
 )
 if exist $(OutDir)\licenses\libdvdnav.txt (
 del /f /q $(OutDir)\licenses\libdvdnav.txt
@@ -1003,9 +1003,9 @@ del /f /q $(OutDir)\licenses\libdvdnav.txt
       <MinimumRequiredVersion>5.1</MinimumRequiredVersion>
     </Link>
     <PostBuildEvent>
-      <Command>mkdir $(OutDir)\include
-mkdir $(OutDir)\include\dvdnav
-copy ..\src\dvdnav\*.h $(OutDir)\include\dvdnav
+      <Command>mkdir "$(OutDir)"\include
+mkdir "$(OutDir)"\include\dvdnav
+copy ..\src\dvdnav\*.h "$(OutDir)"\include\dvdnav
 mkdir $(OutDir)\licenses
 copy ..\COPYING $(OutDir)\licenses\libdvdnav.txt</Command>
     </PostBuildEvent>
@@ -1013,8 +1013,8 @@ copy ..\COPYING $(OutDir)\licenses\libdvdnav.txt</Command>
       <Command>if exist ..\config.h (
 del ..\config.h
 )
-if exist $(OutDir)\include\dvdnav (
-rd /s /q $(OutDir)\include\dvdnav
+if exist "$(OutDir)"\include\dvdnav (
+rd /s /q "$(OutDir)"\include\dvdnav
 cd ../
 cd $(ProjectDir)
 )</Command>
@@ -1024,8 +1024,8 @@ cd $(ProjectDir)
     </CustomBuildStep>
     <CustomBuildStep>
       <Outputs>force_clean</Outputs>
-      <Command>if exist $(OutDir)\include\dvdnav (
-rmdir /s /q $(OutDir)\include\dvdnav
+      <Command>if exist "$(OutDir)"\include\dvdnav (
+rmdir /s /q "$(OutDir)"\include\dvdnav
 )
 if exist $(OutDir)\licenses\libdvdnav.txt (
 del /f /q $(OutDir)\licenses\libdvdnav.txt
@@ -1065,9 +1065,9 @@ del /f /q $(OutDir)\licenses\libdvdnav.txt
       <MinimumRequiredVersion>6.0</MinimumRequiredVersion>
     </Link>
     <PostBuildEvent>
-      <Command>mkdir $(OutDir)\include
-mkdir $(OutDir)\include\dvdnav
-copy ..\src\dvdnav\*.h $(OutDir)\include\dvdnav
+      <Command>mkdir "$(OutDir)"\include
+mkdir "$(OutDir)"\include\dvdnav
+copy ..\src\dvdnav\*.h "$(OutDir)"\include\dvdnav
 mkdir $(OutDir)\licenses
 copy ..\COPYING $(OutDir)\licenses\libdvdnav.txt</Command>
     </PostBuildEvent>
@@ -1075,8 +1075,8 @@ copy ..\COPYING $(OutDir)\licenses\libdvdnav.txt</Command>
       <Command>if exist ..\config.h (
 del ..\config.h
 )
-if exist $(OutDir)\include\dvdnav (
-rd /s /q $(OutDir)\include\dvdnav
+if exist "$(OutDir)"\include\dvdnav (
+rd /s /q "$(OutDir)"\include\dvdnav
 cd ../
 cd $(ProjectDir)
 )</Command>
@@ -1086,8 +1086,8 @@ cd $(ProjectDir)
     </CustomBuildStep>
     <CustomBuildStep>
       <Outputs>force_clean</Outputs>
-      <Command>if exist $(OutDir)\include\dvdnav (
-rmdir /s /q $(OutDir)\include\dvdnav
+      <Command>if exist "$(OutDir)"\include\dvdnav (
+rmdir /s /q "$(OutDir)"\include\dvdnav
 )
 if exist $(OutDir)\licenses\libdvdnav.txt (
 del /f /q $(OutDir)\licenses\libdvdnav.txt
@@ -1127,9 +1127,9 @@ del /f /q $(OutDir)\licenses\libdvdnav.txt
       <MinimumRequiredVersion>6.0</MinimumRequiredVersion>
     </Link>
     <PostBuildEvent>
-      <Command>mkdir $(OutDir)\include
-mkdir $(OutDir)\include\dvdnav
-copy ..\src\dvdnav\*.h $(OutDir)\include\dvdnav
+      <Command>mkdir "$(OutDir)"\include
+mkdir "$(OutDir)"\include\dvdnav
+copy ..\src\dvdnav\*.h "$(OutDir)"\include\dvdnav
 mkdir $(OutDir)\licenses
 copy ..\COPYING $(OutDir)\licenses\libdvdnav.txt</Command>
     </PostBuildEvent>
@@ -1137,8 +1137,8 @@ copy ..\COPYING $(OutDir)\licenses\libdvdnav.txt</Command>
       <Command>if exist ..\config.h (
 del ..\config.h
 )
-if exist $(OutDir)\include\dvdnav (
-rd /s /q $(OutDir)\include\dvdnav
+if exist "$(OutDir)"\include\dvdnav (
+rd /s /q "$(OutDir)"\include\dvdnav
 cd ../
 cd $(ProjectDir)
 )</Command>
@@ -1148,8 +1148,8 @@ cd $(ProjectDir)
     </CustomBuildStep>
     <CustomBuildStep>
       <Outputs>force_clean</Outputs>
-      <Command>if exist $(OutDir)\include\dvdnav (
-rmdir /s /q $(OutDir)\include\dvdnav
+      <Command>if exist "$(OutDir)"\include\dvdnav (
+rmdir /s /q "$(OutDir)"\include\dvdnav
 )
 if exist $(OutDir)\licenses\libdvdnav.txt (
 del /f /q $(OutDir)\licenses\libdvdnav.txt
