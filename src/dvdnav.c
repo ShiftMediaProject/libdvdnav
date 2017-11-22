@@ -935,12 +935,12 @@ uint8_t dvdnav_get_video_aspect(dvdnav_t *this) {
 
   return retval;
 }
-int dvdnav_get_video_resolution(dvdnav_t *this, uint32_t *width, uint32_t *height) {
+dvdnav_status_t dvdnav_get_video_resolution(dvdnav_t *this, uint32_t *width, uint32_t *height) {
   int w, h;
 
   if(!this->started) {
     printerr("Virtual DVD machine not started.");
-    return -1;
+    return DVDNAV_STATUS_ERR;
   }
 
   pthread_mutex_lock(&this->vm_lock);
@@ -949,7 +949,7 @@ int dvdnav_get_video_resolution(dvdnav_t *this, uint32_t *width, uint32_t *heigh
 
   *width  = w;
   *height = h;
-  return 0;
+  return DVDNAV_STATUS_OK;
 }
 
 uint8_t dvdnav_get_video_scale_permission(dvdnav_t *this) {
