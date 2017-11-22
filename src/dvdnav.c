@@ -1079,13 +1079,13 @@ int8_t dvdnav_get_audio_logical_stream(dvdnav_t *this, uint8_t audio_num) {
 dvdnav_status_t dvdnav_get_audio_attr(dvdnav_t *this, uint8_t audio_num, audio_attr_t *audio_attr) {
   if(!this->started) {
     printerr("Virtual DVD machine not started.");
-    return -1;
+    return DVDNAV_STATUS_ERR;
   }
   pthread_mutex_lock(&this->vm_lock);
   if (!this->vm->state.pgc) {
     printerr("No current PGC.");
     pthread_mutex_unlock(&this->vm_lock);
-    return -1;
+    return DVDNAV_STATUS_ERR;
   }
   *audio_attr=vm_get_audio_attr(this->vm, audio_num);
   pthread_mutex_unlock(&this->vm_lock);
@@ -1116,13 +1116,13 @@ int8_t dvdnav_get_spu_logical_stream(dvdnav_t *this, uint8_t subp_num) {
 dvdnav_status_t dvdnav_get_spu_attr(dvdnav_t *this, uint8_t audio_num, subp_attr_t *subp_attr) {
   if(!this->started) {
     printerr("Virtual DVD machine not started.");
-    return -1;
+    return DVDNAV_STATUS_ERR;
   }
   pthread_mutex_lock(&this->vm_lock);
   if (!this->vm->state.pgc) {
     printerr("No current PGC.");
     pthread_mutex_unlock(&this->vm_lock);
-    return -1;
+    return DVDNAV_STATUS_ERR;
   }
   *subp_attr=vm_get_subp_attr(this->vm, audio_num);
   pthread_mutex_unlock(&this->vm_lock);
