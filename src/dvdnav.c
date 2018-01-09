@@ -485,6 +485,9 @@ int64_t dvdnav_get_current_time(dvdnav_t *this) {
   int64_t tm=0;
   dvd_state_t *state = &this->vm->state;
 
+  if(! state->pgc)
+    return 0;
+
   for(i=0; i<state->cellN-1; i++) {
     if(!
         (state->pgc->cell_playback[i].block_type == BLOCK_TYPE_ANGLE_BLOCK &&
@@ -515,6 +518,12 @@ dvdnav_status_t dvdnav_get_next_cache_block(dvdnav_t *this, uint8_t **buf,
       return DVDNAV_STATUS_ERR;
     }
     this->started = 1;
+  }
+
+  if (!this->vm->state.pgc) {
+      printerr("No current PGC.");
+      pthread_mutex_unlock(&this->vm_lock);
+      return DVDNAV_STATUS_ERR;
   }
 
   state = &(this->vm->state);
