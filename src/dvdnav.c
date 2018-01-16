@@ -39,6 +39,7 @@
 #include <dvdread/ifo_types.h> /* For vm_cmd_t */
 #include "vm/decoder.h"
 #include "vm/vm.h"
+#include "vm/getset.h"
 #include "dvdnav_internal.h"
 #include "read_cache.h"
 #include <dvdread/nav_read.h>
@@ -790,6 +791,14 @@ dvdnav_status_t dvdnav_get_next_cache_block(dvdnav_t *this, uint8_t **buf,
     fprintf(MSG_OUT, "libdvdnav: SPU_STREAM_CHANGE stream_id_pan_scan=%d\n",stream_change->physical_pan_scan);
     fprintf(MSG_OUT, "libdvdnav: SPU_STREAM_CHANGE returning DVDNAV_STATUS_OK\n");
 #endif
+    /* This is not realy the right place to do this. FOSL_BTNN should set the register
+     * at HLI_S_PTM rather than when we enter the SPU. As well we should activate FOAC_BTNN
+     * at HLI_E_PTM
+     */
+    if (this->pci.hli.hl_gi.fosl_btnn != 0) {
+      set_HL_BTN(this->vm, this->pci.hli.hl_gi.fosl_btnn);
+    }
+
     pthread_mutex_unlock(&this->vm_lock);
     return DVDNAV_STATUS_OK;
   }

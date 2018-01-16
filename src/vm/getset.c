@@ -216,6 +216,13 @@ void set_RSMinfo(vm_t *vm, int cellN, int blockN) {
   }
 }
 
+
+/* Force the highlight button number register */
+void set_HL_BTN(vm_t *vm, int btnn)
+{
+    (vm->state).HL_BTNN_REG = btnn << 10;
+}
+
 /* Get functions */
 
 /* Searches the TT tables, to find the current TT.
