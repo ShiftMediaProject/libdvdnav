@@ -1,3 +1,9 @@
+libdvdnav (6.0.0)
+ * fix crashes on some DVD on describe_title call
+ * fix various crashes related to PGC validity
+ * fix compilation issues
+ * fix API return codes
+
 libdvdnav (5.0.3)
  * added dvdnav_open_stream to read from external read/seek callbacks
  * fixed reading DVD label regression

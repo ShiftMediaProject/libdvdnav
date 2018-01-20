@@ -3,9 +3,9 @@ dnl Making releases: dvdnav_sub += 1; change DVDNAV_LT_* accordingly
 dnl
 dnl These are defined in m4 so they can be passed to AC_INIT
 dnl --------------------------------------------------------------
-m4_define([dvdnav_major], [5])
+m4_define([dvdnav_major], [6])
 m4_define([dvdnav_minor], [0])
-m4_define([dvdnav_sub],   [3])
+m4_define([dvdnav_sub],   [0])
 m4_define([dvdnav_pre],   [])
 
 AC_INIT([libdvdnav], [dvdnav_major.dvdnav_minor.dvdnav_sub[]dvdnav_pre])
@@ -97,7 +97,7 @@ esac
 AC_SUBST(THREAD_LIBS)
 AC_SUBST(THREAD_CFLAGS)
 
-PKG_CHECK_MODULES([DVDREAD], [dvdread >= 5.0.2])
+PKG_CHECK_MODULES([DVDREAD], [dvdread >= 5.0.3])
 
 dnl ---------------------------------------------
 dnl Check for bitfield compiler flag
