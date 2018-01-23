@@ -72,9 +72,6 @@ AC_C_BIGENDIAN
 AS_CASE([$host],
   [*mingw32* | *cygwin*], [AC_CHECK_FUNCS(gettimeofday)])
 
-AS_CASE([$host],
-  [*os2*], [LDFLAGS="$LDFLAGS -no-undefined"])
-
 dnl ---------------------------------------------
 dnl threads
 dnl ---------------------------------------------
@@ -111,6 +108,14 @@ dnl ---------------------------------------------
 dnl Check for doxygen (dynamic documentation generator)
 dnl ---------------------------------------------
 AC_CHECK_PROG(DOXYGEN, doxygen, doxygen, no)
+
+dnl ---------------------------------------------
+dnl -no-undefined libtool flag
+dnl
+dnl This should be after all checks
+dnl ---------------------------------------------
+AS_CASE([$host_os],
+  [os2*], [LDFLAGS="$LDFLAGS -no-undefined"])
 
 dnl ---------------------------------------------
 dnl Output configuration files
