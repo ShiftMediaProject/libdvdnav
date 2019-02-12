@@ -97,7 +97,7 @@ esac
 AC_SUBST(THREAD_LIBS)
 AC_SUBST(THREAD_CFLAGS)
 
-PKG_CHECK_MODULES([DVDREAD], [dvdread >= 5.0.3])
+PKG_CHECK_MODULES([DVDREAD], [dvdread >= 6.0.0])
 
 dnl ---------------------------------------------
 dnl Check for bitfield compiler flag
