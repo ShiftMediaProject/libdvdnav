@@ -84,8 +84,33 @@ static dvdnav_status_t dvdnav_scan_admap(dvdnav_t *this, int32_t domain, uint32_
 
       /* fprintf(MSG_OUT, "libdvdnav: Found block %u\n", next_vobu); */
 
-      if(vobu_start <= seekto_block && next_vobu > seekto_block)
-        break;
+      if(vobu_start <= seekto_block && next_vobu > seekto_block) {
+        /* We expect the ADMAP to be sorted in order of increasing
+         * sector number, but some discs store out-of-order values in
+         * cells that would not normally be playable, cells which
+         * themselves contain bad sectors. The straightforward linear
+         * search would get "stuck" on those values, essentially
+         * forcing playback of the bad sectors on any sector seek
+         * anywhere within the title. To prevent this, scan the next
+         * few entries to make sure they're all really later than the
+         * current entry, and skip over the out-of-order entries if
+         * not. */
+        uint32_t ooo_address = 0;
+        uint32_t ooo_vobu = SRI_END_OF_CELL;
+        for ( uint32_t check=1 ; check<=32 && address+check<admap_entries ; check++ ) {
+          uint32_t check_vobu = admap->vobu_start_sectors[address+check];
+          if (check_vobu < next_vobu && check_vobu < ooo_vobu) {
+            ooo_address = address+check;
+            ooo_vobu = check_vobu;
+          }
+        }
+        if (ooo_vobu < next_vobu) {
+          address = ooo_address;
+          next_vobu = ooo_vobu;
+        } else {
+          break;
+        }
+      }
       vobu_start = next_vobu;
       address++;
     }
