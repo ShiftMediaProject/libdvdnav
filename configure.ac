@@ -5,7 +5,7 @@ dnl These are defined in m4 so they can be passed to AC_INIT
 dnl --------------------------------------------------------------
 m4_define([dvdnav_major], [6])
 m4_define([dvdnav_minor], [0])
-m4_define([dvdnav_sub],   [0])
+m4_define([dvdnav_sub],   [1])
 m4_define([dvdnav_pre],   [])
 
 AC_INIT([libdvdnav], [dvdnav_major.dvdnav_minor.dvdnav_sub[]dvdnav_pre])
@@ -72,9 +72,6 @@ AC_C_BIGENDIAN
 AS_CASE([$host],
   [*mingw32* | *cygwin*], [AC_CHECK_FUNCS(gettimeofday)])
 
-AS_CASE([$host],
-  [*os2*], [LDFLAGS="$LDFLAGS -no-undefined"])
-
 dnl ---------------------------------------------
 dnl threads
 dnl ---------------------------------------------
@@ -97,7 +94,7 @@ esac
 AC_SUBST(THREAD_LIBS)
 AC_SUBST(THREAD_CFLAGS)
 
-PKG_CHECK_MODULES([DVDREAD], [dvdread >= 5.0.3])
+PKG_CHECK_MODULES([DVDREAD], [dvdread >= 6.0.0])
 
 dnl ---------------------------------------------
 dnl Check for bitfield compiler flag
@@ -111,6 +108,14 @@ dnl ---------------------------------------------
 dnl Check for doxygen (dynamic documentation generator)
 dnl ---------------------------------------------
 AC_CHECK_PROG(DOXYGEN, doxygen, doxygen, no)
+
+dnl ---------------------------------------------
+dnl -no-undefined libtool flag
+dnl
+dnl This should be after all checks
+dnl ---------------------------------------------
+AS_CASE([$host_os],
+  [os2*], [LDFLAGS="$LDFLAGS -no-undefined"])
 
 dnl ---------------------------------------------
 dnl Output configuration files

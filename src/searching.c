@@ -1094,8 +1094,14 @@ static int32_t dvdnav_tmap_calc_time_for_tmap_entry(dvdnav_jump_args_t *args,
   }
 
   /* calc position of cell relative to lo */
-  vobu_pct = ((pos->vobu_idx - lo->vobu_idx) * 1000)
-            / ( hi->vobu_idx - lo->vobu_idx);
+  if (hi->vobu_idx == lo->vobu_idx) {
+    /* We are at the very end - pos should also equal lo so force that
+     * rather than hit the divide-by-zero. */
+    vobu_pct = 0;
+  } else {
+    vobu_pct = ((pos->vobu_idx - lo->vobu_idx) * 1000)
+      / ( hi->vobu_idx - lo->vobu_idx);
+  }
   if (vobu_pct < 0 || vobu_pct > 1000) {
     fprintf(MSG_OUT, "vobu_pct must be between 0 and 1000");
     return 0;
