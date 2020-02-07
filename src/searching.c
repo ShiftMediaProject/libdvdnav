@@ -663,6 +663,8 @@ uint32_t dvdnav_describe_title_chapters(dvdnav_t *this, int32_t title, uint64_t 
 
   ptitle = &this->vm->vmgi->tt_srpt->title[title-1];
   parts = ptitle->nr_of_ptts;
+  if(ptitle->vts_ttn == 0)
+      goto fail;
   ptt = ifo->vts_ptt_srpt->title[ptitle->vts_ttn-1].ptt;
 
   tmp = calloc(1, sizeof(uint64_t)*parts);
