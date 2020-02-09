@@ -97,7 +97,8 @@ static dvdnav_status_t dvdnav_scan_admap(dvdnav_t *this, int32_t domain, uint32_
          * not. */
         uint32_t ooo_address = 0;
         uint32_t ooo_vobu = SRI_END_OF_CELL;
-        for ( uint32_t check=1 ; check<=32 && address+check<admap_entries ; check++ ) {
+        uint32_t check;
+        for( check = 1 ; check <= 32 && address+check < admap_entries ; check++ ) {
           uint32_t check_vobu = admap->vobu_start_sectors[address+check];
           if (check_vobu < next_vobu && check_vobu < ooo_vobu) {
             ooo_address = address+check;
