@@ -1,3 +1,7 @@
+libdvdnav (6.0.2)
+ * handle out-of-order ADMAP entries blocking playback
+ * fix crashes in dvdnav_describe_title_chapters in broken DVDs
+
 libdvdnav (6.0.1)
  * improve random playback mode, to work-around broken discs
  * fix divide-by-zerop issue in tmap search
