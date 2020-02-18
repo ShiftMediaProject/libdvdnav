@@ -167,11 +167,9 @@ static dvdnav_status_t dvdnav_open_common(dvdnav_t** dest, const char *path,
   /* Initialise the VM */
   this->vm = vm_new_vm();
   if(!this->vm) {
-    printerr("Error initialising the DVD VM.");
     goto fail;
   }
   if(!vm_reset(this->vm, path, stream, stream_cb)) {
-    printerr("Error starting the VM / opening the DVD device.");
     goto fail;
   }
 
