@@ -1289,3 +1289,7 @@ user_ops_t dvdnav_get_restrictions(dvdnav_t* this) {
 
   return ops.ops_struct;
 }
+
+const char* dvdnav_version(void) {
+    return VERSION;
+}

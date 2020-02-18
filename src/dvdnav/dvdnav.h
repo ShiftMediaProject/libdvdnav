@@ -115,6 +115,7 @@ dvdnav_status_t dvdnav_path(dvdnav_t *self, const char **path);
  */
 const char* dvdnav_err_to_string(dvdnav_t *self);
 
+const char* dvdnav_version(void);
 
 /*********************************************************************
  * changing and reading DVD player characteristics                   *
