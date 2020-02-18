@@ -234,7 +234,7 @@ int64_t dvdnav_convert_time(dvd_time_t *time);
 #else
 #define printerrf(...) \
     do { if (this) snprintf(this->err_str, MAX_ERR_LEN, __VA_ARGS__); } while (0)
-#endif /* WIN32 */
+#endif /* _MSC_VER */
 #endif
 #define printerr(str) \
     do { if (this) strncpy(this->err_str, str, MAX_ERR_LEN - 1); } while (0)
