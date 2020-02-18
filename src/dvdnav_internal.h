@@ -25,7 +25,7 @@
 #include "config.h"
 #endif
 
-#ifdef WIN32
+#ifdef _WIN32
 
 /* pthread_mutex_* wrapper for win32 */
 #include <windows.h>
@@ -57,7 +57,7 @@ static inline int _private_gettimeofday( struct timeval *tv, void *tz )
 
 #include <pthread.h>
 
-#endif /* WIN32 */
+#endif /* _WIN32 */
 
 #ifdef __ANDROID__
 # undef  lseek
