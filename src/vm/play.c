@@ -40,6 +40,7 @@
 #include "vm/getset.h"
 
 #include "dvdnav_internal.h"
+#include "logger.h"
 
 /* Playback control */
 
@@ -47,11 +48,10 @@ link_t play_PGC(vm_t *vm) {
   link_t link_values;
 
 #ifdef TRACE
-  fprintf(MSG_OUT, "libdvdnav: play_PGC:");
   if((vm->state).domain != DVD_DOMAIN_FirstPlay) {
-    fprintf(MSG_OUT, " (vm->state).pgcN (%i)\n", get_PGCN(vm));
+    Log3(vm, "play_PGC: (vm->state).pgcN (%i)", get_PGCN(vm));
   } else {
-    fprintf(MSG_OUT, " first_play_pgc\n");
+    Log3(vm, "play_PGC: first_play_pgc");
   }
 #endif
 
@@ -91,7 +91,7 @@ link_t play_PGC(vm_t *vm) {
       return link_values;
     } else {
 #ifdef TRACE
-      fprintf(MSG_OUT, "libdvdnav: PGC pre commands didn't do a Jump, Link or Call\n");
+      Log3(vm, "PGC pre commands didn't do a Jump, Link or Call");
 #endif
     }
   }
@@ -102,11 +102,10 @@ link_t play_PGC_PG(vm_t *vm, int pgN) {
   link_t link_values;
 
 #ifdef TRACE
-  fprintf(MSG_OUT, "libdvdnav: play_PGC_PG:");
   if((vm->state).domain != DVD_DOMAIN_FirstPlay) {
-    fprintf(MSG_OUT, " (vm->state).pgcN (%i)\n", get_PGCN(vm));
+    Log3(vm, "play_PGC_PG: (vm->state).pgcN (%i)", get_PGCN(vm));
   } else {
-    fprintf(MSG_OUT, " first_play_pgc\n");
+    Log3(vm, "play_PGC_PG: first_play_pgc");
   }
 #endif
 
@@ -131,7 +130,7 @@ link_t play_PGC_PG(vm_t *vm, int pgN) {
       return link_values;
     } else {
 #ifdef TRACE
-      fprintf(MSG_OUT, "libdvdnav: PGC pre commands didn't do a Jump, Link or Call\n");
+      Log3(vm, "PGC pre commands didn't do a Jump, Link or Call");
 #endif
     }
   }
@@ -142,7 +141,7 @@ link_t play_PGC_post(vm_t *vm) {
   link_t link_values = { LinkNoLink, 0, 0, 0 };
 
 #ifdef TRACE
-  fprintf(MSG_OUT, "libdvdnav: play_PGC_post:\n");
+  Log3(vm, "play_PGC_post:");
 #endif
 
   /* eval -> updates the state and returns either
@@ -158,7 +157,7 @@ link_t play_PGC_post(vm_t *vm) {
   }
 
 #ifdef TRACE
-  fprintf(MSG_OUT, "libdvdnav: ** Fell of the end of the pgc, continuing in NextPGC\n");
+  Log3(vm, "** Fell of the end of the pgc, continuing in NextPGC");
 #endif
   /* Should end up in the STOP_DOMAIN if next_pgc is 0. */
   if(!set_PGCN(vm, (vm->state).pgc->next_pgc_nr)) {
@@ -170,13 +169,13 @@ link_t play_PGC_post(vm_t *vm) {
 
 link_t play_PG(vm_t *vm) {
 #ifdef TRACE
-  fprintf(MSG_OUT, "libdvdnav: play_PG: (vm->state).pgN (%i)\n", (vm->state).pgN);
+  Log3(vm, "play_PG: (vm->state).pgN (%i)", (vm->state).pgN);
 #endif
 
   assert((vm->state).pgN > 0);
   if((vm->state).pgN > (vm->state).pgc->nr_of_programs) {
 #ifdef TRACE
-    fprintf(MSG_OUT, "libdvdnav: play_PG: (vm->state).pgN (%i) > pgc->nr_of_programs (%i)\n",
+    Log3(vm, "play_PG: (vm->state).pgN (%i) > pgc->nr_of_programs (%i)",
             (vm->state).pgN, (vm->state).pgc->nr_of_programs );
 #endif
     assert((vm->state).pgN == (vm->state).pgc->nr_of_programs + 1);
@@ -192,13 +191,13 @@ link_t play_Cell(vm_t *vm) {
   static const link_t play_this = {PlayThis, /* Block in Cell */ 0, 0, 0};
 
 #ifdef TRACE
-  fprintf(MSG_OUT, "libdvdnav: play_Cell: (vm->state).cellN (%i)\n", (vm->state).cellN);
+  Log3(vm, "play_Cell: (vm->state).cellN (%i)", (vm->state).cellN);
 #endif
 
   assert((vm->state).cellN > 0);
   if((vm->state).cellN > (vm->state).pgc->nr_of_cells) {
 #ifdef TRACE
-    fprintf(MSG_OUT, "libdvdnav: (vm->state).cellN (%i) > pgc->nr_of_cells (%i)\n",
+    Log3(vm, "(vm->state).cellN (%i) > pgc->nr_of_cells (%i)",
             (vm->state).cellN, (vm->state).pgc->nr_of_cells );
 #endif
     assert((vm->state).cellN == (vm->state).pgc->nr_of_cells + 1);
@@ -226,7 +225,7 @@ link_t play_Cell(vm_t *vm) {
       if (!((vm->state).cellN <= (vm->state).pgc->nr_of_cells) ||
           !((vm->state).pgc->cell_playback[(vm->state).cellN - 1].block_mode != 0) ||
           !((vm->state).pgc->cell_playback[(vm->state).cellN - 1].block_type == 1)) {
-        fprintf(MSG_OUT, "libdvdnav: Invalid angle block\n");
+        Log1(vm, "Invalid angle block");
         (vm->state).cellN -= (vm->state).AGL_REG - 1;
       }
 #endif
@@ -234,7 +233,7 @@ link_t play_Cell(vm_t *vm) {
     case 2: /*  reserved */
     case 3: /*  reserved */
     default:
-      fprintf(MSG_OUT, "libdvdnav: Invalid? Cell block_mode (%d), block_type (%d)\n",
+      Log1(vm, "Invalid? Cell block_mode (%d), block_type (%d)",
               (vm->state).pgc->cell_playback[(vm->state).cellN - 1].block_mode,
               (vm->state).pgc->cell_playback[(vm->state).cellN - 1].block_type);
       assert(0);
@@ -244,7 +243,7 @@ link_t play_Cell(vm_t *vm) {
   case 3: /*  Last cell in the block */
   /* These might perhaps happen for RSM or LinkC commands? */
   default:
-    fprintf(MSG_OUT, "libdvdnav: Cell is in block but did not enter at first cell!\n");
+    Log1(vm, "Cell is in block but did not enter at first cell!");
   }
 
   /* Updates (vm->state).pgN and PTTN_REG */
@@ -256,7 +255,7 @@ link_t play_Cell(vm_t *vm) {
   (vm->state).cell_restart++;
   (vm->state).blockN = 0;
 #ifdef TRACE
-  fprintf(MSG_OUT, "libdvdnav: Cell should restart here\n");
+  Log3(vm, "Cell should restart here");
 #endif
   return play_this;
 }
@@ -265,7 +264,7 @@ link_t play_Cell_post(vm_t *vm) {
   cell_playback_t *cell;
 
 #ifdef TRACE
-  fprintf(MSG_OUT, "libdvdnav: play_Cell_post: (vm->state).cellN (%i)\n", (vm->state).cellN);
+  Log3(vm, "play_Cell_post: (vm->state).cellN (%i)", (vm->state).cellN);
 #endif
 
   cell = &(vm->state).pgc->cell_playback[(vm->state).cellN - 1];
@@ -279,19 +278,19 @@ link_t play_Cell_post(vm_t *vm) {
     if ((vm->state).pgc->command_tbl != NULL &&
         (vm->state).pgc->command_tbl->nr_of_cell >= cell->cell_cmd_nr) {
 #ifdef TRACE
-      fprintf(MSG_OUT, "libdvdnav: Cell command present, executing\n");
+      Log3(vm, "Cell command present, executing");
 #endif
       if(vmEval_CMD(&(vm->state).pgc->command_tbl->cell_cmds[cell->cell_cmd_nr - 1], 1,
                     &(vm->state).registers, &link_values)) {
         return link_values;
       } else {
 #ifdef TRACE
-        fprintf(MSG_OUT, "libdvdnav: Cell command didn't do a Jump, Link or Call\n");
+        Log3(vm, "Cell command didn't do a Jump, Link or Call");
 #endif
       }
     } else {
 #ifdef TRACE
-      fprintf(MSG_OUT, "libdvdnav: Invalid Cell command\n");
+      Log3(vm, "Invalid Cell command");
 #endif
     }
   }
@@ -322,7 +321,7 @@ link_t play_Cell_post(vm_t *vm) {
     case 2: /*  reserved */
     case 3: /*  reserved */
     default:
-      fprintf(MSG_OUT, "libdvdnav: Invalid? Cell block_mode (%d), block_type (%d)\n",
+      Log1(vm, "Invalid? Cell block_mode (%d), block_type (%d)",
               (vm->state).pgc->cell_playback[(vm->state).cellN - 1].block_mode,
               (vm->state).pgc->cell_playback[(vm->state).cellN - 1].block_type);
       assert(0);
@@ -333,7 +332,7 @@ link_t play_Cell_post(vm_t *vm) {
   /* Figure out the correct pgN for the new cell */
   if(!set_PGN(vm)) {
 #ifdef TRACE
-    fprintf(MSG_OUT, "libdvdnav: last cell in this PGC\n");
+    Log3(vm, "last cell in this PGC");
 #endif
     return play_PGC_post(vm);
   }

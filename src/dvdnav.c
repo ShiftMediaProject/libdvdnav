@@ -41,6 +41,7 @@
 #include "vm/vm.h"
 #include "vm/getset.h"
 #include "dvdnav_internal.h"
+#include "logger.h"
 #include "read_cache.h"
 #include <dvdread/nav_read.h>
 
@@ -114,14 +115,14 @@ fail:
 dvdnav_status_t dvdnav_free_dup(dvdnav_t *this) {
 
 #ifdef LOG_DEBUG
-  fprintf(MSG_OUT, "libdvdnav: free_dup:called\n");
+  Log3(this, "free_dup:called");
 #endif
 
   if (this->file) {
     pthread_mutex_lock(&this->vm_lock);
     DVDCloseFile(this->file);
 #ifdef LOG_DEBUG
-    fprintf(MSG_OUT, "libdvdnav: close:file closing\n");
+    Log3(this, "close:file closing");
 #endif
     this->file = NULL;
     pthread_mutex_unlock(&this->vm_lock);
@@ -168,7 +169,7 @@ static dvdnav_status_t dvdnav_open_common(dvdnav_t** dest,
   printerr("");
 
   /* Initialise the VM */
-  this->vm = vm_new_vm();
+  this->vm = vm_new_vm(priv, logcb);
   if(!this->vm) {
     goto fail;
   }
@@ -234,14 +235,14 @@ dvdnav_status_t dvdnav_open_stream2(dvdnav_t** dest,
 dvdnav_status_t dvdnav_close(dvdnav_t *this) {
 
 #ifdef LOG_DEBUG
-  fprintf(MSG_OUT, "libdvdnav: close:called\n");
+  Log3(this, "close:called");
 #endif
 
   if (this->file) {
     pthread_mutex_lock(&this->vm_lock);
     DVDCloseFile(this->file);
 #ifdef LOG_DEBUG
-    fprintf(MSG_OUT, "libdvdnav: close:file closing\n");
+    Log3(this, "close:file closing");
 #endif
     this->file = NULL;
     pthread_mutex_unlock(&this->vm_lock);
@@ -270,13 +271,13 @@ dvdnav_status_t dvdnav_reset(dvdnav_t *this) {
   dvdnav_status_t result;
 
 #ifdef LOG_DEBUG
-  fprintf(MSG_OUT, "libdvdnav: reset:called\n");
+  Log3(this, "reset:called");
 #endif
 
   pthread_mutex_lock(&this->vm_lock);
 
 #ifdef LOG_DEBUG
-  fprintf(MSG_OUT, "libdvdnav: reseting vm\n");
+  Log3(this, "reseting vm");
 #endif
   if(!vm_reset(this->vm, NULL, NULL, NULL)) {
     printerr("Error restarting the VM.");
@@ -284,7 +285,7 @@ dvdnav_status_t dvdnav_reset(dvdnav_t *this) {
     return DVDNAV_STATUS_ERR;
   }
 #ifdef LOG_DEBUG
-  fprintf(MSG_OUT, "libdvdnav: clearing dvdnav\n");
+  Log3(this, "clearing dvdnav");
 #endif
   pthread_mutex_unlock(&this->vm_lock);
   result = dvdnav_clear(this);
@@ -336,7 +337,8 @@ int64_t dvdnav_convert_time(dvd_time_t *time) {
  * Most of the code in here is copied from xine's MPEG demuxer
  * so any bugs which are found in that should be corrected here also.
  */
-static int32_t dvdnav_decode_packet(uint8_t *p, dsi_t *nav_dsi, pci_t *nav_pci) {
+static int32_t dvdnav_decode_packet(dvdnav_t *this, uint8_t *p,
+                                    dsi_t *nav_dsi, pci_t *nav_pci) {
   int32_t        bMpeg1 = 0;
   uint32_t       nHeaderLen;
   uint32_t       nPacketLen;
@@ -362,7 +364,7 @@ static int32_t dvdnav_decode_packet(uint8_t *p, dsi_t *nav_dsi, pci_t *nav_pci) 
 
   /* we should now have a PES packet here */
   if (p[0] || p[1] || (p[2] != 1)) {
-    fprintf(MSG_OUT, "libdvdnav: demux error! %02x %02x %02x (should be 0x000001) \n",p[0],p[1],p[2]);
+    Log1(this, "demux error! %02x %02x %02x (should be 0x000001)",p[0],p[1],p[2]);
     return 0;
   }
 
@@ -374,11 +376,11 @@ static int32_t dvdnav_decode_packet(uint8_t *p, dsi_t *nav_dsi, pci_t *nav_pci) 
 
   if (nStreamID == 0xbf) { /* Private stream 2 */
 #if 0
+    char buffer[80 * 3 + 1];
     int32_t i;
-    fprintf(MSG_OUT, "libdvdnav: nav packet=%u\n",p-p_start-6);
     for(i=0;i<80;i++)
-      fprintf(MSG_OUT, "%02x ",p[i-6]);
-    fprintf(MSG_OUT, "\n");
+      sprintf(&buffer[i*3], "%02x ",p[i-6]);
+    Log3(this, "nav packet=%u %s",p-p_start-6, buffer);
 #endif
 
     if(p[0] == 0x00) {
@@ -437,7 +439,7 @@ static int32_t dvdnav_get_vobu(dvdnav_t *this, dsi_t *nav_dsi, pci_t *nav_pci, d
   /* FIMXE: The angle reset doesn't work for some reason for the moment */
 #if 0
   if((num_angle < angle) && (angle != 1)) {
-    fprintf(MSG_OUT, "libdvdnav: angle ends!\n");
+    Log3(this, "angle ends!");
 
     /* This is to switch back to angle one when we
      * finish with angles. */
@@ -556,9 +558,9 @@ dvdnav_status_t dvdnav_get_next_cache_block(dvdnav_t *this, uint8_t **buf,
   vm_position_get(this->vm, &this->position_next);
 
 #ifdef LOG_DEBUG
-  fprintf(MSG_OUT, "libdvdnav: POS-NEXT ");
+  Log3(vm, "POS-NEXT ");
   vm_position_print(this->vm, &this->position_next);
-  fprintf(MSG_OUT, "libdvdnav: POS-CUR  ");
+  Log3(vm, "POS-CUR  ");
   vm_position_print(this->vm, &this->position_current);
 #endif
 
@@ -566,7 +568,7 @@ dvdnav_status_t dvdnav_get_next_cache_block(dvdnav_t *this, uint8_t **buf,
   if(this->position_current.hop_channel != this->position_next.hop_channel) {
     (*event) = DVDNAV_HOP_CHANNEL;
 #ifdef LOG_DEBUG
-    fprintf(MSG_OUT, "libdvdnav: HOP_CHANNEL\n");
+    Log3(vm, "HOP_CHANNEL");
 #endif
     if (this->position_next.hop_channel - this->position_current.hop_channel >= HOP_SEEK) {
       int32_t num_angles = 0, current;
@@ -585,7 +587,7 @@ dvdnav_status_t dvdnav_get_next_cache_block(dvdnav_t *this, uint8_t **buf,
           return DVDNAV_STATUS_ERR;
         }
         /* Decode nav into pci and dsi. Then get next VOBU info. */
-        if(!dvdnav_decode_packet(*buf, &this->dsi, &this->pci)) {
+        if(!dvdnav_decode_packet(this, *buf, &this->dsi, &this->pci)) {
           printerr("Expected NAV packet but none found.");
           pthread_mutex_unlock(&this->vm_lock);
           return DVDNAV_STATUS_ERR;
@@ -618,7 +620,7 @@ dvdnav_status_t dvdnav_get_next_cache_block(dvdnav_t *this, uint8_t **buf,
 
     (*event) = DVDNAV_HIGHLIGHT;
 #ifdef LOG_DEBUG
-    fprintf(MSG_OUT, "libdvdnav: HIGHLIGHT\n");
+    Log3(this, "HIGHLIGHT");
 #endif
     (*len) = sizeof(dvdnav_highlight_event_t);
     hevent->display = 1;
@@ -632,7 +634,7 @@ dvdnav_status_t dvdnav_get_next_cache_block(dvdnav_t *this, uint8_t **buf,
   if(this->sync_wait) {
     (*event) = DVDNAV_WAIT;
 #ifdef LOG_DEBUG
-    fprintf(MSG_OUT, "libdvdnav: WAIT\n");
+    Log3(this, "WAIT");
 #endif
     (*len) = 0;
     pthread_mutex_unlock(&this->vm_lock);
@@ -694,7 +696,7 @@ dvdnav_status_t dvdnav_get_next_cache_block(dvdnav_t *this, uint8_t **buf,
     /* File opened successfully so return a VTS change event */
     (*event) = DVDNAV_VTS_CHANGE;
 #ifdef LOG_DEBUG
-    fprintf(MSG_OUT, "libdvdnav: VTS_CHANGE\n");
+    Log3(this, "VTS_CHANGE");
 #endif
     (*len) = sizeof(dvdnav_vts_change_event_t);
 
@@ -718,7 +720,7 @@ dvdnav_status_t dvdnav_get_next_cache_block(dvdnav_t *this, uint8_t **buf,
     this->cur_cell_time = 0;
     (*event) = DVDNAV_CELL_CHANGE;
 #ifdef LOG_DEBUG
-    fprintf(MSG_OUT, "libdvdnav: CELL_CHANGE\n");
+    Log3(this, "CELL_CHANGE");
 #endif
     (*len) = sizeof(dvdnav_cell_change_event_t);
 
@@ -776,7 +778,7 @@ dvdnav_status_t dvdnav_get_next_cache_block(dvdnav_t *this, uint8_t **buf,
   if(this->spu_clut_changed) {
     (*event) = DVDNAV_SPU_CLUT_CHANGE;
 #ifdef LOG_DEBUG
-    fprintf(MSG_OUT, "libdvdnav: SPU_CLUT_CHANGE\n");
+    Log3(this, "SPU_CLUT_CHANGE");
 #endif
     (*len) = 16 * sizeof(uint32_t);
     memcpy(*buf, state->pgc->palette, sizeof(state->pgc->palette));
@@ -791,7 +793,7 @@ dvdnav_status_t dvdnav_get_next_cache_block(dvdnav_t *this, uint8_t **buf,
 
     (*event) = DVDNAV_SPU_STREAM_CHANGE;
 #ifdef LOG_DEBUG
-    fprintf(MSG_OUT, "libdvdnav: SPU_STREAM_CHANGE\n");
+    Log3(this, "SPU_STREAM_CHANGE");
 #endif
     (*len) = sizeof(dvdnav_spu_stream_change_event_t);
     stream_change->physical_wide      = vm_get_subp_active_stream(this->vm, 0);
@@ -799,10 +801,10 @@ dvdnav_status_t dvdnav_get_next_cache_block(dvdnav_t *this, uint8_t **buf,
     stream_change->physical_pan_scan  = vm_get_subp_active_stream(this->vm, 2);
     this->position_current.spu_channel = this->position_next.spu_channel;
 #ifdef LOG_DEBUG
-    fprintf(MSG_OUT, "libdvdnav: SPU_STREAM_CHANGE stream_id_wide=%d\n",stream_change->physical_wide);
-    fprintf(MSG_OUT, "libdvdnav: SPU_STREAM_CHANGE stream_id_letterbox=%d\n",stream_change->physical_letterbox);
-    fprintf(MSG_OUT, "libdvdnav: SPU_STREAM_CHANGE stream_id_pan_scan=%d\n",stream_change->physical_pan_scan);
-    fprintf(MSG_OUT, "libdvdnav: SPU_STREAM_CHANGE returning DVDNAV_STATUS_OK\n");
+    Log3(this, "SPU_STREAM_CHANGE stream_id_wide=%d",stream_change->physical_wide);
+    Log3(this, "SPU_STREAM_CHANGE stream_id_letterbox=%d",stream_change->physical_letterbox);
+    Log3(this, "SPU_STREAM_CHANGE stream_id_pan_scan=%d",stream_change->physical_pan_scan);
+    Log3(this, "SPU_STREAM_CHANGE returning DVDNAV_STATUS_OK");
 #endif
     /* This is not realy the right place to do this. FOSL_BTNN should set the register
      * at HLI_S_PTM rather than when we enter the SPU. As well we should activate FOAC_BTNN
@@ -822,14 +824,14 @@ dvdnav_status_t dvdnav_get_next_cache_block(dvdnav_t *this, uint8_t **buf,
 
     (*event) = DVDNAV_AUDIO_STREAM_CHANGE;
 #ifdef LOG_DEBUG
-    fprintf(MSG_OUT, "libdvdnav: AUDIO_STREAM_CHANGE\n");
+    Log3(this, "AUDIO_STREAM_CHANGE");
 #endif
     (*len) = sizeof(dvdnav_audio_stream_change_event_t);
     stream_change->physical = vm_get_audio_active_stream( this->vm );
     stream_change->logical = this->position_next.audio_channel;
     this->position_current.audio_channel = this->position_next.audio_channel;
 #ifdef LOG_DEBUG
-    fprintf(MSG_OUT, "libdvdnav: AUDIO_STREAM_CHANGE stream_id=%d returning DVDNAV_STATUS_OK\n",stream_change->physical);
+    Log3(this, "AUDIO_STREAM_CHANGE stream_id=%d returning DVDNAV_STATUS_OK",stream_change->physical);
 #endif
     pthread_mutex_unlock(&this->vm_lock);
     return DVDNAV_STATUS_OK;
@@ -841,7 +843,7 @@ dvdnav_status_t dvdnav_get_next_cache_block(dvdnav_t *this, uint8_t **buf,
 
     (*event) = DVDNAV_STILL_FRAME;
 #ifdef LOG_DEBUG
-    fprintf(MSG_OUT, "libdvdnav: STILL_FRAME\n");
+    Log3(this, "STILL_FRAME");
 #endif
     (*len) = sizeof(dvdnav_still_event_t);
     still_event->length = this->position_current.still;
@@ -856,7 +858,7 @@ dvdnav_status_t dvdnav_get_next_cache_block(dvdnav_t *this, uint8_t **buf,
     if(this->vobu.vobu_next == SRI_END_OF_CELL) {
       /* End of Cell from NAV DSI info */
 #ifdef LOG_DEBUG
-      fprintf(MSG_OUT, "libdvdnav: Still set to %x\n", this->position_next.still);
+      Log3(this, "Still set to %x", this->position_next.still);
 #endif
       this->position_current.still = this->position_next.still;
 
@@ -889,7 +891,7 @@ dvdnav_status_t dvdnav_get_next_cache_block(dvdnav_t *this, uint8_t **buf,
       return DVDNAV_STATUS_ERR;
     }
     /* Decode nav into pci and dsi. Then get next VOBU info. */
-    if(!dvdnav_decode_packet(*buf, &this->dsi, &this->pci)) {
+    if(!dvdnav_decode_packet(this, *buf, &this->dsi, &this->pci)) {
       printerr("Expected NAV packet but none found.");
       pthread_mutex_unlock(&this->vm_lock);
       return DVDNAV_STATUS_ERR;
@@ -913,7 +915,7 @@ dvdnav_status_t dvdnav_get_next_cache_block(dvdnav_t *this, uint8_t **buf,
     /* Successfully got a NAV packet */
     (*event) = DVDNAV_NAV_PACKET;
 #ifdef LOG_DEBUG
-    fprintf(MSG_OUT, "libdvdnav: NAV_PACKET\n");
+    Log3(this, "NAV_PACKET");
 #endif
     (*len) = 2048;
     this->cur_cell_time = dvdnav_convert_time(&this->dsi.dsi_gi.c_eltm);
