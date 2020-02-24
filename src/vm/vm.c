@@ -326,7 +326,7 @@ static void vm_close(vm_t *vm) {
 }
 
 int vm_reset(vm_t *vm, const char *dvdroot,
-             void *stream, dvdnav_stream_cb *stream_cb) {
+             void *priv, dvdnav_stream_cb *stream_cb) {
   /*  Setup State */
   memset(vm->state.registers.SPRM, 0, sizeof(vm->state.registers.SPRM));
   memset(vm->state.registers.GPRM, 0, sizeof(vm->state.registers.GPRM));
@@ -363,15 +363,15 @@ int vm_reset(vm_t *vm, const char *dvdroot,
 
   vm->hop_channel                = 0;
 
-  if (vm->dvd && (dvdroot || (stream && stream_cb))) {
+  if (vm->dvd && (dvdroot || (priv && stream_cb))) {
     /* a new dvd device has been requested */
     vm_close(vm);
   }
   if (!vm->dvd) {
     if(dvdroot)
         vm->dvd = DVDOpen(dvdroot);
-    else if(stream && stream_cb)
-        vm->dvd = DVDOpenStream(stream, (dvd_reader_stream_cb *)stream_cb);
+    else if(priv && stream_cb)
+        vm->dvd = DVDOpenStream(priv, (dvd_reader_stream_cb *)stream_cb);
     if(!vm->dvd) {
       fprintf(MSG_OUT, "libdvdnav: vm: failed to open/read the DVD\n");
       return 0;

@@ -87,7 +87,7 @@ typedef dvd_reader_stream_cb dvdnav_stream_cb;
  */
 dvdnav_status_t dvdnav_open(dvdnav_t **dest, const char *path);
 dvdnav_status_t
-dvdnav_open_stream(dvdnav_t **dest, void *stream, dvdnav_stream_cb *stream_cb);
+dvdnav_open_stream(dvdnav_t **dest, void *priv, dvdnav_stream_cb *stream_cb);
 
 dvdnav_status_t dvdnav_dup(dvdnav_t **dest, dvdnav_t *src);
 dvdnav_status_t dvdnav_free_dup(dvdnav_t * _this);

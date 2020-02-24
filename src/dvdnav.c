@@ -147,7 +147,7 @@ dvdnav_status_t dvdnav_free_dup(dvdnav_t *this) {
 }
 
 static dvdnav_status_t dvdnav_open_common(dvdnav_t** dest, const char *path,
-                                          void *stream,
+                                          void *priv,
                                           dvdnav_stream_cb *stream_cb) {
   dvdnav_t *this;
   struct timeval time;
@@ -167,7 +167,7 @@ static dvdnav_status_t dvdnav_open_common(dvdnav_t** dest, const char *path,
   if(!this->vm) {
     goto fail;
   }
-  if(!vm_reset(this->vm, path, stream, stream_cb)) {
+  if(!vm_reset(this->vm, path, priv, stream_cb)) {
     goto fail;
   }
 
@@ -210,8 +210,8 @@ dvdnav_status_t dvdnav_open(dvdnav_t** dest, const char *path) {
 }
 
 dvdnav_status_t dvdnav_open_stream(dvdnav_t** dest,
-                                   void *stream, dvdnav_stream_cb *stream_cb) {
-  return dvdnav_open_common(dest, NULL, stream, stream_cb);
+                                   void *priv, dvdnav_stream_cb *stream_cb) {
+  return dvdnav_open_common(dest, NULL, priv, stream_cb);
 }
 
 dvdnav_status_t dvdnav_close(dvdnav_t *this) {
