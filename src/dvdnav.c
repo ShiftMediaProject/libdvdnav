@@ -146,8 +146,9 @@ dvdnav_status_t dvdnav_free_dup(dvdnav_t *this) {
   return DVDNAV_STATUS_OK;
 }
 
-static dvdnav_status_t dvdnav_open_common(dvdnav_t** dest, const char *path,
-                                          void *priv,
+static dvdnav_status_t dvdnav_open_common(dvdnav_t** dest,
+                                          void *priv, const dvdnav_logger_cb *logcb,
+                                          const char *path,
                                           dvdnav_stream_cb *stream_cb) {
   dvdnav_t *this;
   struct timeval time;
@@ -159,6 +160,8 @@ static dvdnav_status_t dvdnav_open_common(dvdnav_t** dest, const char *path,
     return DVDNAV_STATUS_ERR;
 
   this->priv = priv;
+  if(logcb)
+    this->logcb = *logcb;
 
   pthread_mutex_init(&this->vm_lock, NULL);
   /* Initialise the error string */
@@ -208,16 +211,24 @@ fail:
 }
 
 dvdnav_status_t dvdnav_open(dvdnav_t** dest, const char *path) {
-  return dvdnav_open_common(dest, path, NULL, NULL);
+  return dvdnav_open_common(dest, NULL, NULL, path, NULL);
 }
 
-dvdnav_status_t dvdnav_open2(dvdnav_t** dest, void *priv, const char *path) {
-  return dvdnav_open_common(dest, path, priv, NULL);
+dvdnav_status_t dvdnav_open2(dvdnav_t** dest,
+                             void *priv,const dvdnav_logger_cb *logcb,
+                             const char *path) {
+  return dvdnav_open_common(dest, priv, logcb, path, NULL);
 }
 
 dvdnav_status_t dvdnav_open_stream(dvdnav_t** dest,
                                    void *priv, dvdnav_stream_cb *stream_cb) {
-  return dvdnav_open_common(dest, NULL, priv, stream_cb);
+  return dvdnav_open_common(dest, priv, NULL, NULL, stream_cb);
+}
+
+dvdnav_status_t dvdnav_open_stream2(dvdnav_t** dest,
+                                    void *priv,const dvdnav_logger_cb *logcb,
+                                    dvdnav_stream_cb *stream_cb) {
+  return dvdnav_open_common(dest, priv, logcb, NULL, stream_cb);
 }
 
 dvdnav_status_t dvdnav_close(dvdnav_t *this) {
