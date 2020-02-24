@@ -18,6 +18,8 @@ libdvdnav_la_SOURCES = \
 	src/read_cache.c \
 	src/navigation.c \
 	src/highlight.c \
+        src/logger.c \
+        src/logger.h \
 	src/searching.c \
 	src/settings.c \
 	src/dvdnav_internal.h \
