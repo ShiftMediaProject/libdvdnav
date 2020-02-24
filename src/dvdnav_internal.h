@@ -210,6 +210,9 @@ struct dvdnav_s {
   vm_t *vm;
   pthread_mutex_t vm_lock;
 
+  /* private context */
+  void *priv;
+
   /* Read-ahead cache */
   read_cache_t *cache;
 

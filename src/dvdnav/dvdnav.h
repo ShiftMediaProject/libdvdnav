@@ -86,6 +86,7 @@ typedef dvd_reader_stream_cb dvdnav_stream_cb;
  * The resulting dvdnav_t handle will be written to *dest.
  */
 dvdnav_status_t dvdnav_open(dvdnav_t **dest, const char *path);
+dvdnav_status_t dvdnav_open2(dvdnav_t **dest, void *, const char *path);
 dvdnav_status_t
 dvdnav_open_stream(dvdnav_t **dest, void *priv, dvdnav_stream_cb *stream_cb);
 

@@ -158,6 +158,8 @@ static dvdnav_status_t dvdnav_open_common(dvdnav_t** dest, const char *path,
   if(!this)
     return DVDNAV_STATUS_ERR;
 
+  this->priv = priv;
+
   pthread_mutex_init(&this->vm_lock, NULL);
   /* Initialise the error string */
   printerr("");
@@ -207,6 +209,10 @@ fail:
 
 dvdnav_status_t dvdnav_open(dvdnav_t** dest, const char *path) {
   return dvdnav_open_common(dest, path, NULL, NULL);
+}
+
+dvdnav_status_t dvdnav_open2(dvdnav_t** dest, void *priv, const char *path) {
+  return dvdnav_open_common(dest, path, priv, NULL);
 }
 
 dvdnav_status_t dvdnav_open_stream(dvdnav_t** dest,
