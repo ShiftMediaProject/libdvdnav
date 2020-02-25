@@ -39,6 +39,7 @@
 #include "vm.h"
 #include "getset.h"
 #include "dvdnav_internal.h"
+#include "logger.h"
 
 #include "getset.h"
 /* Set functions */
@@ -152,7 +153,7 @@ int set_PGCN(vm_t *vm, int pgcN) {
 
   if(pgcN < 1 || pgcN > pgcit->nr_of_pgci_srp) {
 #ifdef TRACE
-    fprintf(MSG_OUT, "libdvdnav:  ** No such pgcN = %d\n", pgcN);
+    Log3(vm, "** No such pgcN = %d", pgcN);
 #endif
     return 0;
   }
@@ -253,11 +254,11 @@ int get_ID(vm_t *vm, int id) {
   /* Relies on state to get the correct pgcit. */
   pgcit = get_PGCIT(vm);
   if(pgcit == NULL) {
-    fprintf(MSG_OUT, "libdvdnav: PGCIT null!\n");
+    Log1(vm, "PGCIT null!");
     return 0;
   }
 #ifdef TRACE
-  fprintf(MSG_OUT, "libdvdnav: ** Searching for menu (0x%x) entry PGC\n", id);
+  Log3(vm, "** Searching for menu (0x%x) entry PGC", id);
 #endif
 
   /* Force high bit set. */
@@ -268,16 +269,16 @@ int get_ID(vm_t *vm, int id) {
     if( (pgcit->pgci_srp[i].entry_id) == id) {
       pgcN = i + 1;
 #ifdef TRACE
-      fprintf(MSG_OUT, "libdvdnav: Found menu.\n");
+      Log3(vm, "Found menu.");
 #endif
       return pgcN;
     }
   }
 #ifdef TRACE
-  fprintf(MSG_OUT, "libdvdnav: ** No such id/menu (0x%02x) entry PGC\n", id & 0x7f);
+  Log3(vm, "** No such id/menu (0x%02x) entry PGC", id & 0x7f);
   for(i = 0; i < pgcit->nr_of_pgci_srp; i++) {
     if ( (pgcit->pgci_srp[i].entry_id & 0x80) == 0x80) {
-      fprintf(MSG_OUT, "libdvdnav: Available menus: 0x%x\n",
+      Log3(vm, "Available menus: 0x%x",
                      pgcit->pgci_srp[i].entry_id & 0x7f);
     }
   }
@@ -305,7 +306,7 @@ int get_PGCN(vm_t *vm) {
       pgcN++;
     }
   }
-  fprintf(MSG_OUT, "libdvdnav: get_PGCN failed. Was trying to find pgcN in domain %d\n",
+  Log0(vm, "get_PGCN failed. Was trying to find pgcN in domain %d",
          (vm->state).domain);
   return 0; /*  error */
 }
@@ -314,7 +315,7 @@ pgcit_t* get_MENU_PGCIT(vm_t *vm, ifo_handle_t *h, uint16_t lang) {
   int i;
 
   if(h == NULL || h->pgci_ut == NULL) {
-    fprintf(MSG_OUT, "libdvdnav: *** pgci_ut handle is NULL ***\n");
+    Log0(vm, "*** pgci_ut handle is NULL ***");
     return NULL; /*  error? */
   }
 
@@ -323,17 +324,22 @@ pgcit_t* get_MENU_PGCIT(vm_t *vm, ifo_handle_t *h, uint16_t lang) {
         && h->pgci_ut->lu[i].lang_code != lang)
     i++;
   if(i == h->pgci_ut->nr_of_lus) {
-    fprintf(MSG_OUT, "libdvdnav: Language '%c%c' not found, using '%c%c' instead\n",
+    Log1(vm, "Language '%c%c' not found, using '%c%c' instead",
             (char)(lang >> 8), (char)(lang & 0xff),
              (char)(h->pgci_ut->lu[0].lang_code >> 8),
             (char)(h->pgci_ut->lu[0].lang_code & 0xff));
-    fprintf(MSG_OUT, "libdvdnav: Menu Languages available: ");
-    for(i = 0; i < h->pgci_ut->nr_of_lus; i++) {
-      fprintf(MSG_OUT, "%c%c ",
-             (char)(h->pgci_ut->lu[i].lang_code >> 8),
-            (char)(h->pgci_ut->lu[i].lang_code & 0xff));
+    char *buffer = malloc(3 * h->pgci_ut->nr_of_lus + 1);
+    if(buffer)
+    {
+        buffer[3 * h->pgci_ut->nr_of_lus] = 0;
+        for(i = 0; i < h->pgci_ut->nr_of_lus; i++) {
+        sprintf(&buffer[3*i], "%c%c ",
+                 (char)(h->pgci_ut->lu[i].lang_code >> 8),
+                (char)(h->pgci_ut->lu[i].lang_code & 0xff));
+        }
+        Log2(vm, "Menu Languages available: %s", buffer);
+        free(buffer);
     }
-    fprintf(MSG_OUT, "\n");
     i = 0; /*  error? */
   }
 
