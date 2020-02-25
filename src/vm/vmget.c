@@ -40,6 +40,7 @@
 #include "vm.h"
 #include "getset.h"
 #include "dvdnav_internal.h"
+#include "logger.h"
 
 /* getting information */
 
@@ -85,7 +86,7 @@ int vm_get_current_title_part(vm_t *vm, int *title_result, int *part_result) {
   part++;
 
   if (!found) {
-    fprintf(MSG_OUT, "libdvdnav: chapter NOT FOUND!\n");
+    Log1(vm, "chapter NOT FOUND!");
     return 0;
   }
 
@@ -93,8 +94,8 @@ int vm_get_current_title_part(vm_t *vm, int *title_result, int *part_result) {
 
 #ifdef TRACE
   if (title) {
-    fprintf(MSG_OUT, "libdvdnav: ************ this chapter FOUND!\n");
-    fprintf(MSG_OUT, "libdvdnav: VTS_PTT_SRPT - Title %3i part %3i: PGC: %3i PG: %3i\n",
+    Log3(vm, "************ this chapter FOUND!");
+    Log3(vm, "VTS_PTT_SRPT - Title %3i part %3i: PGC: %3i PG: %3i",
              title, part,
              vts_ptt_srpt->title[vts_ttn-1].ptt[part-1].pgcn ,
              vts_ptt_srpt->title[vts_ttn-1].ptt[part-1].pgn );
@@ -296,7 +297,7 @@ int vm_get_video_aspect(vm_t *vm) {
   int aspect = vm_get_video_attr(vm).display_aspect_ratio;
 
   if(aspect != 0 && aspect != 3) {
-    fprintf(MSG_OUT, "libdvdnav: display aspect ratio is unexpected: %d!\n", aspect);
+    Log1(vm, "display aspect ratio is unexpected: %d!", aspect);
     return -1;
   }
 
