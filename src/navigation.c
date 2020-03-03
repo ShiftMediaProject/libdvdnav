@@ -90,6 +90,14 @@ dvdnav_status_t dvdnav_get_number_of_parts(dvdnav_t *this, int32_t title, int32_
   return status;
 }
 
+dvdnav_status_t dvdnav_get_number_of_angles(dvdnav_t *this, int32_t title, int32_t *angles) {
+    title_info_t *info;
+    dvdnav_status_t status = get_title_by_number(this, title, &info);
+    if(status == DVDNAV_STATUS_OK)
+        (*angles) = info->nr_of_angles;
+    return status;
+}
+
 dvdnav_status_t dvdnav_current_title_info(dvdnav_t *this, int32_t *title, int32_t *part) {
   int32_t retval;
 

@@ -272,6 +272,11 @@ dvdnav_status_t dvdnav_get_number_of_titles(dvdnav_t *self, int32_t *titles);
 dvdnav_status_t dvdnav_get_number_of_parts(dvdnav_t *self, int32_t title, int32_t *parts);
 
 /*
+ * Returns the number of angles for the given title.
+ */
+dvdnav_status_t dvdnav_get_number_of_angles(dvdnav_t *self, int32_t title, int32_t *angles);
+
+/*
  * Plays the specified title of the DVD from its beginning (that is: part 1).
  */
 dvdnav_status_t dvdnav_title_play(dvdnav_t *self, int32_t title);
