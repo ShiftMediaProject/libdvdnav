@@ -27,9 +27,12 @@ DVDNAV_MINOR="dvdnav_minor"
 DVDNAV_SUB="dvdnav_sub"
 DVDNAV_PRE="dvdnav_pre"
 
+DVDREAD_MIN_VERSION="6.0.0"
+
 AC_SUBST(DVDNAV_MAJOR)
 AC_SUBST(DVDNAV_MINOR)
 AC_SUBST(DVDNAV_SUB)
+AC_SUBST(DVDREAD_MIN_VERSION)
 
 dnl The libtool version numbers (DVDNAV_LT_*); Don't even think about faking this!
 dnl
@@ -94,7 +97,7 @@ esac
 AC_SUBST(THREAD_LIBS)
 AC_SUBST(THREAD_CFLAGS)
 
-PKG_CHECK_MODULES([DVDREAD], [dvdread >= 6.0.0])
+PKG_CHECK_MODULES([DVDREAD], [dvdread >= ${DVDREAD_MIN_VERSION}])
 
 dnl ---------------------------------------------
 dnl Check for bitfield compiler flag

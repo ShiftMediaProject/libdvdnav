@@ -7,6 +7,6 @@ Name: libdvdnav
 Description: DVD Navigation library
 Version: @VERSION@
 
-Requires.private: dvdread >= 4.1.2
+Requires.private: dvdread >= @DVDREAD_MIN_VERSION@
 Cflags: -I${includedir} @THREAD_CFLAGS@
 Libs: -L${libdir} -ldvdnav @THREAD_LIBS@
