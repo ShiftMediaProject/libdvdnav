@@ -69,6 +69,7 @@ typedef struct vm_position_s {
 typedef struct {
   void *priv;
   dvdnav_logger_cb logcb;
+  dvdnav_stream_cb streamcb;
   dvd_reader_t *dvd;
   ifo_handle_t *vmgi;
   ifo_handle_t *vtsi;

@@ -62,6 +62,39 @@
 #include <fcntl.h>  /* O_BINARY  */
 #endif
 
+#if DVDREAD_VERSION >= DVDREAD_VERSION_CODE(6,1,0)
+static void dvd_reader_logger_handler( void *priv, dvd_logger_level_t level,
+                                       const char *fmt, va_list list )
+{
+    vm_t *vm = priv;
+    if(vm->logcb.pf_log)
+        vm->logcb.pf_log(vm->priv, (dvdnav_logger_level_t) level, fmt, list );
+}
+#endif
+
+static int dvd_reader_seek_handler(void *priv, uint64_t pos)
+{
+    vm_t *vm = priv;
+    if(vm->streamcb.pf_seek)
+        return vm->streamcb.pf_seek(vm->priv, pos);
+    return 1;
+}
+
+static int dvd_reader_read_handler(void *priv, void *buffer, int count)
+{
+    vm_t *vm = priv;
+    if(vm->streamcb.pf_read)
+        return vm->streamcb.pf_read(vm->priv, buffer, count);
+    return 1;
+}
+
+static const dvd_reader_stream_cb local_dvdreader_stream_handlers =
+{
+  .pf_seek = dvd_reader_seek_handler,
+  .pf_read = dvd_reader_read_handler,
+  .pf_readv = NULL,
+};
+
 /*
 #define DVDNAV_STRICT
 */
@@ -372,15 +405,34 @@ int vm_reset(vm_t *vm, const char *dvdroot,
 
   vm->hop_channel                = 0;
 
+  if(stream_cb)
+      vm->streamcb = *stream_cb;
+  else
+      vm->streamcb = (dvdnav_stream_cb) { NULL, NULL, NULL };
+
   if (vm->dvd && (dvdroot || (priv && stream_cb))) {
     /* a new dvd device has been requested */
     vm_close(vm);
   }
   if (!vm->dvd) {
+    /* dvdread stream callback handlers for redirection */
+#if DVDREAD_VERSION >= DVDREAD_VERSION_CODE(6,1,0)
+    dvd_logger_cb dvdread_logcb = { .pf_log = dvd_reader_logger_handler };
+    /* Only install log handler if we have one ourself */
+    dvd_logger_cb *p_dvdread_logcb = vm->logcb.pf_log ? &dvdread_logcb : NULL;
     if(dvdroot)
-        vm->dvd = DVDOpen(dvdroot);
-    else if(priv && stream_cb)
-        vm->dvd = DVDOpenStream(priv, (dvd_reader_stream_cb *)stream_cb);
+        vm->dvd = DVDOpen2(vm, p_dvdread_logcb, dvdroot);
+    else if(vm->priv && vm->streamcb.pf_read)
+        vm->dvd = DVDOpenStream2(vm, p_dvdread_logcb,
+                                 (struct dvd_reader_stream_cb *) /* no const decl :/ */
+                                 &local_dvdreader_stream_handlers);
+#else
+      if(dvdroot)
+          vm->dvd = DVDOpen(dvdroot);
+      else if(vm->priv && vm->streamcb.pf_read)
+          vm->dvd = DVDOpenStream(vm, (struct dvd_reader_stream_cb *) /* no const decl :/ */
+                                      &local_dvdreader_stream_handlers);
+#endif
     if(!vm->dvd) {
       Log0(vm, "vm: failed to open/read the DVD");
       return 0;
