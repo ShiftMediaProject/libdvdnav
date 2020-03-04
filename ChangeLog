@@ -1,6 +1,9 @@
-libdvdnav (6.0.2)
+libdvdnav (6.1.0)
+ * add a dvdnav_get_number_of_angles API
+ * add a dvdnav_version API
  * handle out-of-order ADMAP entries blocking playback
  * fix crashes in dvdnav_describe_title_chapters in broken DVDs
+ * cleanup old code
 
 libdvdnav (6.0.1)
  * improve random playback mode, to work-around broken discs
