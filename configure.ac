@@ -127,4 +127,5 @@ AC_OUTPUT([
 Makefile
 misc/dvdnav.pc
 misc/libdvdnav.spec
+src/dvdnav/version.h
 ])
