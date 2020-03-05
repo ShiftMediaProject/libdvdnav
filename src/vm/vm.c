@@ -88,12 +88,13 @@ static int dvd_reader_read_handler(void *priv, void *buffer, int count)
     return 1;
 }
 
-static const dvd_reader_stream_cb local_dvdreader_stream_handlers =
+static int dvd_reader_readv_handler(void *priv, void *iovec, int count)
 {
-  .pf_seek = dvd_reader_seek_handler,
-  .pf_read = dvd_reader_read_handler,
-  .pf_readv = NULL,
-};
+    vm_t *vm = priv;
+    if(vm->streamcb.pf_readv)
+        return vm->streamcb.pf_readv(vm->priv, iovec, count);
+    return 1;
+}
 
 /*
 #define DVDNAV_STRICT
@@ -405,10 +406,16 @@ int vm_reset(vm_t *vm, const char *dvdroot,
 
   vm->hop_channel                = 0;
 
+  /* save target callbacks */
   if(stream_cb)
       vm->streamcb = *stream_cb;
   else
       vm->streamcb = (dvdnav_stream_cb) { NULL, NULL, NULL };
+
+  /* bind local callbacks */
+  vm->dvdstreamcb.pf_seek = vm->streamcb.pf_seek ? dvd_reader_seek_handler : NULL;
+  vm->dvdstreamcb.pf_read = vm->streamcb.pf_read ? dvd_reader_read_handler : NULL;
+  vm->dvdstreamcb.pf_readv = vm->streamcb.pf_readv ? dvd_reader_readv_handler : NULL;
 
   if (vm->dvd && (dvdroot || (priv && stream_cb))) {
     /* a new dvd device has been requested */
@@ -422,16 +429,13 @@ int vm_reset(vm_t *vm, const char *dvdroot,
     dvd_logger_cb *p_dvdread_logcb = vm->logcb.pf_log ? &dvdread_logcb : NULL;
     if(dvdroot)
         vm->dvd = DVDOpen2(vm, p_dvdread_logcb, dvdroot);
-    else if(vm->priv && vm->streamcb.pf_read)
-        vm->dvd = DVDOpenStream2(vm, p_dvdread_logcb,
-                                 (struct dvd_reader_stream_cb *) /* no const decl :/ */
-                                 &local_dvdreader_stream_handlers);
+    else if(vm->priv && vm->dvdstreamcb.pf_read)
+        vm->dvd = DVDOpenStream2(vm, p_dvdread_logcb, &vm->dvdstreamcb);
 #else
       if(dvdroot)
           vm->dvd = DVDOpen(dvdroot);
-      else if(vm->priv && vm->streamcb.pf_read)
-          vm->dvd = DVDOpenStream(vm, (struct dvd_reader_stream_cb *) /* no const decl :/ */
-                                      &local_dvdreader_stream_handlers);
+      else if(vm->priv && vm->dvdstreamcb.pf_read)
+          vm->dvd = DVDOpenStream(vm, &vm->dvdstreamcb);
 #endif
     if(!vm->dvd) {
       Log0(vm, "vm: failed to open/read the DVD");

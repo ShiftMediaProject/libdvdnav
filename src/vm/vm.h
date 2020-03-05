@@ -71,6 +71,7 @@ typedef struct {
   dvdnav_logger_cb logcb;
   dvdnav_stream_cb streamcb;
   dvd_reader_t *dvd;
+  dvd_reader_stream_cb dvdstreamcb;
   ifo_handle_t *vmgi;
   ifo_handle_t *vtsi;
   dvd_state_t   state;
