@@ -22,6 +22,8 @@
 #include "config.h"
 #endif
 
+/* Un-comment the following to enable additional Log3() function calls.
+ * Do not forget to #define TRACE in src/vm/vm.h (required) */
 /*
 #define LOG_DEBUG
 */
@@ -558,9 +560,9 @@ dvdnav_status_t dvdnav_get_next_cache_block(dvdnav_t *this, uint8_t **buf,
   vm_position_get(this->vm, &this->position_next);
 
 #ifdef LOG_DEBUG
-  Log3(vm, "POS-NEXT ");
+  Log3(this->vm, "POS-NEXT ");
   vm_position_print(this->vm, &this->position_next);
-  Log3(vm, "POS-CUR  ");
+  Log3(this->vm, "POS-CUR  ");
   vm_position_print(this->vm, &this->position_current);
 #endif
 
@@ -568,7 +570,7 @@ dvdnav_status_t dvdnav_get_next_cache_block(dvdnav_t *this, uint8_t **buf,
   if(this->position_current.hop_channel != this->position_next.hop_channel) {
     (*event) = DVDNAV_HOP_CHANNEL;
 #ifdef LOG_DEBUG
-    Log3(vm, "HOP_CHANNEL");
+    Log3(this->vm, "HOP_CHANNEL");
 #endif
     if (this->position_next.hop_channel - this->position_current.hop_channel >= HOP_SEEK) {
       int32_t num_angles = 0, current;
