@@ -1,8 +1,8 @@
 diff --git a/src/dvdnav_internal.h b/src/dvdnav_internal.h
-index 534ccb8..e9c2f78 100644
+index 495f032..e2052a6 100644
 --- a/src/dvdnav_internal.h
 +++ b/src/dvdnav_internal.h
-@@ -228,7 +228,7 @@ int64_t dvdnav_convert_time(dvd_time_t *time);
+@@ -232,7 +232,7 @@ int64_t dvdnav_convert_time(dvd_time_t *time);
  #define printerrf(format, args...) \
      do { if (this) snprintf(this->err_str, MAX_ERR_LEN, format, ## args); } while (0)
  #else

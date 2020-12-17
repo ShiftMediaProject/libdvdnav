@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="..\src\dvdnav.c" />
+    <ClCompile Include="..\src\highlight.c" />
+    <ClCompile Include="..\src\navigation.c" />
+    <ClCompile Include="..\src\read_cache.c" />
+    <ClCompile Include="..\src\searching.c" />
+    <ClCompile Include="..\src\settings.c" />
+    <ClCompile Include="..\src\vm\decoder.c" />
+    <ClCompile Include="..\src\vm\getset.c" />
+    <ClCompile Include="..\src\vm\play.c" />
+    <ClCompile Include="..\src\vm\vm.c" />
+    <ClCompile Include="..\src\vm\vmcmd.c" />
+    <ClCompile Include="..\src\vm\vmget.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\src\dvdnav\dvdnav.h" />
+    <ClInclude Include="..\src\dvdnav\dvdnav_events.h" />
+    <ClInclude Include="..\src\dvdnav\dvd_types.h" />
+    <ClInclude Include="..\src\dvdnav_internal.h" />
+    <ClInclude Include="..\src\read_cache.h" />
+    <ClInclude Include="..\src\vm\decoder.h" />
+    <ClInclude Include="..\src\vm\getset.h" />
+    <ClInclude Include="..\src\vm\play.h" />
+    <ClInclude Include="..\src\vm\vm.h" />
+    <ClInclude Include="..\src\vm\vmcmd.h" />
+    <ClInclude Include="config.h" />
+    <ClInclude Include="version.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="libdvdnav.def" />
+  </ItemGroup>
+</Project>
