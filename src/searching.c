@@ -35,6 +35,7 @@
 #include "vm/decoder.h"
 #include "vm/vm.h"
 #include "dvdnav_internal.h"
+#include "logger.h"
 #include <dvdread/ifo_read.h>
 
 /*
@@ -51,7 +52,7 @@ static dvdnav_status_t dvdnav_scan_admap(dvdnav_t *this, int32_t domain, uint32_
   vobu_admap_t *admap = NULL;
 
 #ifdef LOG_DEBUG
-  fprintf(MSG_OUT, "libdvdnav: Seeking to target %u ...\n", seekto_block);
+  Log3(this, "Seeking to target %u ...", seekto_block);
 #endif
   *vobu = -1;
 
@@ -69,7 +70,7 @@ static dvdnav_status_t dvdnav_scan_admap(dvdnav_t *this, int32_t domain, uint32_
     admap = this->vm->vtsi->vts_vobu_admap;
     break;
   default:
-    fprintf(MSG_OUT, "libdvdnav: Error: Unknown domain for seeking.\n");
+    Log0(this, "Error: Unknown domain for seeking.");
   }
   if(admap) {
     uint32_t address = 0;
@@ -84,15 +85,41 @@ static dvdnav_status_t dvdnav_scan_admap(dvdnav_t *this, int32_t domain, uint32_
 
       /* fprintf(MSG_OUT, "libdvdnav: Found block %u\n", next_vobu); */
 
-      if(vobu_start <= seekto_block && next_vobu > seekto_block)
-        break;
+      if(vobu_start <= seekto_block && next_vobu > seekto_block) {
+        /* We expect the ADMAP to be sorted in order of increasing
+         * sector number, but some discs store out-of-order values in
+         * cells that would not normally be playable, cells which
+         * themselves contain bad sectors. The straightforward linear
+         * search would get "stuck" on those values, essentially
+         * forcing playback of the bad sectors on any sector seek
+         * anywhere within the title. To prevent this, scan the next
+         * few entries to make sure they're all really later than the
+         * current entry, and skip over the out-of-order entries if
+         * not. */
+        uint32_t ooo_address = 0;
+        uint32_t ooo_vobu = SRI_END_OF_CELL;
+        uint32_t check;
+        for( check = 1 ; check <= 32 && address+check < admap_entries ; check++ ) {
+          uint32_t check_vobu = admap->vobu_start_sectors[address+check];
+          if (check_vobu < next_vobu && check_vobu < ooo_vobu) {
+            ooo_address = address+check;
+            ooo_vobu = check_vobu;
+          }
+        }
+        if (ooo_vobu < next_vobu) {
+          address = ooo_address;
+          next_vobu = ooo_vobu;
+        } else {
+          break;
+        }
+      }
       vobu_start = next_vobu;
       address++;
     }
     *vobu = next ? next_vobu : vobu_start;
     return DVDNAV_STATUS_OK;
   }
-  fprintf(MSG_OUT, "libdvdnav: admap not located\n");
+  Log0(this, "admap not located");
   return DVDNAV_STATUS_ERR;
 }
 
@@ -157,7 +184,7 @@ dvdnav_status_t dvdnav_time_search(dvdnav_t *this,
   if(found) {
     uint32_t vobu;
 #ifdef LOG_DEBUG
-    fprintf(MSG_OUT, "libdvdnav: Seeking to cell %i from choice of %i to %i\n",
+    Log3(this, "Seeking to cell %i from choice of %i to %i",
             cell_nr, first_cell_nr, last_cell_nr);
 #endif
     if (dvdnav_scan_admap(this, state->domain, target, 0, &vobu) == DVDNAV_STATUS_OK) {
@@ -165,7 +192,7 @@ dvdnav_status_t dvdnav_time_search(dvdnav_t *this,
 
       if (vm_jump_cell_block(this->vm, cell_nr, vobu - start)) {
 #ifdef LOG_DEBUG
-        fprintf(MSG_OUT, "libdvdnav: After cellN=%u blockN=%u target=%x vobu=%x start=%x\n" ,
+        Log3(this, "After cellN=%u blockN=%u target=%x vobu=%x start=%x" ,
           state->cellN, state->blockN, target, vobu, start);
 #endif
         this->vm->hop_channel += HOP_SEEK;
@@ -175,7 +202,7 @@ dvdnav_status_t dvdnav_time_search(dvdnav_t *this,
     }
   }
 
-  fprintf(MSG_OUT, "libdvdnav: Error when seeking\n");
+  Log0(this, "Error when seeking");
   printerr("Error when seeking.");
   pthread_mutex_unlock(&this->vm_lock);
   return DVDNAV_STATUS_ERR;
@@ -213,8 +240,8 @@ dvdnav_status_t dvdnav_sector_search(dvdnav_t *this,
     return DVDNAV_STATUS_ERR;
   }
 #ifdef LOG_DEBUG
-  fprintf(MSG_OUT, "libdvdnav: seeking to offset=%lld pos=%u length=%u\n", offset, target, length);
-  fprintf(MSG_OUT, "libdvdnav: Before cellN=%u blockN=%u\n", state->cellN, state->blockN);
+  Log3(this, "seeking to offset=%lld pos=%u length=%u", offset, target, length);
+  Log3(this, "Before cellN=%u blockN=%u", state->cellN, state->blockN);
 #endif
 
   current_pos = target;
@@ -313,7 +340,7 @@ dvdnav_status_t dvdnav_sector_search(dvdnav_t *this,
   if(found) {
     uint32_t vobu;
 #ifdef LOG_DEBUG
-    fprintf(MSG_OUT, "libdvdnav: Seeking to cell %i from choice of %i to %i\n",
+    Log3(this, "Seeking to cell %i from choice of %i to %i",
             cell_nr, first_cell_nr, last_cell_nr);
 #endif
     if (dvdnav_scan_admap(this, state->domain, target, 0, &vobu) == DVDNAV_STATUS_OK) {
@@ -321,7 +348,7 @@ dvdnav_status_t dvdnav_sector_search(dvdnav_t *this,
 
       if (vm_jump_cell_block(this->vm, cell_nr, vobu - start)) {
 #ifdef LOG_DEBUG
-        fprintf(MSG_OUT, "libdvdnav: After cellN=%u blockN=%u target=%x vobu=%x start=%x\n" ,
+        Log3(this, "After cellN=%u blockN=%u target=%x vobu=%x start=%x" ,
           state->cellN, state->blockN, target, vobu, start);
 #endif
         this->vm->hop_channel += HOP_SEEK;
@@ -331,8 +358,8 @@ dvdnav_status_t dvdnav_sector_search(dvdnav_t *this,
     }
   }
 
-  fprintf(MSG_OUT, "libdvdnav: Error when seeking\n");
-  fprintf(MSG_OUT, "libdvdnav: FIXME: Implement seeking to location %u\n", target);
+  Log0(this, "Error when seeking");
+  Log1(this, "FIXME: Implement seeking to location %u", target);
   printerr("Error when seeking.");
   pthread_mutex_unlock(&this->vm_lock);
   return DVDNAV_STATUS_ERR;
@@ -355,10 +382,10 @@ dvdnav_status_t dvdnav_prev_pg_search(dvdnav_t *this) {
   }
 
 #ifdef LOG_DEBUG
-  fprintf(MSG_OUT, "libdvdnav: previous chapter\n");
+  Log3(this, "previous chapter");
 #endif
   if (!vm_jump_prev_pg(this->vm)) {
-    fprintf(MSG_OUT, "libdvdnav: previous chapter failed.\n");
+    Log0(this, "previous chapter failed.");
     printerr("Skip to previous chapter failed.");
     pthread_mutex_unlock(&this->vm_lock);
     return DVDNAV_STATUS_ERR;
@@ -367,7 +394,7 @@ dvdnav_status_t dvdnav_prev_pg_search(dvdnav_t *this) {
   this->position_current.still = 0;
   this->vm->hop_channel++;
 #ifdef LOG_DEBUG
-  fprintf(MSG_OUT, "libdvdnav: previous chapter done\n");
+  Log3(this, "previous chapter done");
 #endif
   pthread_mutex_unlock(&this->vm_lock);
 
@@ -383,10 +410,10 @@ dvdnav_status_t dvdnav_top_pg_search(dvdnav_t *this) {
   }
 
 #ifdef LOG_DEBUG
-  fprintf(MSG_OUT, "libdvdnav: top chapter\n");
+  Log3(this, "top chapter");
 #endif
   if (!vm_jump_top_pg(this->vm)) {
-    fprintf(MSG_OUT, "libdvdnav: top chapter failed.\n");
+    Log0(this, "top chapter failed.");
     printerr("Skip to top chapter failed.");
     pthread_mutex_unlock(&this->vm_lock);
     return DVDNAV_STATUS_ERR;
@@ -395,7 +422,7 @@ dvdnav_status_t dvdnav_top_pg_search(dvdnav_t *this) {
   this->position_current.still = 0;
   this->vm->hop_channel++;
 #ifdef LOG_DEBUG
-  fprintf(MSG_OUT, "libdvdnav: top chapter done\n");
+  Log3(this, "top chapter done");
 #endif
   pthread_mutex_unlock(&this->vm_lock);
 
@@ -412,7 +439,7 @@ dvdnav_status_t dvdnav_next_pg_search(dvdnav_t *this) {
   }
 
 #ifdef LOG_DEBUG
-  fprintf(MSG_OUT, "libdvdnav: next chapter\n");
+  Log3(this, "next chapter");
 #endif
   /* make a copy of current VM and try to navigate the copy to the next PG */
   try_vm = vm_new_copy(this->vm);
@@ -432,7 +459,7 @@ dvdnav_status_t dvdnav_next_pg_search(dvdnav_t *this) {
     vm_get_next_cell(try_vm);
     if (try_vm->stopped) {
       vm_free_copy(try_vm);
-      fprintf(MSG_OUT, "libdvdnav: next chapter failed.\n");
+      Log0(this, "next chapter failed.");
       printerr("Skip to next chapter failed.");
       goto fail;
     }
@@ -444,7 +471,7 @@ dvdnav_status_t dvdnav_next_pg_search(dvdnav_t *this) {
   this->position_current.still = 0;
   this->vm->hop_channel++;
 #ifdef LOG_DEBUG
-  fprintf(MSG_OUT, "libdvdnav: next chapter done\n");
+  Log3(this, "next chapter done");
 #endif
   pthread_mutex_unlock(&this->vm_lock);
 
@@ -638,6 +665,8 @@ uint32_t dvdnav_describe_title_chapters(dvdnav_t *this, int32_t title, uint64_t 
 
   ptitle = &this->vm->vmgi->tt_srpt->title[title-1];
   parts = ptitle->nr_of_ptts;
+  if(ptitle->vts_ttn == 0)
+      goto fail;
   ptt = ifo->vts_ptt_srpt->title[ptitle->vts_ttn-1].ptt;
 
   tmp = calloc(1, sizeof(uint64_t)*parts);
@@ -747,7 +776,7 @@ static vobu_admap_t* dvdnav_admap_get(dvdnav_t *this, dvd_state_t *state,
     admap = this->vm->vtsi->vts_vobu_admap;
     break;
   default: {
-    fprintf(MSG_OUT, "Unknown domain");
+    Log1(this, "Unknown domain");
     return NULL;
   }
   }
@@ -755,7 +784,7 @@ static vobu_admap_t* dvdnav_admap_get(dvdnav_t *this, dvd_state_t *state,
 
   *admap_len = (admap->last_byte + 1 - VOBU_ADMAP_SIZE) / VOBU_ADMAP_SIZE;
   if (*admap_len <= 0) {
-    fprintf(MSG_OUT, "admap_len <= 0");
+    Log1(this, "admap_len <= 0");
     return NULL;
   }
   return admap;
@@ -785,7 +814,7 @@ static vts_tmap_t* dvdnav_tmap_get(dvdnav_t *this, dvd_state_t *state,
     break;
   }
   default: {
-    fprintf(MSG_OUT, "unknown domain for tmap");
+    Log1(this, "unknown domain for tmap");
     return NULL;
   }
   }
@@ -805,7 +834,7 @@ static vts_tmap_t* dvdnav_tmap_get(dvdnav_t *this, dvd_state_t *state,
   tmap_count = tmapt->nr_of_tmaps;
   pgcN = state->pgcN - 1; /* -1 b/c pgcN is base1 */
   if (pgcN < 0) {
-    fprintf(MSG_OUT, "pgcN < 0");
+    Log1(this, "pgcN < 0");
     return NULL;
   }
 
@@ -815,7 +844,7 @@ static vts_tmap_t* dvdnav_tmap_get(dvdnav_t *this, dvd_state_t *state,
   case DVD_DOMAIN_VMGM:
   case DVD_DOMAIN_VTSMenu: {
     if (tmap_count == 0) {
-      fprintf(MSG_OUT, "tmap_count == 0");
+      Log1(this, "tmap_count == 0");
       return NULL;
     }
     tmap = &tmapt->tmap[0]; /* ASSUME: vmgi only has one time map */
@@ -823,7 +852,7 @@ static vts_tmap_t* dvdnav_tmap_get(dvdnav_t *this, dvd_state_t *state,
   }
   case DVD_DOMAIN_VTSTitle: {
     if (pgcN >= tmap_count) {
-      fprintf(MSG_OUT, "pgcN >= tmap_count; pgcN=%i tmap_count=%i",
+      Log1(this, "pgcN >= tmap_count; pgcN=%i tmap_count=%i",
           pgcN, tmap_count);
       return NULL;
     }
@@ -836,20 +865,21 @@ static vts_tmap_t* dvdnav_tmap_get(dvdnav_t *this, dvd_state_t *state,
   /* tmap->tmu is in seconds; convert to millisecs */
   *tmap_interval = tmap->tmu * 1000;
   if (*tmap_interval == 0) {
-    fprintf(MSG_OUT, "tmap_interval == 0");
+    Log1(this, "tmap_interval == 0");
     return NULL;
   }
   *tmap_len = tmap->nr_of_entries;
   if (*tmap_len == 0) {
-    fprintf(MSG_OUT, "tmap_len == 0");
+    Log1(this, "tmap_len == 0");
     return NULL;
   }
   return tmap;
 }
 
 /* Get a sector from a tmap */
-static int32_t dvdnav_tmap_get_entry(vts_tmap_t *tmap, uint16_t tmap_len,
-            int32_t idx, uint32_t *sector) {
+static int32_t dvdnav_tmap_get_entry(dvdnav_t *this,
+                                     vts_tmap_t *tmap, uint16_t tmap_len,
+                                     int32_t idx, uint32_t *sector) {
   /* tmaps start at idx 0 which represents a sector at time 1 * tmap_interval
    * this creates a "fake" tmap index at idx -1 for sector 0 */
   if (idx == TMAP_IDX_EDGE_BGN) {
@@ -857,7 +887,7 @@ static int32_t dvdnav_tmap_get_entry(vts_tmap_t *tmap, uint16_t tmap_len,
     return 1;
   }
   if (idx < TMAP_IDX_EDGE_BGN || idx >= tmap_len) {
-    fprintf(MSG_OUT, "idx out of bounds idx=%i %i", idx, tmap_len);
+    Log1(this, "idx out of bounds idx=%i %i", idx, tmap_len);
     return 0;
   }
   /* 0x7fffffff unsets discontinuity bit if present */
@@ -905,7 +935,8 @@ static int32_t dvdnav_admap_search(vobu_admap_t *admap, uint32_t admap_len,
 }
 
 /* Do a binary search for the earlier tmap entry near find_sector */
-static int32_t dvdnav_tmap_search(vts_tmap_t *tmap, uint32_t tmap_len,
+static int32_t dvdnav_tmap_search(dvdnav_t *this,
+                                  vts_tmap_t *tmap, uint32_t tmap_len,
             uint32_t find_sector, int32_t *tmap_idx, uint32_t *sector) {
   int32_t adj = 1;
   int32_t prv_pos = 0;
@@ -924,7 +955,7 @@ static int32_t dvdnav_tmap_search(vts_tmap_t *tmap, uint32_t tmap_len,
     else if (cur_idx >= (int32_t)tmap_len)
       cur_idx = tmap_len - 1;
     cur_sector = 0;
-    result = dvdnav_tmap_get_entry(tmap, tmap_len, cur_idx, &cur_sector);
+    result = dvdnav_tmap_get_entry(this, tmap, tmap_len, cur_idx, &cur_sector);
     if (!result) return 0;
     if      (find_sector <  cur_sector) adj = -1;
     else if (find_sector >  cur_sector) adj =  1;
@@ -941,7 +972,7 @@ static int32_t dvdnav_tmap_search(vts_tmap_t *tmap, uint32_t tmap_len,
         }
         else {
           cur_idx -= 1;
-          result = dvdnav_tmap_get_entry(tmap, tmap_len, cur_idx, &cur_sector);
+          result = dvdnav_tmap_get_entry(this, tmap, tmap_len, cur_idx, &cur_sector);
           if (!result) return 0;
         }
       }
@@ -970,7 +1001,7 @@ static int32_t dvdnav_cell_find(dvdnav_t *this, dvd_state_t *state,
   if (pgc == NULL) return 0;
   cells_len = pgc->nr_of_cells;
   if (cells_len == 0) {
-    fprintf(MSG_OUT, "cells_len == 0");
+    Log1(this, "cells_len == 0");
     return 0;
   }
 
@@ -1017,12 +1048,13 @@ static int32_t dvdnav_cell_find(dvdnav_t *this, dvd_state_t *state,
     cell_data->idx = cell_idx;
   }
   else
-    fprintf(MSG_OUT, "cell not found; find=%"PRId64"", find_val);
+    Log1(this, "cell not found; find=%"PRId64, find_val);
   return found;
 }
 
 /* Given two sectors and a fraction, calc the corresponding vobu */
-static int32_t dvdnav_admap_interpolate_vobu(dvdnav_jump_args_t *args,
+static int32_t dvdnav_admap_interpolate_vobu(dvdnav_t *this,
+                                             dvdnav_jump_args_t *args,
             dvdnav_pos_data_t *bgn, dvdnav_pos_data_t *end, uint32_t fraction,
             uint32_t *jump_sector) {
   int32_t result = 0;
@@ -1034,7 +1066,7 @@ static int32_t dvdnav_admap_interpolate_vobu(dvdnav_jump_args_t *args,
   result = dvdnav_admap_search(args->admap, args->admap_len,
       bgn->sector, &bgn->vobu_idx);
   if (!result) {
-    fprintf(MSG_OUT, "admap_interpolate: could not find sector_bgn");
+    Log1(this, "admap_interpolate: could not find sector_bgn");
     return 0;
   }
 
@@ -1042,7 +1074,7 @@ static int32_t dvdnav_admap_interpolate_vobu(dvdnav_jump_args_t *args,
   result = dvdnav_admap_search(args->admap, args->admap_len,
       end->sector, &end->vobu_idx);
   if (!result) {
-    fprintf(MSG_OUT, "admap_interpolate: could not find sector_end");
+    Log1(this, "admap_interpolate: could not find sector_end");
     return 0;
   }
 
@@ -1053,7 +1085,7 @@ static int32_t dvdnav_admap_interpolate_vobu(dvdnav_jump_args_t *args,
   vobu_adj++;
   vobu_idx = bgn->vobu_idx + vobu_adj;
   if ((int32_t)vobu_idx >= args->admap_len) {
-    fprintf(MSG_OUT, "admap_interpolate: vobu_idx >= admap_len");
+    Log1(this, "admap_interpolate: vobu_idx >= admap_len");
     return 0;
   }
   *jump_sector = args->admap->vobu_start_sectors[vobu_idx];
@@ -1061,7 +1093,8 @@ static int32_t dvdnav_admap_interpolate_vobu(dvdnav_jump_args_t *args,
 }
 
 /* Given two tmap entries and a time, calc the time for the lo tmap entry */
-static int32_t dvdnav_tmap_calc_time_for_tmap_entry(dvdnav_jump_args_t *args,
+static int32_t dvdnav_tmap_calc_time_for_tmap_entry(dvdnav_t *this,
+                                                    dvdnav_jump_args_t *args,
             dvdnav_pos_data_t *lo, dvdnav_pos_data_t *hi,
             dvdnav_pos_data_t *pos, uint64_t *out_time) {
   int32_t result = 0;
@@ -1069,7 +1102,7 @@ static int32_t dvdnav_tmap_calc_time_for_tmap_entry(dvdnav_jump_args_t *args,
   uint64_t time_adj = 0;
 
   if (lo->sector == hi->sector) {
-    fprintf(MSG_OUT, "lo->sector == hi->sector: %i", lo->sector);
+    Log1(this, "lo->sector == hi->sector: %i", lo->sector);
     return 0;
   }
 
@@ -1077,19 +1110,19 @@ static int32_t dvdnav_tmap_calc_time_for_tmap_entry(dvdnav_jump_args_t *args,
   result = dvdnav_admap_search(args->admap, args->admap_len,
       lo->sector, &lo->vobu_idx);
   if (!result) {
-    fprintf(MSG_OUT, "lo->vobu: lo->sector=%i", lo->sector);
+    Log1(this, "lo->vobu: lo->sector=%i", lo->sector);
     return 0;
   }
   result = dvdnav_admap_search(args->admap, args->admap_len,
       hi->sector, &hi->vobu_idx);
   if (!result) {
-    fprintf(MSG_OUT, "hi->vobu: hi->sector=%i", hi->sector);
+    Log1(this, "hi->vobu: hi->sector=%i", hi->sector);
     return 0;
   }
   result = dvdnav_admap_search(args->admap, args->admap_len,
       pos->sector, &pos->vobu_idx);
   if (!result) {
-    fprintf(MSG_OUT, "pos->vobu: pos->sector=%i", pos->sector);
+    Log1(this, "pos->vobu: pos->sector=%i", pos->sector);
     return 0;
   }
 
@@ -1103,7 +1136,7 @@ static int32_t dvdnav_tmap_calc_time_for_tmap_entry(dvdnav_jump_args_t *args,
       / ( hi->vobu_idx - lo->vobu_idx);
   }
   if (vobu_pct < 0 || vobu_pct > 1000) {
-    fprintf(MSG_OUT, "vobu_pct must be between 0 and 1000");
+    Log1(this, "vobu_pct must be between 0 and 1000");
     return 0;
   }
 
@@ -1115,15 +1148,17 @@ static int32_t dvdnav_tmap_calc_time_for_tmap_entry(dvdnav_jump_args_t *args,
 
 /* Find the tmap entries on either side of a given sector */
 static int32_t dvdnav_tmap_get_entries_for_sector(
+            dvdnav_t *this,
             dvdnav_jump_args_t *args,
             dvdnav_cell_data_t *cell_data, uint32_t find_sector,
             dvdnav_pos_data_t *lo, dvdnav_pos_data_t *hi) {
   int32_t result = 0;
 
-  result = dvdnav_tmap_search(args->tmap, args->tmap_len, find_sector,
+  result = dvdnav_tmap_search(this,
+      args->tmap, args->tmap_len, find_sector,
       &lo->tmap_idx, &lo->sector);
   if (!result) {
-    fprintf(MSG_OUT, "could not find lo idx: %i", find_sector);
+    Log1(this, "could not find lo idx: %i", find_sector);
     return 0;
   }
 
@@ -1147,10 +1182,10 @@ static int32_t dvdnav_tmap_get_entries_for_sector(
   }
   else {
     hi->tmap_idx = lo->tmap_idx + 1;
-    result = dvdnav_tmap_get_entry(args->tmap, args->tmap_len,
+    result = dvdnav_tmap_get_entry(this, args->tmap, args->tmap_len,
         hi->tmap_idx, &hi->sector);
     if (!result) {
-      fprintf(MSG_OUT, "could not find hi idx: %i", find_sector);
+      Log1(this, "could not find hi idx: %i", find_sector);
       return 0;
     }
   }
@@ -1177,12 +1212,13 @@ static int32_t dvdnav_find_vobu_by_tmap(dvdnav_t *this, dvd_state_t *state,
   /* get tmap entries on either side of cell_bgn */
   cell_bgn_lo = &(dvdnav_pos_data_t){0};
   cell_bgn_hi = &(dvdnav_pos_data_t){0};
-  result = dvdnav_tmap_get_entries_for_sector(args, cell_data,
+  result = dvdnav_tmap_get_entries_for_sector(this, args, cell_data,
       cell_data->bgn->sector, cell_bgn_lo, cell_bgn_hi);
   if (!result) return 0;
 
   /* calc time of cell_bgn_lo */
-  result = dvdnav_tmap_calc_time_for_tmap_entry(args, cell_bgn_lo, cell_bgn_hi,
+  result = dvdnav_tmap_calc_time_for_tmap_entry(this,
+      args, cell_bgn_lo, cell_bgn_hi,
       cell_data->bgn, &cell_bgn_lo->time);
   if (!result) return 0;
 
@@ -1204,26 +1240,26 @@ static int32_t dvdnav_find_vobu_by_tmap(dvdnav_t *this, dvd_state_t *state,
   }
   else {
     jump_lo->tmap_idx = (uint32_t)(cell_bgn_lo->tmap_idx + seek_idx);
-    result = dvdnav_tmap_get_entry(args->tmap, args->tmap_len,
+    result = dvdnav_tmap_get_entry(this, args->tmap, args->tmap_len,
         jump_lo->tmap_idx, &jump_lo->sector);
     if (!result) return 0;
 
     /* +1 handled by dvdnav_tmap_get_entry */
     jump_hi->tmap_idx = jump_lo->tmap_idx + 1;
-    result = dvdnav_tmap_get_entry(args->tmap, args->tmap_len,
+    result = dvdnav_tmap_get_entry(this, args->tmap, args->tmap_len,
         jump_hi->tmap_idx, &jump_hi->sector);
     if (!result) return 0;
   }
 
   /* interpolate sector */
-  result = dvdnav_admap_interpolate_vobu(args, jump_lo, jump_hi,
+  result = dvdnav_admap_interpolate_vobu(this, args, jump_lo, jump_hi,
       seek_pct, &jump->sector);
 
   return result;
 }
 
 /* Find the nearest vobu by using the cell boundaries */
-static int32_t dvdnav_find_vobu_by_cell_boundaries(
+static int32_t dvdnav_find_vobu_by_cell_boundaries(dvdnav_t *this,
             dvdnav_jump_args_t *args, dvdnav_cell_data_t *cell_data,
             dvdnav_pos_data_t *jump) {
   int64_t jump_offset = 0;
@@ -1234,12 +1270,12 @@ static int32_t dvdnav_find_vobu_by_cell_boundaries(
   /* get jump_offset */
   jump_offset = jump->time - cell_data->bgn->time;
   if (jump_offset < 0) {
-    fprintf(MSG_OUT, "jump_offset < 0");
+    Log1(this, "jump_offset < 0");
     return 0;
   }
   cell_len = cell_data->end->time - cell_data->bgn->time;
   if (cell_len < 0) {
-    fprintf(MSG_OUT, "cell_len < 0");
+    Log1(this, "cell_len < 0");
     return 0;
   }
   jump_pct = (jump_offset * 1000) / cell_len;
@@ -1250,10 +1286,10 @@ static int32_t dvdnav_find_vobu_by_cell_boundaries(
    * +1 to get sector that is the start of a VOBU
    * start of a VOBU is needed in order to index into admap */
   cell_data->end->sector += 1;
-  result = dvdnav_admap_interpolate_vobu(args,
+  result = dvdnav_admap_interpolate_vobu(this, args,
       cell_data->bgn, cell_data->end, jump_pct, &jump->sector);
   if (!result) {
-    fprintf(MSG_OUT, "find_by_admap.interpolate");
+    Log1(this, "find_by_admap.interpolate");
     return 0;
   }
   return 1;
@@ -1298,7 +1334,7 @@ dvdnav_status_t dvdnav_jump_to_sector_by_time(dvdnav_t *this,
   /* find sector */
   result = dvdnav_find_vobu_by_tmap(this, state, args, cell_data, jump);
   if (!result) {/* bad tmap; interpolate over cell */
-    result = dvdnav_find_vobu_by_cell_boundaries(args, cell_data, jump);
+    result = dvdnav_find_vobu_by_cell_boundaries(this, args, cell_data, jump);
     if (!result) {
       goto exit;
     }

@@ -64,19 +64,38 @@ dvdnav_status_t dvdnav_get_number_of_titles(dvdnav_t *this, int32_t *titles) {
   return DVDNAV_STATUS_OK;
 }
 
+static dvdnav_status_t get_title_by_number(dvdnav_t *this, int32_t title,
+                                           title_info_t **pp_title)
+{
+    int32_t titlescount;
+    dvdnav_status_t status = dvdnav_get_number_of_titles(this, &titlescount);
+    if(status == DVDNAV_STATUS_OK)
+    {
+        if ((title < 1) || (title > titlescount)) {
+          printerr("Passed a title number out of range.");
+          status = DVDNAV_STATUS_ERR;
+        }
+        else {
+            *pp_title = &vm_get_vmgi(this->vm)->tt_srpt->title[title-1];
+        }
+    }
+    return status;
+}
+
 dvdnav_status_t dvdnav_get_number_of_parts(dvdnav_t *this, int32_t title, int32_t *parts) {
-  if (!this->vm->vmgi) {
-    printerr("Bad VM state.");
-    return DVDNAV_STATUS_ERR;
-  }
-  if ((title < 1) || (title > vm_get_vmgi(this->vm)->tt_srpt->nr_of_srpts) ) {
-    printerr("Passed a title number out of range.");
-    return DVDNAV_STATUS_ERR;
-  }
+  title_info_t *info;
+  dvdnav_status_t status = get_title_by_number(this, title, &info);
+  if(status == DVDNAV_STATUS_OK)
+      (*parts) = info->nr_of_ptts;
+  return status;
+}
 
-  (*parts) = vm_get_vmgi(this->vm)->tt_srpt->title[title-1].nr_of_ptts;
-
-  return DVDNAV_STATUS_OK;
+dvdnav_status_t dvdnav_get_number_of_angles(dvdnav_t *this, int32_t title, int32_t *angles) {
+    title_info_t *info;
+    dvdnav_status_t status = get_title_by_number(this, title, &info);
+    if(status == DVDNAV_STATUS_OK)
+        (*angles) = info->nr_of_angles;
+    return status;
 }
 
 dvdnav_status_t dvdnav_current_title_info(dvdnav_t *this, int32_t *title, int32_t *part) {

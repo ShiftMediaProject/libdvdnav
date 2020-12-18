@@ -26,19 +26,18 @@
 #ifndef LIBDVDNAV_DVDNAV_H
 #define LIBDVDNAV_DVDNAV_H
 
-#define DVDNAV_VERSION 50400
-
 #ifdef __cplusplus
 extern "C" {
 #endif
 
+#include "version.h"
 #include <dvdnav/dvd_types.h>
 #include <dvdread/dvd_reader.h>
 #include <dvdread/nav_types.h>
 #include <dvdread/ifo_types.h> /* For vm_cmd_t */
 #include <dvdnav/dvdnav_events.h>
 
-
+#include <stdarg.h>
 
 /*********************************************************************
  * dvdnav data types                                                 *
@@ -70,6 +69,22 @@ typedef dvd_reader_stream_cb dvdnav_stream_cb;
  *********************************************************************/
 
 /*
+ * Logger callback definition
+ */
+typedef enum
+{
+    DVDNAV_LOGGER_LEVEL_INFO,
+    DVDNAV_LOGGER_LEVEL_ERROR,
+    DVDNAV_LOGGER_LEVEL_WARN,
+    DVDNAV_LOGGER_LEVEL_DEBUG,
+} dvdnav_logger_level_t;
+
+typedef struct
+{
+  void ( *pf_log )  ( void *, dvdnav_logger_level_t, const char *, va_list );
+} dvdnav_logger_cb;
+
+/*
  * These functions allow you to open a DVD device and associate it
  * with a dvdnav_t.
  */
@@ -87,7 +102,14 @@ typedef dvd_reader_stream_cb dvdnav_stream_cb;
  */
 dvdnav_status_t dvdnav_open(dvdnav_t **dest, const char *path);
 dvdnav_status_t
-dvdnav_open_stream(dvdnav_t **dest, void *stream, dvdnav_stream_cb *stream_cb);
+dvdnav_open_stream(dvdnav_t **dest, void *priv, dvdnav_stream_cb *stream_cb);
+
+dvdnav_status_t dvdnav_open2(dvdnav_t **dest,
+                             void *, const dvdnav_logger_cb *,
+                             const char *path);
+dvdnav_status_t dvdnav_open_stream2(dvdnav_t **dest,
+                                    void *priv, const dvdnav_logger_cb *,
+                                    dvdnav_stream_cb *stream_cb);
 
 dvdnav_status_t dvdnav_dup(dvdnav_t **dest, dvdnav_t *src);
 dvdnav_status_t dvdnav_free_dup(dvdnav_t * _this);
@@ -115,6 +137,7 @@ dvdnav_status_t dvdnav_path(dvdnav_t *self, const char **path);
  */
 const char* dvdnav_err_to_string(dvdnav_t *self);
 
+const char* dvdnav_version(void);
 
 /*********************************************************************
  * changing and reading DVD player characteristics                   *
@@ -270,6 +293,11 @@ dvdnav_status_t dvdnav_get_number_of_titles(dvdnav_t *self, int32_t *titles);
  * Returns the number of parts within the given title.
  */
 dvdnav_status_t dvdnav_get_number_of_parts(dvdnav_t *self, int32_t title, int32_t *parts);
+
+/*
+ * Returns the number of angles for the given title.
+ */
+dvdnav_status_t dvdnav_get_number_of_angles(dvdnav_t *self, int32_t title, int32_t *angles);
 
 /*
  * Plays the specified title of the DVD from its beginning (that is: part 1).

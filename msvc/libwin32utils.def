@@ -4,14 +4,6 @@
 EXPORTS
 
 ;------------------------------------------------------------
-; dirent exports
-
-opendir
-closedir
-readdir
-rewinddir
-
-;------------------------------------------------------------
 ; pthread exports
 
 ;pthread_atfork

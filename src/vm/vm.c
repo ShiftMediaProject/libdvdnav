@@ -38,6 +38,7 @@
 #include <sys/stat.h>
 #include <sys/time.h>
 #include <fcntl.h>
+#include <ctype.h>
 
 #include <dvdread/nav_types.h>
 #include <dvdread/ifo_types.h>
@@ -49,6 +50,7 @@
 #include "play.h"
 #include "getset.h"
 #include "dvdnav_internal.h"
+#include "logger.h"
 
 #ifdef _MSC_VER
 #include <io.h>   /* read() */
@@ -61,6 +63,40 @@
 #include <io.h>     /* setmode() */
 #include <fcntl.h>  /* O_BINARY  */
 #endif
+
+#if DVDREAD_VERSION >= DVDREAD_VERSION_CODE(6,1,0)
+static void dvd_reader_logger_handler( void *priv, dvd_logger_level_t level,
+                                       const char *fmt, va_list list )
+{
+    vm_t *vm = priv;
+    if(vm->logcb.pf_log)
+        vm->logcb.pf_log(vm->priv, (dvdnav_logger_level_t) level, fmt, list );
+}
+#endif
+
+static int dvd_reader_seek_handler(void *priv, uint64_t pos)
+{
+    vm_t *vm = priv;
+    if(vm->streamcb.pf_seek)
+        return vm->streamcb.pf_seek(vm->priv, pos);
+    return 1;
+}
+
+static int dvd_reader_read_handler(void *priv, void *buffer, int count)
+{
+    vm_t *vm = priv;
+    if(vm->streamcb.pf_read)
+        return vm->streamcb.pf_read(vm->priv, buffer, count);
+    return 1;
+}
+
+static int dvd_reader_readv_handler(void *priv, void *iovec, int count)
+{
+    vm_t *vm = priv;
+    if(vm->streamcb.pf_readv)
+        return vm->streamcb.pf_readv(vm->priv, iovec, count);
+    return 1;
+}
 
 /*
 #define DVDNAV_STRICT
@@ -78,7 +114,7 @@ static void vm_close(vm_t *vm);
 
 #ifdef TRACE
 void vm_position_print(vm_t *vm, vm_position_t *position) {
-  fprintf(MSG_OUT, "libdvdnav: But=%x Spu=%x Aud=%x Ang=%x Hop=%x vts=%x dom=%x cell=%x cell_restart=%x cell_start=%x still=%x block=%x\n",
+  Log3(vm, "But=%x Spu=%x Aud=%x Ang=%x Hop=%x vts=%x dom=%x cell=%x cell_restart=%x cell_start=%x still=%x block=%x",
   position->button,
   position->spu_channel,
   position->audio_channel,
@@ -103,7 +139,7 @@ static void vm_print_current_domain_state(vm_t *vm) {
     case DVD_DOMAIN_FirstPlay:   domain = "First Play";         break;
     default:          domain = "Unknown";            break;
   }
-  fprintf(MSG_OUT, "libdvdnav: %s Domain: VTS:%d PGC:%d PG:%u CELL:%u BLOCK:%u VTS_TTN:%u TTN:%u TT_PGCN:%u\n",
+  Log3(vm, "%s Domain: VTS:%d PGC:%d PG:%u CELL:%u BLOCK:%u VTS_TTN:%u TTN:%u TT_PGCN:%u",
                    domain,
                    vm->state.vtsN,
                    get_PGCN(vm),
@@ -139,79 +175,79 @@ static int os2_open(const char *name, int oflag)
 }
 #endif
 
-static int dvd_read_name(char *name, char *serial, const char *device) {
+static void escaped_strcpy(char *dst, const char *src, size_t len)
+{
+    for(size_t i=0; i < len; i++ )
+    {
+      if(src[i] == 0)
+      {
+          dst[i] = 0;
+          break;
+      }
+      else if(isprint(src[i]))
+      {
+        dst[i] = src[i];
+      } else {
+        dst[i] = ' ';
+      }
+    }
+}
+
+static int dvd_read_name(const vm_t *vm, char *name, char *serial, const char *device) {
   /* Because we are compiling with _FILE_OFFSET_BITS=64
    * all off_t are 64bit.
    */
   off_t off;
   ssize_t read_size = 0;
-  int fd = -1, i;
+  int fd = -1;
   uint8_t data[DVD_VIDEO_LB_LEN];
 
   /* Read DVD name */
   if (device == NULL) {
-    fprintf(MSG_OUT, "libdvdnav: Device name string NULL\n");
+    Log0(vm, "Device name string NULL");
     goto fail;
   }
   if ((fd = open(device, O_RDONLY)) == -1) {
-    fprintf(MSG_OUT, "libdvdnav: Unable to open device file %s.\n", device);
+    Log0(vm, "Unable to open device file %s.", device);
     goto fail;
   }
 
   if ((off = lseek( fd, 32 * (off_t) DVD_VIDEO_LB_LEN, SEEK_SET )) == (off_t) - 1) {
-    fprintf(MSG_OUT, "libdvdnav: Unable to seek to the title block %u.\n", 32);
+    Log0(vm, "Unable to seek to the title block %u.", 32);
     goto fail;
   }
 
   if( off != ( 32 * (off_t) DVD_VIDEO_LB_LEN ) ) {
-    fprintf(MSG_OUT, "libdvdnav: Can't seek to block %u\n", 32 );
+    Log0(vm, "Can't seek to block %u", 32 );
     goto fail;
   }
 
   if ((read_size = read( fd, data, DVD_VIDEO_LB_LEN )) == -1) {
-    fprintf(MSG_OUT, "libdvdnav: Can't read name block. Probably not a DVD-ROM device.\n");
+    Log0(vm, "Can't read name block. Probably not a DVD-ROM device.");
     goto fail;
   }
 
   close(fd);
   fd = -1;
   if (read_size != DVD_VIDEO_LB_LEN) {
-    fprintf(MSG_OUT, "libdvdnav: Can't read name block. Probably not a DVD-ROM device.\n");
+    Log0(vm, "Can't read name block. Probably not a DVD-ROM device.");
     goto fail;
   }
 
-  fprintf(MSG_OUT, "libdvdnav: DVD Title: ");
-  for(i=25; i < 73; i++ ) {
-    if(data[i] == 0) break;
-    if((data[i] > 32) && (data[i] < 127)) {
-      fprintf(MSG_OUT, "%c", data[i]);
-    } else {
-      fprintf(MSG_OUT, " ");
-    }
-  }
-  strncpy(name, (char*) &data[25], 48);
+  char buffer[49] = {0};
+  strncpy(name, (const char*) &data[25], 48);
   name[48] = 0;
-  fprintf(MSG_OUT, "\nlibdvdnav: DVD Serial Number: ");
-  for(i=73; i < 89; i++ ) {
-    if(data[i] == 0) break;
-    if((data[i] > 32) && (data[i] < 127)) {
-      fprintf(MSG_OUT, "%c", data[i]);
-    } else {
-      fprintf(MSG_OUT, " ");
-    }
-  }
-  strncpy(serial, (char*) &data[73], 14);
+  escaped_strcpy(buffer, name, 48);
+  Log2(vm, "DVD Title: %s", buffer);
+
+  strncpy(serial, (const char*) &data[73], 14);
   serial[14] = 0;
-  fprintf(MSG_OUT, "\nlibdvdnav: DVD Title (Alternative): ");
-  for(i=89; i < 128; i++ ) {
-    if(data[i] == 0) break;
-    if((data[i] > 32) && (data[i] < 127)) {
-      fprintf(MSG_OUT, "%c", data[i]);
-    } else {
-      fprintf(MSG_OUT, " ");
-    }
-  }
-  fprintf(MSG_OUT, "\n");
+  escaped_strcpy(buffer, serial, 14);
+  Log2(vm, "DVD Serial Number: %s", buffer);
+
+  escaped_strcpy(buffer, (const char *) &data[89], 128 - 89);
+  Log2(vm, "DVD Title (Alternative): %s", buffer);
+
   return 1;
 
 fail:
@@ -231,27 +267,27 @@ int ifoOpenNewVTSI(vm_t *vm, dvd_reader_t *dvd, int vtsN) {
 
   vm->vtsi = ifoOpenVTSI(dvd, vtsN);
   if(vm->vtsi == NULL) {
-    fprintf(MSG_OUT, "libdvdnav: ifoOpenVTSI failed\n");
+    Log0(vm, "ifoOpenVTSI failed");
     return 0;
   }
   if(!ifoRead_VTS_PTT_SRPT(vm->vtsi)) {
-    fprintf(MSG_OUT, "libdvdnav: ifoRead_VTS_PTT_SRPT failed\n");
+    Log0(vm, "ifoRead_VTS_PTT_SRPT failed");
     return 0;
   }
   if(!ifoRead_PGCIT(vm->vtsi)) {
-    fprintf(MSG_OUT, "libdvdnav: ifoRead_PGCIT failed\n");
+    Log0(vm, "ifoRead_PGCIT failed");
     return 0;
   }
   if(!ifoRead_PGCI_UT(vm->vtsi)) {
-    fprintf(MSG_OUT, "libdvdnav: ifoRead_PGCI_UT failed\n");
+    Log0(vm, "ifoRead_PGCI_UT failed");
     return 0;
   }
   if(!ifoRead_VOBU_ADMAP(vm->vtsi)) {
-    fprintf(MSG_OUT, "libdvdnav: ifoRead_VOBU_ADMAP vtsi failed\n");
+    Log0(vm, "ifoRead_VOBU_ADMAP vtsi failed");
     return 0;
   }
   if(!ifoRead_TITLE_VOBU_ADMAP(vm->vtsi)) {
-    fprintf(MSG_OUT, "libdvdnav: ifoRead_TITLE_VOBU_ADMAP vtsi failed\n");
+    Log0(vm, "ifoRead_TITLE_VOBU_ADMAP vtsi failed");
     return 0;
   }
   vm->state.vtsN = vtsN;
@@ -262,8 +298,15 @@ int ifoOpenNewVTSI(vm_t *vm, dvd_reader_t *dvd, int vtsN) {
 
 /* Initialisation & Destruction */
 
-vm_t* vm_new_vm() {
-  return (vm_t*)calloc(1, sizeof(vm_t));
+vm_t* vm_new_vm(void *priv, const dvdnav_logger_cb *logcb) {
+  vm_t *vm = calloc(1, sizeof(vm_t));
+  if(vm)
+  {
+    vm->priv = priv;
+    if(logcb)
+        vm->logcb = *logcb;
+  }
+  return vm;
 }
 
 void vm_free_vm(vm_t *vm) {
@@ -328,7 +371,7 @@ static void vm_close(vm_t *vm) {
 }
 
 int vm_reset(vm_t *vm, const char *dvdroot,
-             void *stream, dvdnav_stream_cb *stream_cb) {
+             void *priv, dvdnav_stream_cb *stream_cb) {
   /*  Setup State */
   memset(vm->state.registers.SPRM, 0, sizeof(vm->state.registers.SPRM));
   memset(vm->state.registers.GPRM, 0, sizeof(vm->state.registers.GPRM));
@@ -365,61 +408,90 @@ int vm_reset(vm_t *vm, const char *dvdroot,
 
   vm->hop_channel                = 0;
 
-  if (vm->dvd && (dvdroot || (stream && stream_cb))) {
+  /* save target callbacks */
+  if(stream_cb)
+      vm->streamcb = *stream_cb;
+  else
+      vm->streamcb = (dvdnav_stream_cb) { NULL, NULL, NULL };
+
+  /* bind local callbacks */
+  vm->dvdstreamcb.pf_seek = vm->streamcb.pf_seek ? dvd_reader_seek_handler : NULL;
+  vm->dvdstreamcb.pf_read = vm->streamcb.pf_read ? dvd_reader_read_handler : NULL;
+  vm->dvdstreamcb.pf_readv = vm->streamcb.pf_readv ? dvd_reader_readv_handler : NULL;
+
+  if (vm->dvd && (dvdroot || (priv && stream_cb))) {
     /* a new dvd device has been requested */
     vm_close(vm);
   }
   if (!vm->dvd) {
+    /* dvdread stream callback handlers for redirection */
+#if DVDREAD_VERSION >= DVDREAD_VERSION_CODE(6,1,0)
+    dvd_logger_cb dvdread_logcb = { .pf_log = dvd_reader_logger_handler };
+    /* Only install log handler if we have one ourself */
+    dvd_logger_cb *p_dvdread_logcb = vm->logcb.pf_log ? &dvdread_logcb : NULL;
     if(dvdroot)
-        vm->dvd = DVDOpen(dvdroot);
-    else if(stream && stream_cb)
-        vm->dvd = DVDOpenStream(stream, (dvd_reader_stream_cb *)stream_cb);
+        vm->dvd = DVDOpen2(vm, p_dvdread_logcb, dvdroot);
+    else if(vm->priv && vm->dvdstreamcb.pf_read)
+        vm->dvd = DVDOpenStream2(vm, p_dvdread_logcb, &vm->dvdstreamcb);
+#else
+      if(dvdroot)
+          vm->dvd = DVDOpen(dvdroot);
+      else if(vm->priv && vm->dvdstreamcb.pf_read)
+          vm->dvd = DVDOpenStream(vm, &vm->dvdstreamcb);
+#endif
     if(!vm->dvd) {
-      fprintf(MSG_OUT, "libdvdnav: vm: failed to open/read the DVD\n");
+      Log0(vm, "vm: failed to open/read the DVD");
       return 0;
     }
     vm->vmgi = ifoOpenVMGI(vm->dvd);
     if(!vm->vmgi) {
-      fprintf(MSG_OUT, "libdvdnav: vm: failed to read VIDEO_TS.IFO\n");
+      Log0(vm, "vm: vm: failed to read VIDEO_TS.IFO");
       return 0;
     }
     if(!ifoRead_FP_PGC(vm->vmgi)) {
-      fprintf(MSG_OUT, "libdvdnav: vm: ifoRead_FP_PGC failed\n");
+      Log0(vm, "vm: vm: ifoRead_FP_PGC failed");
       return 0;
     }
     if(!ifoRead_TT_SRPT(vm->vmgi)) {
-      fprintf(MSG_OUT, "libdvdnav: vm: ifoRead_TT_SRPT failed\n");
+      Log0(vm, "vm: vm: ifoRead_TT_SRPT failed");
       return 0;
     }
     if(!ifoRead_PGCI_UT(vm->vmgi)) {
-      fprintf(MSG_OUT, "libdvdnav: vm: ifoRead_PGCI_UT failed\n");
+      Log0(vm, "vm: vm: ifoRead_PGCI_UT failed");
       return 0;
     }
     if(!ifoRead_PTL_MAIT(vm->vmgi)) {
-      fprintf(MSG_OUT, "libdvdnav: vm: ifoRead_PTL_MAIT failed\n");
+      Log0(vm, "vm: ifoRead_PTL_MAIT failed");
       /* return 0; Not really used for now.. */
     }
     if(!ifoRead_VTS_ATRT(vm->vmgi)) {
-      fprintf(MSG_OUT, "libdvdnav: vm: ifoRead_VTS_ATRT failed\n");
+      Log0(vm, "vm: ifoRead_VTS_ATRT failed");
       /* return 0; Not really used for now.. */
     }
     if(!ifoRead_VOBU_ADMAP(vm->vmgi)) {
-      fprintf(MSG_OUT, "libdvdnav: vm: ifoRead_VOBU_ADMAP vgmi failed\n");
+      Log0(vm, "vm: ifoRead_VOBU_ADMAP vgmi failed");
       /* return 0; Not really used for now.. */
     }
     /* ifoRead_TXTDT_MGI(vmgi); Not implemented yet */
-    if(dvd_read_name(vm->dvd_name, vm->dvd_serial, dvdroot) != 1) {
-      fprintf(MSG_OUT, "libdvdnav: vm: dvd_read_name failed\n");
+    if(dvd_read_name(vm, vm->dvd_name, vm->dvd_serial, dvdroot) != 1) {
+      Log1(vm, "vm: dvd_read_name failed");
     }
   }
   if (vm->vmgi) {
     int i, mask;
-    fprintf(MSG_OUT, "libdvdnav: DVD disk reports itself with Region mask 0x%08x. Regions:",
-      vm->vmgi->vmgi_mat->vmg_category);
+    char buffer[8 * 3 + 1];
+    char *p = buffer;
     for (i = 1, mask = 1; i <= 8; i++, mask <<= 1)
+    {
       if (((vm->vmgi->vmgi_mat->vmg_category >> 16) & mask) == 0)
-        fprintf(MSG_OUT, " %d", i);
-    fprintf(MSG_OUT, "\n");
+      {
+        sprintf(p, " %02d", i);
+        p +=3;
+      }
+    }
+    *p = 0;
+    Log2(vm, "DVD disk reports itself with Region mask 0x%08x. Regions:%s",
+      vm->vmgi->vmgi_mat->vmg_category, buffer);
   }
   return 1;
 }
@@ -428,7 +500,7 @@ int vm_reset(vm_t *vm, const char *dvdroot,
 /* copying and merging */
 
 vm_t *vm_new_copy(vm_t *source) {
-  vm_t *target = vm_new_vm();
+  vm_t *target = vm_new_vm(source->priv, &source->logcb);
   int vtsN;
   int pgcN = get_PGCN(source);
   int pgN  = (source->state).pgN;
@@ -687,12 +759,12 @@ static int process_command(vm_t *vm, link_t link_values) {
   while(link_values.command != PlayThis) {
 
 #ifdef TRACE
-    fprintf(MSG_OUT, "libdvdnav: Before printout starts:\n");
+    Log3(vm, "Before printout starts:");
     vm_print_link(link_values);
-    fprintf(MSG_OUT, "libdvdnav: Link values %i %i %i %i\n", link_values.command,
+    Log3(vm, "Link values %i %i %i %i", link_values.command,
             link_values.data1, link_values.data2, link_values.data3);
     vm_print_current_domain_state(vm);
-    fprintf(MSG_OUT, "libdvdnav: Before printout ends.\n");
+    Log3(vm, "Before printout ends.");
 #endif
 
     switch(link_values.command) {
@@ -812,7 +884,7 @@ static int process_command(vm_t *vm, link_t link_values) {
     case LinkRSM:
         /* Check and see if there is any rsm info!! */
         if (!vm->state.rsm_vtsN) {
-          fprintf(MSG_OUT, "libdvdnav: trying to resume without any resume info set\n");
+          Log2(vm, "trying to resume without any resume info set");
           link_values.command = Exit;
           break;
         }
@@ -1080,9 +1152,9 @@ static int process_command(vm_t *vm, link_t link_values) {
     }
 
 #ifdef TRACE
-    fprintf(MSG_OUT, "libdvdnav: After printout starts:\n");
+    Log3(vm, "After printout starts:");
     vm_print_current_domain_state(vm);
-    fprintf(MSG_OUT, "libdvdnav: After printout ends.\n");
+    Log3(vm, "After printout ends.");
 #endif
 
   }

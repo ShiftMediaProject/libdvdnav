@@ -32,7 +32,7 @@
 /* which is the default language for menus/audio/subpictures? */
 #define DVD_LANGUAGE "en"
 
-#ifdef WIN32
+#ifdef _WIN32
 #define S_IRWXG 0
 #endif
 

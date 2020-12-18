@@ -67,7 +67,11 @@ typedef struct vm_position_s {
 } vm_position_t;
 
 typedef struct {
+  void *priv;
+  dvdnav_logger_cb logcb;
+  dvdnav_stream_cb streamcb;
   dvd_reader_t *dvd;
+  dvd_reader_stream_cb dvdstreamcb;
   ifo_handle_t *vmgi;
   ifo_handle_t *vtsi;
   dvd_state_t   state;
@@ -101,7 +105,7 @@ typedef struct {
 #define PTL_REG      registers.SPRM[13]
 
 /* Initialisation & destruction */
-vm_t *vm_new_vm(void);
+vm_t *vm_new_vm(void *, const dvdnav_logger_cb *);
 void  vm_free_vm(vm_t *vm);
 
 /* IFO access */
@@ -114,7 +118,7 @@ dvd_reader_t *vm_get_dvd_reader(vm_t *vm);
 /* Basic Handling */
 int  vm_start(vm_t *vm);
 void vm_stop(vm_t *vm);
-int  vm_reset(vm_t *vm, const char *dvdroot, void *stream,
+int  vm_reset(vm_t *vm, const char *dvdroot, void *priv,
               dvdnav_stream_cb *stream_cb);
 
 /* copying and merging  - useful for try-running an operation */

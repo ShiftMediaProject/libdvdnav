@@ -25,7 +25,7 @@
 #include "config.h"
 #endif
 
-#ifdef WIN32
+#ifdef _WIN32
 
 /* pthread_mutex_* wrapper for win32 */
 #include <windows.h>
@@ -57,7 +57,7 @@ static inline int _private_gettimeofday( struct timeval *tv, void *tz )
 
 #include <pthread.h>
 
-#endif /* WIN32 */
+#endif /* _WIN32 */
 
 #ifdef __ANDROID__
 # undef  lseek
@@ -210,6 +210,10 @@ struct dvdnav_s {
   vm_t *vm;
   pthread_mutex_t vm_lock;
 
+  /* private context and logger*/
+  void *priv;
+  dvdnav_logger_cb logcb;
+
   /* Read-ahead cache */
   read_cache_t *cache;
 
@@ -234,7 +238,7 @@ int64_t dvdnav_convert_time(dvd_time_t *time);
 #else
 #define printerrf(...) \
     do { if (this) snprintf(this->err_str, MAX_ERR_LEN, __VA_ARGS__); } while (0)
-#endif /* WIN32 */
+#endif /* _MSC_VER */
 #endif
 #define printerr(str) \
     do { if (this) strncpy(this->err_str, str, MAX_ERR_LEN - 1); } while (0)

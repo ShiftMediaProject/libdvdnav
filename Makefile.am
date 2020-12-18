@@ -1,6 +1,9 @@
 ACLOCAL_AMFLAGS = -Im4
 
-AM_CPPFLAGS = -I$(top_srcdir)/src $(THREAD_CFLAGS) $(DVDREAD_CFLAGS)
+AM_CPPFLAGS = -I$(top_srcdir)/src \
+              -I$(top_builddir)/src/dvdnav \
+              $(THREAD_CFLAGS) \
+              $(DVDREAD_CFLAGS)
 
 dist_doc_DATA = AUTHORS ChangeLog COPYING README TODO
 
@@ -18,6 +21,8 @@ libdvdnav_la_SOURCES = \
 	src/read_cache.c \
 	src/navigation.c \
 	src/highlight.c \
+        src/logger.c \
+        src/logger.h \
 	src/searching.c \
 	src/settings.c \
 	src/dvdnav_internal.h \
@@ -44,7 +49,8 @@ pkgincludedir = $(includedir)/dvdnav
 pkginclude_HEADERS = \
 	src/dvdnav/dvdnav.h \
 	src/dvdnav/dvdnav_events.h \
-	src/dvdnav/dvd_types.h
+	src/dvdnav/dvd_types.h \
+	src/dvdnav/version.h
 
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = misc/dvdnav.pc
