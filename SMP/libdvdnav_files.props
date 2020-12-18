@@ -3,6 +3,7 @@
   <ItemGroup>
     <ClCompile Include="..\src\dvdnav.c" />
     <ClCompile Include="..\src\highlight.c" />
+    <ClCompile Include="..\src\logger.c" />
     <ClCompile Include="..\src\navigation.c" />
     <ClCompile Include="..\src\read_cache.c" />
     <ClCompile Include="..\src\searching.c" />
@@ -19,6 +20,7 @@
     <ClInclude Include="..\src\dvdnav\dvdnav_events.h" />
     <ClInclude Include="..\src\dvdnav\dvd_types.h" />
     <ClInclude Include="..\src\dvdnav_internal.h" />
+    <ClInclude Include="..\src\logger.h" />
     <ClInclude Include="..\src\read_cache.h" />
     <ClInclude Include="..\src\vm\decoder.h" />
     <ClInclude Include="..\src\vm\getset.h" />

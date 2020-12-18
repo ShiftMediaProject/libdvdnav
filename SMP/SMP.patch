@@ -1,3 +1,17 @@
+diff --git a/src/dvdnav.c b/src/dvdnav.c
+index 39d83b0..2afcf2d 100644
+--- a/src/dvdnav.c
++++ b/src/dvdnav.c
+@@ -29,7 +29,9 @@
+ #include <inttypes.h>
+ #include <stdlib.h>
+ #include <stdio.h>
++#ifdef HAVE_UNISTD_H
+ #include <unistd.h>
++#endif
+ #include <limits.h>
+ #include <string.h>
+ #include <sys/time.h>
 diff --git a/src/dvdnav_internal.h b/src/dvdnav_internal.h
 index 495f032..e2052a6 100644
 --- a/src/dvdnav_internal.h
@@ -24,3 +38,17 @@ index 1b2862d..e12bd6d 100644
  #  define dprintf(fmt, str) /* Nowt */
  #else
  #  define dprintf(fmt, ...) /* Nowt */
+diff --git a/src/vm/vm.c b/src/vm/vm.c
+index 6c64e59..480ff5a 100644
+--- a/src/vm/vm.c
++++ b/src/vm/vm.c
+@@ -28,7 +28,9 @@
+ #include <stdio.h>
+ #include <string.h>
+ #include <stdlib.h>
++#ifdef HAVE_UNISTD_H
+ #include <unistd.h>
++#endif
+ #include <inttypes.h>
+ #include <limits.h>
+ #include <assert.h>

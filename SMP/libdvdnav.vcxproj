@@ -12,6 +12,7 @@
     <ClCompile>
       <PreprocessorDefinitions>HAVE_CONFIG_H;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>.\;..\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <DisableSpecificWarnings>4244;4267;4067;4018;%(DisableSpecificWarnings)</DisableSpecificWarnings>
     </ClCompile>
     <Lib>
       <AdditionalDependencies>libdvdreadd.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -50,6 +51,7 @@ del /f /q $(OutDir)\licenses\libdvdnav.txt
     <ClCompile>
       <PreprocessorDefinitions>HAVE_CONFIG_H;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>.\;..\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <DisableSpecificWarnings>4244;4267;4067;4018;%(DisableSpecificWarnings)</DisableSpecificWarnings>
     </ClCompile>
     <Lib>
       <AdditionalDependencies>libdvdreadd.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -88,6 +90,7 @@ del /f /q $(OutDir)\licenses\libdvdnav.txt
     <ClCompile>
       <PreprocessorDefinitions>HAVE_CONFIG_H;NO_DVDCSS_LINK;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>.\;..\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <DisableSpecificWarnings>4244;4267;4067;4018;%(DisableSpecificWarnings)</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <ModuleDefinitionFile>libdvdnav.def</ModuleDefinitionFile>
@@ -127,6 +130,7 @@ del /f /q $(OutDir)\licenses\libdvdnav.txt
     <ClCompile>
       <PreprocessorDefinitions>HAVE_CONFIG_H;NO_DVDCSS_LINK;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>.\;..\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <DisableSpecificWarnings>4244;4267;4067;4018;%(DisableSpecificWarnings)</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <ModuleDefinitionFile>libdvdnav.def</ModuleDefinitionFile>
@@ -166,6 +170,7 @@ del /f /q $(OutDir)\licenses\libdvdnav.txt
     <ClCompile>
       <PreprocessorDefinitions>HAVE_CONFIG_H;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>.\;..\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <DisableSpecificWarnings>4244;4267;4067;4018;%(DisableSpecificWarnings)</DisableSpecificWarnings>
     </ClCompile>
     <Lib>
       <AdditionalDependencies>libdvdread.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -204,6 +209,7 @@ del /f /q $(OutDir)\licenses\libdvdnav.txt
     <ClCompile>
       <PreprocessorDefinitions>HAVE_CONFIG_H;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>.\;..\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <DisableSpecificWarnings>4244;4267;4067;4018;%(DisableSpecificWarnings)</DisableSpecificWarnings>
     </ClCompile>
     <Lib>
       <AdditionalDependencies>libdvdread.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -242,6 +248,7 @@ del /f /q $(OutDir)\licenses\libdvdnav.txt
     <ClCompile>
       <PreprocessorDefinitions>HAVE_CONFIG_H;NO_DVDCSS_LINK;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>.\;..\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <DisableSpecificWarnings>4244;4267;4067;4018;%(DisableSpecificWarnings)</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <ModuleDefinitionFile>libdvdnav.def</ModuleDefinitionFile>
@@ -281,6 +288,7 @@ del /f /q $(OutDir)\licenses\libdvdnav.txt
     <ClCompile>
       <PreprocessorDefinitions>HAVE_CONFIG_H;NO_DVDCSS_LINK;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>.\;..\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <DisableSpecificWarnings>4244;4267;4067;4018;%(DisableSpecificWarnings)</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <ModuleDefinitionFile>libdvdnav.def</ModuleDefinitionFile>
@@ -320,6 +328,7 @@ del /f /q $(OutDir)\licenses\libdvdnav.txt
     <ClCompile>
       <PreprocessorDefinitions>HAVE_CONFIG_H;NO_DVDCSS_LINK;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>.\;..\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <DisableSpecificWarnings>4244;4267;4067;4018;%(DisableSpecificWarnings)</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <ModuleDefinitionFile>libdvdnav.def</ModuleDefinitionFile>
@@ -359,6 +368,7 @@ del /f /q $(OutDir)\licenses\libdvdnav.txt
     <ClCompile>
       <PreprocessorDefinitions>HAVE_CONFIG_H;NO_DVDCSS_LINK;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>.\;..\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <DisableSpecificWarnings>4244;4267;4067;4018;%(DisableSpecificWarnings)</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <ModuleDefinitionFile>libdvdnav.def</ModuleDefinitionFile>
