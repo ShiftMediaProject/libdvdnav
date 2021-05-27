@@ -5,7 +5,7 @@ dnl These are defined in m4 so they can be passed to AC_INIT
 dnl --------------------------------------------------------------
 m4_define([dvdnav_major], [6])
 m4_define([dvdnav_minor], [1])
-m4_define([dvdnav_sub],   [0])
+m4_define([dvdnav_sub],   [1])
 m4_define([dvdnav_pre],   [])
 
 AC_INIT([libdvdnav], [dvdnav_major.dvdnav_minor.dvdnav_sub[]dvdnav_pre])
@@ -67,7 +67,7 @@ AC_SUBST(DVDNAV_LT_CURRENT)
 AC_SUBST(DVDNAV_LT_AGE)
 AC_SUBST(DVDNAV_LT_REVISION)
 
-AC_PROG_CC
+AC_PROG_CC_C99
 
 AC_SYS_LARGEFILE
 AC_C_BIGENDIAN

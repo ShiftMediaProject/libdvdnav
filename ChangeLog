@@ -1,3 +1,7 @@
+libdvdnav (6.1.1)
+ * fix build issues
+ * improve CI
+
 libdvdnav (6.1.0)
  * add a dvdnav_open2 API to setup a logging mechanism, similar to libdvdread
  * add a dvdnav_get_number_of_angles API
