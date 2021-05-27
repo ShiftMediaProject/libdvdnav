@@ -1,8 +1,8 @@
 diff --git a/src/dvdnav.c b/src/dvdnav.c
-index 39d83b0..2afcf2d 100644
+index b633c7d..2055056 100644
 --- a/src/dvdnav.c
 +++ b/src/dvdnav.c
-@@ -29,7 +29,9 @@
+@@ -31,7 +31,9 @@
  #include <inttypes.h>
  #include <stdlib.h>
  #include <stdio.h>
