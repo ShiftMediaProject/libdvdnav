@@ -1,5 +1,8 @@
 ShiftMediaProject libdvdnav
 =============
+[![Build status](https://ci.appveyor.com/api/projects/status/0kajjj20v5j8qk10?svg=true)](https://ci.appveyor.com/project/Sibras/sdl)
+[![Github All Releases](https://img.shields.io/github/downloads/ShiftMediaProject/libdvdnav/total.svg)](https://github.com/ShiftMediaProject/libdvdnav/releases)
+[![GitHub release](https://img.shields.io/github/release/ShiftMediaProject/libdvdnav.svg)](https://github.com/ShiftMediaProject/libdvdnav/releases/latest)
 [![GitHub issues](https://img.shields.io/github/issues/ShiftMediaProject/libdvdnav.svg)](https://github.com/ShiftMediaProject/libdvdnav/issues)
 [![license](https://img.shields.io/github/license/ShiftMediaProject/libdvdnav.svg)](https://github.com/ShiftMediaProject/libdvdnav)
 [![donate](https://img.shields.io/badge/donate-link-brightgreen.svg)](https://shiftmediaproject.github.io/8-donate/)
