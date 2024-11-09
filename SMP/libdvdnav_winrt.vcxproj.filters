@@ -60,9 +60,7 @@
     <ClCompile Include="..\src\vm\vmcmd.c">
       <Filter>Source Files\vm</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\logger.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
+    <ClCompile Include="..\src\logger.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\dvdnav_internal.h">
@@ -101,9 +99,7 @@
     <ClInclude Include="version.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\logger.h">
-      <Filter>Header Files\src</Filter>
-    </ClInclude>
+    <ClInclude Include="..\src\logger.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="libdvdnav.def">
